@@ -17,6 +17,7 @@ const Dashboard: React.FC = () => {
 
       <div style={styles.formContainer}>
         <div style={styles.formCard}>
+          <img src="logo 1.png" alt="Logo" style={styles.logo} />
           <form onSubmit={handleSubmit}>
             <div style={styles.formGroup}>
               <label>Email</label>
@@ -54,7 +55,6 @@ const Dashboard: React.FC = () => {
   );
 };
 
-
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: 'flex',
@@ -70,7 +70,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: '100%',
     objectFit: 'cover',
   },
-
   formContainer: {
     flex: 1,
     display: 'flex',
@@ -86,14 +85,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: '10px',
     boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
   },
+  logo: {
+    display: 'block',
+    margin: '0 auto 20px auto',
+    width: '150px',
+  },
   logoText: {
-    textAlign: 'center' as 'center', 
+    textAlign: 'center' as 'center',
     fontSize: '24px',
     marginBottom: '20px',
   },
   formGroup: {
     marginBottom: '20px',
-    color: '#000', 
+    color: '#000',
   },
   inputField: {
     width: '100%',
@@ -102,7 +106,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: '1px solid #ccc',
     fontSize: '16px',
     backgroundColor: 'rgba(128, 128, 128, 0.5)',
-    color: '#000', 
+    color: '#000',
   },
   submitButton: {
     width: '100%',
@@ -115,7 +119,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '16px',
   },
   registerLink: {
-    textAlign: 'center' as 'center', 
+    textAlign: 'center' as 'center',
     marginTop: '20px',
   },
 };

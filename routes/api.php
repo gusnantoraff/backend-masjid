@@ -13,3 +13,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
+    return response()->json(['message' => 'Access granted to verified users.']);
+});
+
