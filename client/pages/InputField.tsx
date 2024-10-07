@@ -6,12 +6,16 @@ interface InputFieldProps {
   type: string;
   placeholder: string;
   iconSrc: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, type, placeholder, iconSrc }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, type, placeholder, iconSrc, value, onChange }) => {
   return (
     <div className={styles.inputGroup}>
-      <label className={styles.inputLabel} htmlFor={`${label.toLowerCase()}Input`}>{label}</label>
+      <label className={styles.inputLabel} htmlFor={`${label.toLowerCase()}Input`}>
+        {label}
+      </label>
       <div className={styles.inputWrapper}>
         <div className={styles.inputField}>
           <img loading="lazy" src={iconSrc} alt="" className={styles.inputIcon} />
@@ -20,6 +24,8 @@ const InputField: React.FC<InputFieldProps> = ({ label, type, placeholder, iconS
             id={`${label.toLowerCase()}Input`}
             placeholder={placeholder}
             className={styles.inputPlaceholder}
+            value={value}
+            onChange={onChange}
             aria-label={label}
           />
         </div>
