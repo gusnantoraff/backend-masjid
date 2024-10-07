@@ -1,127 +1,44 @@
-import React, { useState } from 'react';
+import React from 'react';
+import styles from '../styles/LoginPage.module.css';
 
-const Dashboard: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+import InputField from './InputField';
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    console.log('Logging in with:', email, password);
-  };
-
+const LoginPage: React.FC = () => {
   return (
-    <div style={styles.container}>
-      <div style={styles.imageContainer}>
-        <img src="masjid.jpg" alt="Masjid" style={styles.image} />
-      </div>
-
-      <div style={styles.formContainer}>
-        <div style={styles.formCard}>
-          <img src="logo 1.png" alt="Logo" style={styles.logo} />
-          <form onSubmit={handleSubmit}>
-            <div style={styles.formGroup}>
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="Masukan Email"
-                value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                style={styles.inputField}
-                required
-              />
-            </div>
-
-            <div style={styles.formGroup}>
-              <label>Kata Sandi</label>
-              <input
-                type="password"
-                placeholder="Masukan Kata Sandi"
-                value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                style={styles.inputField}
-                required
-              />
-            </div>
-
-            <button type="submit" style={styles.submitButton}>Login</button>
-
-            <p style={styles.registerLink}>
-              Belum Punya Akun? <a href="#">Daftar</a>
+    <main className={styles.loginContainer}>
+      <div className={styles.contentWrapper}>
+        <section className={styles.imageColumn}>
+          <img loading="lazy" src="masjid.jpg" alt="Login illustration" className={styles.loginImage} />
+        </section>
+        <section className={styles.formColumn}>
+          <div className={styles.formWrapper}>
+            <img loading="lazy" src="logo.png" alt="Company logo" className={styles.logo} />
+            <div className={styles.formContainer}>
+              <form className={styles.formInner}>
+                <InputField
+                  label="Email"
+                  type="email"
+                  placeholder="Masukan Email"
+                  iconSrc="https://cdn.builder.io/api/v1/image/assets/TEMP/752c057431de35aee51b53d713a776157f2d93a1507ca0cc4f4ceaa7a1d738e7?placeholderIfAbsent=true&apiKey=0071786d14794a0283243dd846096a5a"
+                />
+                <InputField
+                  label="Kata Sandi"
+                  type="password"
+                  placeholder="Masukan Kata Sandi"
+                  iconSrc="https://cdn.builder.io/api/v1/image/assets/TEMP/7daa5e8b61dc30306140a9b07e4c21364e6d726bcf3998aff700423ef6c7bd29?placeholderIfAbsent=true&apiKey=0071786d14794a0283243dd846096a5a"
+                />
+                <a href="#" className={styles.forgotPassword}>Lupa Kata Sandi?</a>
+                <button type="submit" className={styles.loginButton}>Login</button>
+                <p className={styles.signupPrompt}>
+              Belum Punya Akun? <a href="#" className={styles.signupLink}>Daftar</a>
             </p>
-          </form>
-        </div>
+              </form>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
 
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: 'flex',
-    height: '100vh',
-    backgroundColor: '#f0f0f0',
-  },
-  imageContainer: {
-    flex: 1,
-    position: 'relative' as 'relative', 
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  formContainer: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  formCard: {
-    width: '80%',
-    maxWidth: '400px',
-    padding: '40px',
-    backgroundColor: '#ffffff',
-    borderRadius: '10px',
-    boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
-  },
-  logo: {
-    display: 'block',
-    margin: '0 auto 20px auto',
-    width: '150px',
-  },
-  logoText: {
-    textAlign: 'center' as 'center',
-    fontSize: '24px',
-    marginBottom: '20px',
-  },
-  formGroup: {
-    marginBottom: '20px',
-    color: '#000',
-  },
-  inputField: {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-    backgroundColor: 'rgba(128, 128, 128, 0.5)',
-    color: '#000',
-  },
-  submitButton: {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#d10000',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  registerLink: {
-    textAlign: 'center' as 'center',
-    marginTop: '20px',
-  },
-};
-
-export default Dashboard;
+export default LoginPage;
