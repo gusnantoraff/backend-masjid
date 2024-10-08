@@ -29,6 +29,11 @@ class KelolaMasjidController extends Controller
             'kategori' => 'required|string',
             'provinsi' => 'required|string|max:100',
             'kota' => 'required|string|max:100',
+            'kecamatan' => 'required|string|max:100', // New field
+            'desa' => 'required|string|max:100', // New field
+            'RW' => 'required|string|max:10', // New field
+            'alamat_lengkap' => 'required|string|max:255', // New field
+            'description_text' => 'nullable|string', // New field
             'luas_tanah' => 'required|numeric|min:0',
             'status_tanah' => 'required|string|max:50',
             'luas_bangunan' => 'required|numeric|min:0',
@@ -36,6 +41,8 @@ class KelolaMasjidController extends Controller
             'jumlah_jamaah' => 'nullable|integer|min:0',
             'jumlah_muazin' => 'nullable|integer|min:0',
             'jumlah_khatib' => 'nullable|integer|min:0',
+            'jumlah_remaja' => 'nullable|integer|min:0', // New field
+            'website' => 'nullable|string|max:255', // New field
         ]);
 
         $masjid = KelolaMasjid::create($validated);
@@ -62,6 +69,11 @@ class KelolaMasjidController extends Controller
             'kategori' => 'required|string',
             'provinsi' => 'required|string|max:100',
             'kota' => 'required|string|max:100',
+            'kecamatan' => 'required|string|max:100', // New field
+            'desa' => 'required|string|max:100', // New field
+            'RW' => 'required|string|max:10', // New field
+            'alamat_lengkap' => 'required|string|max:255', // New field
+            'description_text' => 'nullable|string', // New field
             'luas_tanah' => 'required|numeric|min:0',
             'status_tanah' => 'required|string|max:50',
             'luas_bangunan' => 'required|numeric|min:0',
@@ -69,6 +81,8 @@ class KelolaMasjidController extends Controller
             'jumlah_jamaah' => 'nullable|integer|min:0',
             'jumlah_muazin' => 'nullable|integer|min:0',
             'jumlah_khatib' => 'nullable|integer|min:0',
+            'jumlah_remaja' => 'nullable|integer|min:0', // New field
+            'website' => 'nullable|string|max:255', // New field
         ]);
 
         $kelola_masjid->update($validated);

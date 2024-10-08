@@ -15,6 +15,11 @@ class KelolaMasjid extends Model
         'kategori',
         'provinsi',
         'kota',
+        'kecamatan', // New field
+        'desa', // New field
+        'RW', // New field
+        'alamat_lengkap', // New field
+        'description_text', // New field
         'luas_tanah',
         'status_tanah',
         'luas_bangunan',
@@ -22,5 +27,7 @@ class KelolaMasjid extends Model
         'jumlah_jamaah',
         'jumlah_muazin',
         'jumlah_khatib',
+        'jumlah_remaja', // New field
+        'website', // New field
     ];
 }
