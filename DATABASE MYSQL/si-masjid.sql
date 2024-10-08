@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2024 at 02:01 PM
+-- Generation Time: Oct 08, 2024 at 02:24 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -20,6 +20,30 @@ SET time_zone = "+00:00";
 --
 -- Database: `si-masjid`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `berita`
+--
+
+CREATE TABLE `berita` (
+  `berita_id` bigint(20) UNSIGNED NOT NULL,
+  `judul` varchar(255) NOT NULL,
+  `text_berita` text NOT NULL,
+  `kategori` varchar(255) NOT NULL,
+  `status` enum('draft','published','archived') NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `berita`
+--
+
+INSERT INTO `berita` (`berita_id`, `judul`, `text_berita`, `kategori`, `status`, `foto`, `created_at`, `updated_at`) VALUES
+(1, 'Berita baru', 'ini adalah berita terbaru', '2024-10-12', 'draft', 'images/icrVDvoUiL7rcjZpfRKuXJNTaQyaZozHlJSkzATn.jpg', '2024-10-08 05:24:00', '2024-10-08 05:24:00');
 
 -- --------------------------------------------------------
 
@@ -101,7 +125,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (11, '2024_10_07_204404_add_remember_token_to_users_table', 4),
 (12, '2024_10_07_213441_add_email_verified_at_to_users_table', 5),
 (13, '2024_10_07_203139_create_orphans_table', 6),
-(16, '2024_10_08_105702_create_kegiatan_table', 7);
+(16, '2024_10_08_105702_create_kegiatan_table', 7),
+(17, '2024_10_08_121812_create_berita_table', 8);
 
 -- --------------------------------------------------------
 
@@ -240,6 +265,12 @@ INSERT INTO `users` (`user_id`, `firstname`, `lastname`, `email`, `email_verifie
 --
 
 --
+-- Indexes for table `berita`
+--
+ALTER TABLE `berita`
+  ADD PRIMARY KEY (`berita_id`);
+
+--
 -- Indexes for table `cache`
 --
 ALTER TABLE `cache`
@@ -303,6 +334,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `berita`
+--
+ALTER TABLE `berita`
+  MODIFY `berita_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `kegiatan`
 --
 ALTER TABLE `kegiatan`
@@ -312,7 +349,7 @@ ALTER TABLE `kegiatan`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `orphans`
