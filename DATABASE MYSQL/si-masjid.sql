@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2024 at 11:30 AM
+-- Generation Time: Oct 08, 2024 at 12:38 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -76,7 +76,24 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (7, '2024_10_07_192956_create_cache_table', 2),
 (9, '2024_10_07_201235_create_password_reset_tokens_table', 3),
 (11, '2024_10_07_204404_add_remember_token_to_users_table', 4),
-(12, '2024_10_07_213441_add_email_verified_at_to_users_table', 5);
+(12, '2024_10_07_213441_add_email_verified_at_to_users_table', 5),
+(13, '2024_10_07_203139_create_orphans_table', 6);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orphans`
+--
+
+CREATE TABLE `orphans` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `birth` date NOT NULL,
+  `info` enum('Yatim','Piatu','Yatim Piatu') NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -184,7 +201,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `email_verified_at`, `password`, `remember_token`, `phone`, `birth`, `gender`, `role`, `created_at`, `updated_at`) VALUES
 (4, 'Gusnanto', 'Rafly', 'gusnantoid@gmail.com', '2024-10-07 14:35:24', '$2y$12$D7Mo7hQ.B49KGHGNPNKYWuJCZ53NjcD8u7StfzOVeOI1b9gUe05Sm', NULL, '8888889888', '2024-10-01', 'Male', 'Super Admin', '2024-10-07 14:24:07', '2024-10-07 14:35:24'),
-(5, 'Admin', 'Satu', 'admin@gmail.com', NULL, '$2y$12$D5QaU5Cyj4K2IytHROxaouxxognu73iq4g2/8u8B3ARd8Zs4yy0im', NULL, '8888889888', '2024-10-01', 'Male', 'Admin', '2024-10-07 14:38:59', '2024-10-07 14:38:59'),
+(5, 'Admin', 'Satu', 'admin@gmail.com', NULL, 'admin123', NULL, '8888889888', '2024-10-01', 'Male', 'Admin', '2024-10-07 14:38:59', '2024-10-08 03:27:25'),
 (6, 'Jemaah', 'Satu', 'jemaah@gmail.com', NULL, '$2y$12$nwaSzRvKQwurlYzKE5I54Oqbr9gVOB7jI2snK1/wMuZ7n2YGVwX.q', NULL, '8888889888', '2024-10-01', 'Male', 'Jemaah', '2024-10-07 16:24:32', '2024-10-07 16:24:32');
 
 --
@@ -207,6 +224,12 @@ ALTER TABLE `cache_locks`
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `orphans`
+--
+ALTER TABLE `orphans`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -246,7 +269,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `orphans`
+--
+ALTER TABLE `orphans`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
