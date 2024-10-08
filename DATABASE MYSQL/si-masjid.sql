@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2024 at 12:38 PM
+-- Generation Time: Oct 08, 2024 at 02:01 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -56,6 +56,29 @@ CREATE TABLE `cache_locks` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `kegiatan`
+--
+
+CREATE TABLE `kegiatan` (
+  `kegiatan_id` bigint(20) UNSIGNED NOT NULL,
+  `judul` varchar(255) NOT NULL,
+  `lokasi` varchar(255) NOT NULL,
+  `tanggal` date NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kegiatan`
+--
+
+INSERT INTO `kegiatan` (`kegiatan_id`, `judul`, `lokasi`, `tanggal`, `foto`, `created_at`, `updated_at`) VALUES
+(2, 'Halal bi Halal', 'Masjid', '2024-10-01', 'images/RxckqqLxoD3aYwBRbasUj7AjtWXr7ZNu3BLTMPD0.jpg', '2024-10-08 04:55:15', '2024-10-08 05:00:41');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -77,7 +100,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (9, '2024_10_07_201235_create_password_reset_tokens_table', 3),
 (11, '2024_10_07_204404_add_remember_token_to_users_table', 4),
 (12, '2024_10_07_213441_add_email_verified_at_to_users_table', 5),
-(13, '2024_10_07_203139_create_orphans_table', 6);
+(13, '2024_10_07_203139_create_orphans_table', 6),
+(16, '2024_10_08_105702_create_kegiatan_table', 7);
 
 -- --------------------------------------------------------
 
@@ -86,7 +110,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `orphans` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `orphan_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
   `birth` date NOT NULL,
@@ -94,6 +118,13 @@ CREATE TABLE `orphans` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `orphans`
+--
+
+INSERT INTO `orphans` (`orphan_id`, `name`, `address`, `birth`, `info`, `created_at`, `updated_at`) VALUES
+(1, 'orphan 1', 'ringroad selatan', '2024-10-01', 'Yatim', '2024-10-08 04:33:50', '2024-10-08 04:33:50');
 
 -- --------------------------------------------------------
 
@@ -180,7 +211,7 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 --
 
 CREATE TABLE `users` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -199,7 +230,7 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `email_verified_at`, `password`, `remember_token`, `phone`, `birth`, `gender`, `role`, `created_at`, `updated_at`) VALUES
+INSERT INTO `users` (`user_id`, `firstname`, `lastname`, `email`, `email_verified_at`, `password`, `remember_token`, `phone`, `birth`, `gender`, `role`, `created_at`, `updated_at`) VALUES
 (4, 'Gusnanto', 'Rafly', 'gusnantoid@gmail.com', '2024-10-07 14:35:24', '$2y$12$D7Mo7hQ.B49KGHGNPNKYWuJCZ53NjcD8u7StfzOVeOI1b9gUe05Sm', NULL, '8888889888', '2024-10-01', 'Male', 'Super Admin', '2024-10-07 14:24:07', '2024-10-07 14:35:24'),
 (5, 'Admin', 'Satu', 'admin@gmail.com', NULL, 'admin123', NULL, '8888889888', '2024-10-01', 'Male', 'Admin', '2024-10-07 14:38:59', '2024-10-08 03:27:25'),
 (6, 'Jemaah', 'Satu', 'jemaah@gmail.com', NULL, '$2y$12$nwaSzRvKQwurlYzKE5I54Oqbr9gVOB7jI2snK1/wMuZ7n2YGVwX.q', NULL, '8888889888', '2024-10-01', 'Male', 'Jemaah', '2024-10-07 16:24:32', '2024-10-07 16:24:32');
@@ -221,6 +252,12 @@ ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`);
 
 --
+-- Indexes for table `kegiatan`
+--
+ALTER TABLE `kegiatan`
+  ADD PRIMARY KEY (`kegiatan_id`);
+
+--
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -230,7 +267,7 @@ ALTER TABLE `migrations`
 -- Indexes for table `orphans`
 --
 ALTER TABLE `orphans`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`orphan_id`);
 
 --
 -- Indexes for table `password_reset_tokens`
@@ -258,7 +295,7 @@ ALTER TABLE `sessions`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `users_email_unique` (`email`);
 
 --
@@ -266,16 +303,22 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `kegiatan`
+--
+ALTER TABLE `kegiatan`
+  MODIFY `kegiatan_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `orphans`
 --
 ALTER TABLE `orphans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `orphan_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -287,7 +330,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
