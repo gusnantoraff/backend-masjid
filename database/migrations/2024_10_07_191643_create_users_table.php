@@ -19,8 +19,8 @@ class CreateUsersTable extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('phone');
-            $table->date('birth');
+            $table->string('phone')->nullable();
+            $table->date('birth')->nullable();
             $table->enum('gender', ['Male', 'Female']);
             $table->enum('role', ['Super Admin', 'Admin', 'Jemaah']);
             $table->timestamps(); // This creates the created_at and updated_at columns
