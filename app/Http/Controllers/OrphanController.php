@@ -42,12 +42,12 @@ class OrphanController extends Controller
     /**
      * Display the specified orphan.
      *
-     * @param int $id
+     * @param int $orphan_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(int $id): JsonResponse
+    public function show(int $orphan_id): JsonResponse
     {
-        $orphan = Orphan::find($id);
+        $orphan = Orphan::find($orphan_id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
@@ -60,12 +60,12 @@ class OrphanController extends Controller
      * Update the specified orphan in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param int $orphan_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $orphan_id): JsonResponse
     {
-        $orphan = Orphan::find($id);
+        $orphan = Orphan::find($orphan_id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
@@ -86,12 +86,12 @@ class OrphanController extends Controller
     /**
      * Remove the specified orphan from storage.
      *
-     * @param int $id
+     * @param int $orphan_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(int $orphan_id): JsonResponse
     {
-        $orphan = Orphan::find($id);
+        $orphan = Orphan::find($orphan_id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);

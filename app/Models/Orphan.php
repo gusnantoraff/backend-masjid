@@ -14,6 +14,8 @@ class Orphan extends Model
      *
      * @var array<int, string>
      */
+
+    protected $primaryKey = 'orphan_id';
     protected $fillable = [
         'name',
         'address',
