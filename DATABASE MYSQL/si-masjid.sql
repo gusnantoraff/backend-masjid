@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2024 at 02:24 PM
+-- Generation Time: Oct 09, 2024 at 08:25 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -103,6 +103,37 @@ INSERT INTO `kegiatan` (`kegiatan_id`, `judul`, `lokasi`, `tanggal`, `foto`, `cr
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `kelola_masjids`
+--
+
+CREATE TABLE `kelola_masjids` (
+  `kelola_masjid_id` bigint(20) UNSIGNED NOT NULL,
+  `nama_masjid` varchar(255) NOT NULL,
+  `phone_number` varchar(20) NOT NULL,
+  `kategori` enum('Kampung','Kota','Kabupaten','Provinsi') NOT NULL,
+  `provinsi` varchar(100) NOT NULL,
+  `kota` varchar(100) NOT NULL,
+  `kecamatan` varchar(100) NOT NULL,
+  `desa` varchar(100) NOT NULL,
+  `RW` varchar(10) NOT NULL,
+  `alamat_lengkap` varchar(255) NOT NULL,
+  `description_text` text DEFAULT NULL,
+  `luas_tanah` decimal(10,2) UNSIGNED NOT NULL,
+  `status_tanah` varchar(50) NOT NULL,
+  `luas_bangunan` decimal(10,2) UNSIGNED NOT NULL,
+  `tahun_berdiri` year(4) NOT NULL,
+  `jumlah_jamaah` int(10) UNSIGNED DEFAULT NULL,
+  `jumlah_muazin` int(10) UNSIGNED DEFAULT NULL,
+  `jumlah_khatib` int(10) UNSIGNED DEFAULT NULL,
+  `jumlah_remaja` int(10) UNSIGNED DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -126,7 +157,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (12, '2024_10_07_213441_add_email_verified_at_to_users_table', 5),
 (13, '2024_10_07_203139_create_orphans_table', 6),
 (16, '2024_10_08_105702_create_kegiatan_table', 7),
-(17, '2024_10_08_121812_create_berita_table', 8);
+(17, '2024_10_08_121812_create_berita_table', 8),
+(18, '2024_10_08_124310_create_kelola_masjids_table', 9);
 
 -- --------------------------------------------------------
 
@@ -205,7 +237,9 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (9, 'App\\Models\\User', 4, 'API Token', 'ceba4c4f1a5312813361dc1224f4f38b78f1d89a3a0e1ee523f3773dd9dd7e1d', '[\"*\"]', NULL, NULL, '2024-10-07 16:14:09', '2024-10-07 16:14:09'),
 (10, 'App\\Models\\User', 4, 'API Token', 'd86c1b2fa438be1c247dae9fb98f5a81ac23a01c1f2a12502d408b9fb01dd126', '[\"*\"]', NULL, NULL, '2024-10-07 16:15:45', '2024-10-07 16:15:45'),
 (11, 'App\\Models\\User', 4, 'API Token', 'ef8509759706199ab77922decb25f8240b47d941e21306e5e8837670b0ce184f', '[\"*\"]', NULL, NULL, '2024-10-07 16:17:33', '2024-10-07 16:17:33'),
-(12, 'App\\Models\\User', 4, 'API Token', '16d83bd53364a3e2a1efc690c5506606a198f5dc1a6202b93eb1380e70ac7057', '[\"*\"]', NULL, NULL, '2024-10-07 16:18:10', '2024-10-07 16:18:10');
+(12, 'App\\Models\\User', 4, 'API Token', '16d83bd53364a3e2a1efc690c5506606a198f5dc1a6202b93eb1380e70ac7057', '[\"*\"]', NULL, NULL, '2024-10-07 16:18:10', '2024-10-07 16:18:10'),
+(13, 'App\\Models\\User', 4, 'API Token', 'f42dcde0c6f15dc77603402373237812381991eaf6f8c4556300496fde4c4b93', '[\"*\"]', NULL, NULL, '2024-10-08 23:09:07', '2024-10-08 23:09:07'),
+(14, 'App\\Models\\User', 4, 'API Token', '2dc50d7795202278f89478744864e0cbcc3ca919433ee0bddddda5b1457e2a56', '[\"*\"]', NULL, NULL, '2024-10-08 23:24:47', '2024-10-08 23:24:47');
 
 -- --------------------------------------------------------
 
@@ -289,6 +323,13 @@ ALTER TABLE `kegiatan`
   ADD PRIMARY KEY (`kegiatan_id`);
 
 --
+-- Indexes for table `kelola_masjids`
+--
+ALTER TABLE `kelola_masjids`
+  ADD PRIMARY KEY (`kelola_masjid_id`),
+  ADD KEY `kelola_masjids_provinsi_kota_index` (`provinsi`,`kota`);
+
+--
 -- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
@@ -346,10 +387,16 @@ ALTER TABLE `kegiatan`
   MODIFY `kegiatan_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `kelola_masjids`
+--
+ALTER TABLE `kelola_masjids`
+  MODIFY `kelola_masjid_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `orphans`
@@ -361,7 +408,7 @@ ALTER TABLE `orphans`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `users`
