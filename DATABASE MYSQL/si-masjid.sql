@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2024 at 08:25 AM
+-- Generation Time: Oct 10, 2024 at 08:47 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -24,26 +24,34 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `berita`
+-- Table structure for table `arus_kas`
 --
 
-CREATE TABLE `berita` (
-  `berita_id` bigint(20) UNSIGNED NOT NULL,
-  `judul` varchar(255) NOT NULL,
-  `text_berita` text NOT NULL,
-  `kategori` varchar(255) NOT NULL,
-  `status` enum('draft','published','archived') NOT NULL,
-  `foto` varchar(255) DEFAULT NULL,
+CREATE TABLE `arus_kas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `penerimaan_kas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `pengeluaran_kas_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tanggal` date NOT NULL,
+  `pemasukan` decimal(15,2) DEFAULT NULL,
+  `pengeluaran` decimal(15,2) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `berita`
+-- Table structure for table `berita`
 --
 
-INSERT INTO `berita` (`berita_id`, `judul`, `text_berita`, `kategori`, `status`, `foto`, `created_at`, `updated_at`) VALUES
-(1, 'Berita baru', 'ini adalah berita terbaru', '2024-10-12', 'draft', 'images/icrVDvoUiL7rcjZpfRKuXJNTaQyaZozHlJSkzATn.jpg', '2024-10-08 05:24:00', '2024-10-08 05:24:00');
+CREATE TABLE `berita` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `judul` varchar(255) NOT NULL,
+  `konten` text NOT NULL,
+  `tanggal_publikasi` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -56,14 +64,6 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('1b6453892473a467d07372d45eb05abc2031647a', 'i:1;', 1728337070),
-('1b6453892473a467d07372d45eb05abc2031647a:timer', 'i:1728337070;', 1728337070);
 
 -- --------------------------------------------------------
 
@@ -80,53 +80,188 @@ CREATE TABLE `cache_locks` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kegiatan`
+-- Table structure for table `coa`
 --
 
-CREATE TABLE `kegiatan` (
-  `kegiatan_id` bigint(20) UNSIGNED NOT NULL,
-  `judul` varchar(255) NOT NULL,
-  `lokasi` varchar(255) NOT NULL,
-  `tanggal` date NOT NULL,
-  `foto` varchar(255) DEFAULT NULL,
+CREATE TABLE `coa` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `kode_akun` varchar(255) NOT NULL,
+  `nama_akun` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dhuafa`
+--
+
+CREATE TABLE `dhuafa` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `kontak` varchar(255) DEFAULT NULL,
+  `alamat` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fasilitas`
+--
+
+CREATE TABLE `fasilitas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `info_masjid_id` bigint(20) UNSIGNED NOT NULL,
+  `nama_fasilitas` varchar(255) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `kegiatan`
+-- Dumping data for table `fasilitas`
 --
 
-INSERT INTO `kegiatan` (`kegiatan_id`, `judul`, `lokasi`, `tanggal`, `foto`, `created_at`, `updated_at`) VALUES
-(2, 'Halal bi Halal', 'Masjid', '2024-10-01', 'images/RxckqqLxoD3aYwBRbasUj7AjtWXr7ZNu3BLTMPD0.jpg', '2024-10-08 04:55:15', '2024-10-08 05:00:41');
+INSERT INTO `fasilitas` (`id`, `info_masjid_id`, `nama_fasilitas`, `deskripsi`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Parkir Luas', 'Area parkir dapat menampung hingga 100 kendaraan.', '2024-10-09 23:32:11', '2024-10-09 23:32:11'),
+(2, 2, 'Ruang Ibadah Ber-AC', 'Ruang ibadah dilengkapi dengan pendingin ruangan untuk kenyamanan jamaah.', '2024-10-09 23:32:11', '2024-10-09 23:32:11');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kelola_masjids`
+-- Table structure for table `general_ledger`
 --
 
-CREATE TABLE `kelola_masjids` (
-  `kelola_masjid_id` bigint(20) UNSIGNED NOT NULL,
+CREATE TABLE `general_ledger` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `coa_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `debit` decimal(15,2) NOT NULL,
+  `kredit` decimal(15,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `images`
+--
+
+CREATE TABLE `images` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `kategori` varchar(255) NOT NULL,
+  `image` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `info_masjid`
+--
+
+CREATE TABLE `info_masjid` (
+  `id` bigint(20) UNSIGNED NOT NULL,
   `nama_masjid` varchar(255) NOT NULL,
-  `phone_number` varchar(20) NOT NULL,
-  `kategori` enum('Kampung','Kota','Kabupaten','Provinsi') NOT NULL,
-  `provinsi` varchar(100) NOT NULL,
-  `kota` varchar(100) NOT NULL,
-  `kecamatan` varchar(100) NOT NULL,
-  `desa` varchar(100) NOT NULL,
-  `RW` varchar(10) NOT NULL,
-  `alamat_lengkap` varchar(255) NOT NULL,
-  `description_text` text DEFAULT NULL,
-  `luas_tanah` decimal(10,2) UNSIGNED NOT NULL,
-  `status_tanah` varchar(50) NOT NULL,
-  `luas_bangunan` decimal(10,2) UNSIGNED NOT NULL,
-  `tahun_berdiri` year(4) NOT NULL,
-  `jumlah_jamaah` int(10) UNSIGNED DEFAULT NULL,
-  `jumlah_muazin` int(10) UNSIGNED DEFAULT NULL,
-  `jumlah_khatib` int(10) UNSIGNED DEFAULT NULL,
-  `jumlah_remaja` int(10) UNSIGNED DEFAULT NULL,
-  `website` varchar(255) DEFAULT NULL,
+  `alamat` text NOT NULL,
+  `kontak` varchar(255) DEFAULT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `ad_art` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `info_masjid`
+--
+
+INSERT INTO `info_masjid` (`id`, `nama_masjid`, `alamat`, `kontak`, `deskripsi`, `ad_art`, `created_at`, `updated_at`) VALUES
+(1, 'Masjid Al-Falah', 'Jl. Merdeka No. 1, Jakarta', '081234567890', 'Masjid Al-Falah adalah masjid besar yang terletak di pusat kota.', 'AD/ART lengkap', '2024-10-09 23:32:11', '2024-10-09 23:32:11'),
+(2, 'Masjid Al-Ikhlas', 'Jl. Sukabumi No. 2, Bandung', '082345678901', 'Masjid Al-Ikhlas adalah masjid kecil namun nyaman.', 'AD/ART detail', '2024-10-09 23:32:11', '2024-10-09 23:32:11');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_sholat`
+--
+
+CREATE TABLE `jadwal_sholat` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `subuh` time NOT NULL,
+  `dzuhur` time NOT NULL,
+  `ashar` time NOT NULL,
+  `maghrib` time NOT NULL,
+  `isya` time NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jamaah`
+--
+
+CREATE TABLE `jamaah` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `kontak` varchar(255) DEFAULT NULL,
+  `alamat` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jurnal_umum`
+--
+
+CREATE TABLE `jurnal_umum` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `coa_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `debit` decimal(15,2) NOT NULL,
+  `kredit` decimal(15,2) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kegiatan`
+--
+
+CREATE TABLE `kegiatan` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama_kegiatan` varchar(255) NOT NULL,
+  `tanggal` date NOT NULL,
+  `kategori` enum('khatib','muazin','umum') NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `laporan_keuangan`
+--
+
+CREATE TABLE `laporan_keuangan` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `periode` varchar(255) NOT NULL,
+  `total_pemasukan` decimal(15,2) NOT NULL,
+  `total_pengeluaran` decimal(15,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -148,40 +283,59 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(4, '2024_10_07_173427_create_sessions_table', 1),
-(5, '2024_10_07_180754_create_personal_access_tokens_table', 1),
-(6, '2024_10_07_191643_create_users_table', 1),
-(7, '2024_10_07_192956_create_cache_table', 2),
-(9, '2024_10_07_201235_create_password_reset_tokens_table', 3),
-(11, '2024_10_07_204404_add_remember_token_to_users_table', 4),
-(12, '2024_10_07_213441_add_email_verified_at_to_users_table', 5),
-(13, '2024_10_07_203139_create_orphans_table', 6),
-(16, '2024_10_08_105702_create_kegiatan_table', 7),
-(17, '2024_10_08_121812_create_berita_table', 8),
-(18, '2024_10_08_124310_create_kelola_masjids_table', 9);
+(1, '2024_10_07_050425_create_info_masjid_table', 1),
+(2, '2024_10_07_173427_create_sessions_table', 1),
+(3, '2024_10_07_180754_create_personal_access_tokens_table', 1),
+(4, '2024_10_07_191643_create_users_table', 1),
+(5, '2024_10_07_192956_create_cache_table', 1),
+(6, '2024_10_07_201235_create_password_reset_tokens_table', 1),
+(7, '2024_10_07_204404_add_remember_token_to_users_table', 1),
+(8, '2024_10_07_213441_add_email_verified_at_to_users_table', 1),
+(9, '2024_10_10_045714_create_mubaligh_table', 1),
+(10, '2024_10_10_045742_create_bank_table', 1),
+(11, '2024_10_10_050425_create_fasilitas_table', 1),
+(12, '2024_10_10_050427_create_strukur_organisasi_table', 1),
+(13, '2024_10_10_050428_create_coa_table', 1),
+(14, '2024_10_10_050429_create_penerimaan_kas_table', 1),
+(15, '2024_10_10_050429_create_pengeluaran_kas_table', 1),
+(16, '2024_10_10_050430_create_arus_kas_table', 1),
+(17, '2024_10_10_050431_create_general_ledger_table', 1),
+(18, '2024_10_10_050431_create_jurnal_umum_table', 1),
+(19, '2024_10_10_050432_create_posisi_keuangan_table', 1),
+(20, '2024_10_10_050433_create_pesan_website_table', 1),
+(21, '2024_10_10_050434_create_dhuafa_table', 1),
+(22, '2024_10_10_050434_create_laporan_keuangan_table', 1),
+(23, '2024_10_10_050435_create_yatim_table', 1),
+(24, '2024_10_10_050436_create_images_table', 1),
+(25, '2024_10_10_050436_create_jamaah_table', 1),
+(26, '2024_10_10_050437_create_template_surat_table', 1),
+(27, '2024_10_10_050438_create_berita_table', 1),
+(28, '2024_10_10_050439_create_jadwal_sholat_table', 1),
+(29, '2024_10_10_050439_create_kegiatan_table', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orphans`
+-- Table structure for table `mubaligh`
 --
 
-CREATE TABLE `orphans` (
-  `orphan_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `birth` date NOT NULL,
-  `info` enum('Yatim','Piatu','Yatim Piatu') NOT NULL,
+CREATE TABLE `mubaligh` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `info_masjid_id` bigint(20) UNSIGNED NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `kontak` varchar(255) DEFAULT NULL,
+  `alamat` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `orphans`
+-- Dumping data for table `mubaligh`
 --
 
-INSERT INTO `orphans` (`orphan_id`, `name`, `address`, `birth`, `info`, `created_at`, `updated_at`) VALUES
-(1, 'orphan 1', 'ringroad selatan', '2024-10-01', 'Yatim', '2024-10-08 04:33:50', '2024-10-08 04:33:50');
+INSERT INTO `mubaligh` (`id`, `info_masjid_id`, `nama`, `kontak`, `alamat`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Ustadz Abdul Somad', '081234567892', 'Jl. Sudirman No. 5, Jakarta', '2024-10-09 23:32:11', '2024-10-09 23:32:11'),
+(2, 2, 'Ustadz Adi Hidayat', '081234567893', 'Jl. Diponegoro No. 7, Bandung', '2024-10-09 23:32:11', '2024-10-09 23:32:11');
 
 -- --------------------------------------------------------
 
@@ -195,12 +349,37 @@ CREATE TABLE `password_reset_tokens` (
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `password_reset_tokens`
+-- Table structure for table `penerimaan_kas`
 --
 
-INSERT INTO `password_reset_tokens` (`email`, `token`, `created_at`) VALUES
-('gusnantorafly@gmail.com', '$2y$12$qx8HxJ3SYXthIZjWwpStkev8MkqCWTNpVceEH7K84yp1CnWOEJ9Ka', '2024-10-07 13:34:12');
+CREATE TABLE `penerimaan_kas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `coa_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `jumlah` decimal(15,2) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pengeluaran_kas`
+--
+
+CREATE TABLE `pengeluaran_kas` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `coa_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `jumlah` decimal(15,2) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -221,25 +400,60 @@ CREATE TABLE `personal_access_tokens` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `personal_access_tokens`
+-- Table structure for table `pesan_website`
 --
 
-INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
-(1, 'App\\Models\\User', 2, 'API Token', 'e37d27b4cb59c637075fa50da98fc1e24d7287500339b047315f1be5de927e89', '[\"*\"]', NULL, NULL, '2024-10-07 14:11:09', '2024-10-07 14:11:09'),
-(2, 'App\\Models\\User', 2, 'API Token', 'feff76bdf844c8f26d6907d7a0392cd5206b145024aaf6398e89c53c083323f3', '[\"*\"]', NULL, NULL, '2024-10-07 14:15:01', '2024-10-07 14:15:01'),
-(3, 'App\\Models\\User', 2, 'API Token', '9ba97c2632ec829aa326d5661c6e7aa48b8cbe3abc987edda485d6a8cea92d21', '[\"*\"]', NULL, NULL, '2024-10-07 14:17:59', '2024-10-07 14:17:59'),
-(4, 'App\\Models\\User', 2, 'API Token', '0c8d8cee74f7b96daaa2d4745052089a1c045d883612037683bd22bce724c393', '[\"*\"]', NULL, NULL, '2024-10-07 14:20:49', '2024-10-07 14:20:49'),
-(5, 'App\\Models\\User', 4, 'API Token', '868e4696bcd1ef6e1237b79b4c7ba05a8ecef34660f9549472492070736cd58e', '[\"*\"]', '2024-10-07 14:27:30', NULL, '2024-10-07 14:24:18', '2024-10-07 14:27:30'),
-(6, 'App\\Models\\User', 4, 'API Token', 'e9ed118a911751d1117516d722ae2f147832a2956483b8e0be31bb88d3c5147f', '[\"*\"]', '2024-10-07 14:46:45', NULL, '2024-10-07 14:32:20', '2024-10-07 14:46:45'),
-(7, 'App\\Models\\User', 4, 'API Token', 'eb4a61ca6b6d5117f6e21cb63b8a6ca318d8334b909936f5b90f19365f9e8b13', '[\"*\"]', NULL, NULL, '2024-10-07 14:37:05', '2024-10-07 14:37:05'),
-(8, 'App\\Models\\User', 5, 'API Token', '2bd425f001de611f83fdbaa01d6237ad81717dd89bd40bb4e399268f6c319c61', '[\"*\"]', '2024-10-07 14:47:37', NULL, '2024-10-07 14:46:59', '2024-10-07 14:47:37'),
-(9, 'App\\Models\\User', 4, 'API Token', 'ceba4c4f1a5312813361dc1224f4f38b78f1d89a3a0e1ee523f3773dd9dd7e1d', '[\"*\"]', NULL, NULL, '2024-10-07 16:14:09', '2024-10-07 16:14:09'),
-(10, 'App\\Models\\User', 4, 'API Token', 'd86c1b2fa438be1c247dae9fb98f5a81ac23a01c1f2a12502d408b9fb01dd126', '[\"*\"]', NULL, NULL, '2024-10-07 16:15:45', '2024-10-07 16:15:45'),
-(11, 'App\\Models\\User', 4, 'API Token', 'ef8509759706199ab77922decb25f8240b47d941e21306e5e8837670b0ce184f', '[\"*\"]', NULL, NULL, '2024-10-07 16:17:33', '2024-10-07 16:17:33'),
-(12, 'App\\Models\\User', 4, 'API Token', '16d83bd53364a3e2a1efc690c5506606a198f5dc1a6202b93eb1380e70ac7057', '[\"*\"]', NULL, NULL, '2024-10-07 16:18:10', '2024-10-07 16:18:10'),
-(13, 'App\\Models\\User', 4, 'API Token', 'f42dcde0c6f15dc77603402373237812381991eaf6f8c4556300496fde4c4b93', '[\"*\"]', NULL, NULL, '2024-10-08 23:09:07', '2024-10-08 23:09:07'),
-(14, 'App\\Models\\User', 4, 'API Token', '2dc50d7795202278f89478744864e0cbcc3ca919433ee0bddddda5b1457e2a56', '[\"*\"]', NULL, NULL, '2024-10-08 23:24:47', '2024-10-08 23:24:47');
+CREATE TABLE `pesan_website` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama_pengirim` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `pesan` text NOT NULL,
+  `tanggal` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `posisi_keuangan`
+--
+
+CREATE TABLE `posisi_keuangan` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `aktiva` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `pasiva` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rekening_bank`
+--
+
+CREATE TABLE `rekening_bank` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `info_masjid_id` bigint(20) UNSIGNED NOT NULL,
+  `nama_bank` varchar(255) NOT NULL,
+  `nomor_rekening` varchar(255) NOT NULL,
+  `atas_nama` varchar(255) NOT NULL,
+  `image_transfer` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `rekening_bank`
+--
+
+INSERT INTO `rekening_bank` (`id`, `info_masjid_id`, `nama_bank`, `nomor_rekening`, `atas_nama`, `image_transfer`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Bank Mandiri', '1234567890', 'Masjid Al-Falah', NULL, '2024-10-09 23:32:11', '2024-10-09 23:32:11'),
+(2, 2, 'Bank BRI', '0987654321', 'Masjid Al-Ikhlas', NULL, '2024-10-09 23:32:11', '2024-10-09 23:32:11');
 
 -- --------------------------------------------------------
 
@@ -256,12 +470,37 @@ CREATE TABLE `sessions` (
   `last_activity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `sessions`
+-- Table structure for table `struktur_organisasi`
 --
 
-INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('JAmV97YbXdvB437eFrtDcs0zObfuuTXOtVEBEYPq', NULL, '127.0.0.1', 'PostmanRuntime/7.39.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTnpwdlRrYXIwOXNPVjhmc2JSSlZUdDBtcGpuSGM3b3Ewc292RlYwayI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9zYW5jdHVtL2NzcmYtY29va2llIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1728329437);
+CREATE TABLE `struktur_organisasi` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `info_masjid_id` bigint(20) UNSIGNED NOT NULL,
+  `jabatan` varchar(255) NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `kontak` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `template_surat`
+--
+
+CREATE TABLE `template_surat` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `judul_surat` varchar(255) NOT NULL,
+  `isi_surat` text NOT NULL,
+  `tanda_tangan` text DEFAULT NULL,
+  `stempel` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -270,17 +509,18 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 --
 
 CREATE TABLE `users` (
-  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
-  `phone` varchar(255) NOT NULL,
-  `birth` date NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `birth` date DEFAULT NULL,
   `gender` enum('Male','Female') NOT NULL,
-  `role` enum('Super Admin','Admin','Jemaah') NOT NULL,
+  `role` enum('ADMIN','PENGURUS_MASJID') NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -289,20 +529,41 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `firstname`, `lastname`, `email`, `email_verified_at`, `password`, `remember_token`, `phone`, `birth`, `gender`, `role`, `created_at`, `updated_at`) VALUES
-(4, 'Gusnanto', 'Rafly', 'gusnantoid@gmail.com', '2024-10-07 14:35:24', '$2y$12$D7Mo7hQ.B49KGHGNPNKYWuJCZ53NjcD8u7StfzOVeOI1b9gUe05Sm', NULL, '8888889888', '2024-10-01', 'Male', 'Super Admin', '2024-10-07 14:24:07', '2024-10-07 14:35:24'),
-(5, 'Admin', 'Satu', 'admin@gmail.com', NULL, 'admin123', NULL, '8888889888', '2024-10-01', 'Male', 'Admin', '2024-10-07 14:38:59', '2024-10-08 03:27:25'),
-(6, 'Jemaah', 'Satu', 'jemaah@gmail.com', NULL, '$2y$12$nwaSzRvKQwurlYzKE5I54Oqbr9gVOB7jI2snK1/wMuZ7n2YGVwX.q', NULL, '8888889888', '2024-10-01', 'Male', 'Jemaah', '2024-10-07 16:24:32', '2024-10-07 16:24:32');
+INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `email_verified_at`, `password`, `remember_token`, `phone`, `birth`, `gender`, `role`, `image`, `created_at`, `updated_at`) VALUES
+(1, 'Gusnanto', 'Rafly', 'admin@gmail.com', NULL, '$2y$12$6KlzCgnTsSH7XbA21byAPeKAWScoETxGZSvscLu.3SzYgjjtZbHZu', NULL, '081234567890', '1990-01-01', 'Male', 'ADMIN', 'default.jpg', '2024-10-09 23:32:11', '2024-10-09 23:32:11');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `yatim`
+--
+
+CREATE TABLE `yatim` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `usia` int(11) NOT NULL,
+  `alamat` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `arus_kas`
+--
+ALTER TABLE `arus_kas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `arus_kas_penerimaan_kas_id_foreign` (`penerimaan_kas_id`),
+  ADD KEY `arus_kas_pengeluaran_kas_id_foreign` (`pengeluaran_kas_id`);
+
+--
 -- Indexes for table `berita`
 --
 ALTER TABLE `berita`
-  ADD PRIMARY KEY (`berita_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cache`
@@ -317,17 +578,73 @@ ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`);
 
 --
+-- Indexes for table `coa`
+--
+ALTER TABLE `coa`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `dhuafa`
+--
+ALTER TABLE `dhuafa`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `fasilitas`
+--
+ALTER TABLE `fasilitas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fasilitas_info_masjid_id_foreign` (`info_masjid_id`);
+
+--
+-- Indexes for table `general_ledger`
+--
+ALTER TABLE `general_ledger`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `general_ledger_coa_id_foreign` (`coa_id`);
+
+--
+-- Indexes for table `images`
+--
+ALTER TABLE `images`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `info_masjid`
+--
+ALTER TABLE `info_masjid`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `jadwal_sholat`
+--
+ALTER TABLE `jadwal_sholat`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `jamaah`
+--
+ALTER TABLE `jamaah`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `jurnal_umum`
+--
+ALTER TABLE `jurnal_umum`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jurnal_umum_coa_id_foreign` (`coa_id`);
+
+--
 -- Indexes for table `kegiatan`
 --
 ALTER TABLE `kegiatan`
-  ADD PRIMARY KEY (`kegiatan_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `kelola_masjids`
+-- Indexes for table `laporan_keuangan`
 --
-ALTER TABLE `kelola_masjids`
-  ADD PRIMARY KEY (`kelola_masjid_id`),
-  ADD KEY `kelola_masjids_provinsi_kota_index` (`provinsi`,`kota`);
+ALTER TABLE `laporan_keuangan`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `migrations`
@@ -336,16 +653,31 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `orphans`
+-- Indexes for table `mubaligh`
 --
-ALTER TABLE `orphans`
-  ADD PRIMARY KEY (`orphan_id`);
+ALTER TABLE `mubaligh`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `mubaligh_info_masjid_id_foreign` (`info_masjid_id`);
 
 --
 -- Indexes for table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD KEY `password_reset_tokens_email_index` (`email`);
+
+--
+-- Indexes for table `penerimaan_kas`
+--
+ALTER TABLE `penerimaan_kas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `penerimaan_kas_coa_id_foreign` (`coa_id`);
+
+--
+-- Indexes for table `pengeluaran_kas`
+--
+ALTER TABLE `pengeluaran_kas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pengeluaran_kas_coa_id_foreign` (`coa_id`);
 
 --
 -- Indexes for table `personal_access_tokens`
@@ -356,6 +688,25 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
+-- Indexes for table `pesan_website`
+--
+ALTER TABLE `pesan_website`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `posisi_keuangan`
+--
+ALTER TABLE `posisi_keuangan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `rekening_bank`
+--
+ALTER TABLE `rekening_bank`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `rekening_bank_info_masjid_id_foreign` (`info_masjid_id`);
+
+--
 -- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
@@ -364,57 +715,243 @@ ALTER TABLE `sessions`
   ADD KEY `sessions_last_activity_index` (`last_activity`);
 
 --
+-- Indexes for table `struktur_organisasi`
+--
+ALTER TABLE `struktur_organisasi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `struktur_organisasi_info_masjid_id_foreign` (`info_masjid_id`);
+
+--
+-- Indexes for table `template_surat`
+--
+ALTER TABLE `template_surat`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`user_id`),
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `users_email_unique` (`email`);
+
+--
+-- Indexes for table `yatim`
+--
+ALTER TABLE `yatim`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
+-- AUTO_INCREMENT for table `arus_kas`
+--
+ALTER TABLE `arus_kas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `berita`
 --
 ALTER TABLE `berita`
-  MODIFY `berita_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `coa`
+--
+ALTER TABLE `coa`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dhuafa`
+--
+ALTER TABLE `dhuafa`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `fasilitas`
+--
+ALTER TABLE `fasilitas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `general_ledger`
+--
+ALTER TABLE `general_ledger`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `images`
+--
+ALTER TABLE `images`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `info_masjid`
+--
+ALTER TABLE `info_masjid`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `jadwal_sholat`
+--
+ALTER TABLE `jadwal_sholat`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jamaah`
+--
+ALTER TABLE `jamaah`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jurnal_umum`
+--
+ALTER TABLE `jurnal_umum`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `kegiatan`
 --
 ALTER TABLE `kegiatan`
-  MODIFY `kegiatan_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `kelola_masjids`
+-- AUTO_INCREMENT for table `laporan_keuangan`
 --
-ALTER TABLE `kelola_masjids`
-  MODIFY `kelola_masjid_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `laporan_keuangan`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
--- AUTO_INCREMENT for table `orphans`
+-- AUTO_INCREMENT for table `mubaligh`
 --
-ALTER TABLE `orphans`
-  MODIFY `orphan_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `mubaligh`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `penerimaan_kas`
+--
+ALTER TABLE `penerimaan_kas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pengeluaran_kas`
+--
+ALTER TABLE `pengeluaran_kas`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pesan_website`
+--
+ALTER TABLE `pesan_website`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `posisi_keuangan`
+--
+ALTER TABLE `posisi_keuangan`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `rekening_bank`
+--
+ALTER TABLE `rekening_bank`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `struktur_organisasi`
+--
+ALTER TABLE `struktur_organisasi`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `template_surat`
+--
+ALTER TABLE `template_surat`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `yatim`
+--
+ALTER TABLE `yatim`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `arus_kas`
+--
+ALTER TABLE `arus_kas`
+  ADD CONSTRAINT `arus_kas_penerimaan_kas_id_foreign` FOREIGN KEY (`penerimaan_kas_id`) REFERENCES `penerimaan_kas` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `arus_kas_pengeluaran_kas_id_foreign` FOREIGN KEY (`pengeluaran_kas_id`) REFERENCES `pengeluaran_kas` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `fasilitas`
+--
+ALTER TABLE `fasilitas`
+  ADD CONSTRAINT `fasilitas_info_masjid_id_foreign` FOREIGN KEY (`info_masjid_id`) REFERENCES `info_masjid` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `general_ledger`
+--
+ALTER TABLE `general_ledger`
+  ADD CONSTRAINT `general_ledger_coa_id_foreign` FOREIGN KEY (`coa_id`) REFERENCES `coa` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `jurnal_umum`
+--
+ALTER TABLE `jurnal_umum`
+  ADD CONSTRAINT `jurnal_umum_coa_id_foreign` FOREIGN KEY (`coa_id`) REFERENCES `coa` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `mubaligh`
+--
+ALTER TABLE `mubaligh`
+  ADD CONSTRAINT `mubaligh_info_masjid_id_foreign` FOREIGN KEY (`info_masjid_id`) REFERENCES `info_masjid` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `penerimaan_kas`
+--
+ALTER TABLE `penerimaan_kas`
+  ADD CONSTRAINT `penerimaan_kas_coa_id_foreign` FOREIGN KEY (`coa_id`) REFERENCES `coa` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `pengeluaran_kas`
+--
+ALTER TABLE `pengeluaran_kas`
+  ADD CONSTRAINT `pengeluaran_kas_coa_id_foreign` FOREIGN KEY (`coa_id`) REFERENCES `coa` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `rekening_bank`
+--
+ALTER TABLE `rekening_bank`
+  ADD CONSTRAINT `rekening_bank_info_masjid_id_foreign` FOREIGN KEY (`info_masjid_id`) REFERENCES `info_masjid` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `struktur_organisasi`
+--
+ALTER TABLE `struktur_organisasi`
+  ADD CONSTRAINT `struktur_organisasi_info_masjid_id_foreign` FOREIGN KEY (`info_masjid_id`) REFERENCES `info_masjid` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
