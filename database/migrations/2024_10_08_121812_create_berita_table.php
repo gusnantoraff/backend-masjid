@@ -14,12 +14,10 @@ class CreateBeritaTable extends Migration
     public function up()
     {
         Schema::create('berita', function (Blueprint $table) {
-            $table->id('berita_id');
+            $table->id();
             $table->string('judul');
-            $table->text('text_berita');
-            $table->string('kategori');
-            $table->enum('status', ['draft', 'published', 'archived']);
-            $table->string('foto')->nullable();
+            $table->text('konten');
+            $table->date('tanggal_publikasi');
             $table->timestamps();
         });
     }

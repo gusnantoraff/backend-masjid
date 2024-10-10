@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Orphan;
+use App\Models\Yatim;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class OrphanController extends Controller
+class YatimController extends Controller
 {
     /**
      * Display a listing of the orphans.
@@ -15,7 +16,7 @@ class OrphanController extends Controller
      */
     public function index(): JsonResponse
     {
-        $orphans = Orphan::all();
+        $orphans = Yatim::all();
         return response()->json($orphans);
     }
 
@@ -34,7 +35,7 @@ class OrphanController extends Controller
             'info' => 'required|in:Yatim,Piatu,Yatim Piatu',
         ]);
 
-        $orphan = Orphan::create($validatedData);
+        $orphan = Yatim::create($validatedData);
 
         return response()->json(['message' => 'Orphan created successfully', 'orphan' => $orphan], 201);
     }
@@ -42,12 +43,12 @@ class OrphanController extends Controller
     /**
      * Display the specified orphan.
      *
-     * @param int $orphan_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(int $orphan_id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $orphan = Orphan::find($orphan_id);
+        $orphan = Yatim::find($id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
@@ -60,12 +61,12 @@ class OrphanController extends Controller
      * Update the specified orphan in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $orphan_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, int $orphan_id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
-        $orphan = Orphan::find($orphan_id);
+        $orphan = Yatim::find($id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
@@ -86,12 +87,12 @@ class OrphanController extends Controller
     /**
      * Remove the specified orphan from storage.
      *
-     * @param int $orphan_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $orphan_id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $orphan = Orphan::find($orphan_id);
+        $orphan = Yatim::find($id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);

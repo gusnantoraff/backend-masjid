@@ -49,12 +49,12 @@ class BeritaController extends Controller
     /**
      * Display the specified berita.
      *
-     * @param int $berita_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(int $berita_id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $berita = Berita::find($berita_id);
+        $berita = Berita::find($id);
 
         if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);
@@ -67,12 +67,12 @@ class BeritaController extends Controller
      * Update the specified berita in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $berita_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, int $berita_id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
-        $berita = Berita::find($berita_id);
+        $berita = Berita::find($id);
 
         if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);
@@ -100,12 +100,12 @@ class BeritaController extends Controller
     /**
      * Remove the specified berita from storage.
      *
-     * @param int $berita_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $berita_id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $berita = Berita::find($berita_id);
+        $berita = Berita::find($id);
 
         if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);

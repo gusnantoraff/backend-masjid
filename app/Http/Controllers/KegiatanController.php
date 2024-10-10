@@ -48,12 +48,12 @@ class KegiatanController extends Controller
     /**
      * Display the specified kegiatan.
      *
-     * @param int $kegiatan_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(int $kegiatan_id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $kegiatan = Kegiatan::find($kegiatan_id);
+        $kegiatan = Kegiatan::find($id);
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Kegiatan not found'], 404);
@@ -66,12 +66,12 @@ class KegiatanController extends Controller
      * Update the specified kegiatan in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $kegiatan_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, int $kegiatan_id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
-        $kegiatan = Kegiatan::find($kegiatan_id);
+        $kegiatan = Kegiatan::find($id);
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Kegiatan not found'], 404);
@@ -98,12 +98,12 @@ class KegiatanController extends Controller
     /**
      * Remove the specified kegiatan from storage.
      *
-     * @param int $kegiatan_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $kegiatan_id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $kegiatan = Kegiatan::find($kegiatan_id);
+        $kegiatan = Kegiatan::find($id);
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Kegiatan not found'], 404);

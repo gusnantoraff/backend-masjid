@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KelolaMasjid;
+use App\Models\InfoMasjid;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class KelolaMasjidController extends Controller
+class InfoMasjidController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $masjid = KelolaMasjid::all();
+        $masjid = InfoMasjid::all();
 
         return response()->json($masjid, Response::HTTP_OK);
     }
@@ -45,7 +45,7 @@ class KelolaMasjidController extends Controller
             'website' => 'nullable|string|max:255', // New field
         ]);
 
-        $masjid = KelolaMasjid::create($validated);
+        $masjid = InfoMasjid::create($validated);
 
         return response()->json($masjid, Response::HTTP_CREATED);
     }
@@ -53,7 +53,7 @@ class KelolaMasjidController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(KelolaMasjid $kelola_masjid)
+    public function show(InfoMasjid $kelola_masjid)
     {
         return response()->json($kelola_masjid, Response::HTTP_OK);
     }
@@ -61,7 +61,7 @@ class KelolaMasjidController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, KelolaMasjid $kelola_masjid)
+    public function update(Request $request, InfoMasjid $kelola_masjid)
     {
         $validated = $request->validate([
             'nama_masjid' => 'required|string|max:255',
@@ -93,7 +93,7 @@ class KelolaMasjidController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(KelolaMasjid $kelola_masjid)
+    public function destroy(InfoMasjid $kelola_masjid)
     {
         $kelola_masjid->delete();
 

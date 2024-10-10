@@ -24,12 +24,12 @@ class UserController extends Controller
     /**
      * Show a specific user by ID.
      *
-     * @param int $user_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(int $user_id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $user = User::find($user_id);
+        $user = User::find($id);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -38,9 +38,9 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function update(Request $request, int $user_id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
-        $user = User::find($user_id);
+        $user = User::find($id);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -49,7 +49,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'firstname' => ['sometimes', 'required', 'string', 'max:255'],
             'lastname' => ['sometimes', 'required', 'string', 'max:255'],
-            'email' => ['sometimes', 'required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user_id],
+            'email' => ['sometimes', 'required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
             'password' => ['sometimes', 'required', 'confirmed', PasswordRule::defaults()],
             'phone' => ['sometimes', 'required', 'digits_between:10,13'],
             'birth' => ['sometimes', 'required', 'date'],
@@ -69,12 +69,12 @@ class UserController extends Controller
     /**
      * Delete a specific user by ID.
      *
-     * @param int $user_id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $user_id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $user = User::find($user_id);
+        $user = User::find($id);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);

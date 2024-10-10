@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orphans', function (Blueprint $table) {
+        Schema::create('yatim', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('address');
-            $table->date('birth');
-            $table->enum('info', ['Yatim', 'Piatu', 'Yatim Piatu']);
-            $table->timestamps(); // This creates the created_at and updated_at columns
+            $table->string('nama');
+            $table->integer('usia');
+            $table->string('alamat');
+            $table->timestamps();
         });
     }
 
