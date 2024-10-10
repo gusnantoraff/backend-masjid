@@ -8,7 +8,7 @@ class CreateStrukurOrganisasiTable extends Migration
 {
     public function up()
     {
-        Schema::create('strukur_organisasi', function (Blueprint $table) {
+        Schema::create('struktur_organisasi', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('info_masjid_id');
             $table->string('jabatan');
@@ -23,6 +23,6 @@ class CreateStrukurOrganisasiTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('strukur_organisasi');
+        Schema::dropIfExists('struktur_organisasi');
     }
 }
