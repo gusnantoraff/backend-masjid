@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('phone')->nullable();
             $table->date('birth')->nullable();
             $table->enum('gender', ['Male', 'Female']);
-            $table->enum('role', ['Super Admin', 'Admin', 'Jemaah']);
+            $table->enum('role', ['ADMIN', 'PENGURUS_MASJID']);
             $table->string('image')->nullable();
             $table->timestamps(); // This creates the created_at and updated_at columns
         });
