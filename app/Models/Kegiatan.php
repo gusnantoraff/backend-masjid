@@ -17,11 +17,10 @@ class Kegiatan extends Model
 
     protected $table = 'kegiatan';
 
-    protected $primaryKey = 'kegiatan_id';
     protected $fillable = [
-        'judul',
-        'lokasi',
+        'nama_kegiatan',
         'tanggal',
-        'foto'
+        'kategori',
+        'keterangan'
     ];
 }

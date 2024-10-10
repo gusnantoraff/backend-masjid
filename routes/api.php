@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\KelolaMasjidController;
-use App\Http\Controllers\OrphanController;
+use App\Http\Controllers\InfoMasjidController;
+use App\Http\Controllers\YatimController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,21 +14,11 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('users', UserController::class)->parameters([
-    'users' => 'user_id',
-]);
-Route::apiResource('orphans', OrphanController::class)->parameters([
-    'orphans' => 'orphan_id',
-]);
-Route::apiResource('kegiatan', KegiatanController::class)->parameters([
-    'kegiatan' => 'kegiatan_id',
-]);
-Route::apiResource('berita', BeritaController::class)->parameters([
-    'berita' => 'berita_id',
-]);
-Route::apiResource('kelola-masjid', KelolaMasjidController::class)->parameters([
-    'kelola-masjid' => 'kelola_masjid_id',
-]);
+Route::apiResource('users', UserController::class);
+Route::apiResource('yatim', YatimController::class);
+Route::apiResource('kegiatan', KegiatanController::class);
+Route::apiResource('berita', BeritaController::class);
+Route::apiResource('info_masjid', InfoMasjidController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

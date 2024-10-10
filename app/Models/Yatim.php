@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Orphan extends Model
+class Yatim extends Model
 {
     use HasFactory;
 
@@ -15,11 +15,9 @@ class Orphan extends Model
      * @var array<int, string>
      */
 
-    protected $primaryKey = 'orphan_id';
     protected $fillable = [
-        'name',
-        'address',
-        'birth',
-        'info',
+        'nama',
+        'usia',
+        'alamat',
     ];
 }
