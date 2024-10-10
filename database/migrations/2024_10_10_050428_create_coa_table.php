@@ -13,6 +13,10 @@ class CreateCoaTable extends Migration
             $table->string('kode_akun');
             $table->string('nama_akun');
             $table->timestamps();
+
+            // Set the character set and collation
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
         });
     }
 

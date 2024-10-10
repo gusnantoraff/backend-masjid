@@ -16,7 +16,11 @@ class CreateGeneralLedgerTable extends Migration
             $table->decimal('kredit', 15, 2);
             $table->timestamps();
 
-            // Correct the foreign key constraint
+            // Set the character set and collation
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+
+            // Foreign key constraint
             $table->foreign('coa_id')->references('id')->on('coa')->onDelete('cascade');
         });
     }

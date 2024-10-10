@@ -10,8 +10,8 @@ class CreatePosisiKeuanganTable extends Migration
     {
         Schema::create('posisi_keuangan', function (Blueprint $table) {
             $table->id();
-            $table->decimal('aktiva', 15, 2);
-            $table->decimal('pasiva', 15, 2);
+            $table->decimal('aktiva', 15, 2)->default(0);
+            $table->decimal('pasiva', 15, 2)->default(0);
             $table->timestamps();
         });
     }
