@@ -20,7 +20,9 @@ const config: Config = {
     },
     extend: {
       colors: {
+        ijo: "#14B8A6",
         current: "currentColor",
+        oren: "#F97F30",
         transparent: "transparent",
         white: "#FFFFFF",
         primary: "#5750F1",

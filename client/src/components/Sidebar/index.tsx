@@ -15,6 +15,7 @@ import { FaRegEnvelope } from "react-icons/fa";
 import { FaNewspaper } from "react-icons/fa6";
 import { FaPeopleRoof } from "react-icons/fa6";
 import { FaTools } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BiHelpCircle } from "react-icons/bi";
 import { BiLogOut } from "react-icons/bi";
@@ -26,8 +27,13 @@ interface SidebarProps {
 
 const menuGroups = [
   {
-    name: "Dashboard",
     menuItems: [
+      {
+        icon: 
+        <FaHome size={24} className="fill-current" />,
+        label: "Dashboard",
+        route: "#",
+      },
       {
         icon: 
         <FaMosque size={24} className="fill-current" />,
@@ -98,7 +104,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
-        className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark lg:static lg:translate-x-0 ${
+        className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-stroke bg-ijo dark:border-stroke-dark dark:bg-gray-dark lg:static lg:translate-x-0 ${
           sidebarOpen
             ? "translate-x-0 duration-300 ease-linear"
             : "-translate-x-full"
@@ -106,20 +112,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       >
         {/* <!-- SIDEBAR HEADER --> */}
         <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5 xl:py-10">
-          <Link href="/">
+          <Link href="#">
             <Image
               width={176}
               height={32}
-              src={"/images/logo/logo-dark.svg"}
+              src={"/images/logo.png"}
               alt="Logo"
               priority
               className="dark:hidden"
-              style={{ width: "auto", height: "auto" }}
+              style={{ filter: "brightness(0) invert(1)", width: "auto", height: "auto" }}
             />
             <Image
               width={176}
               height={32}
-              src={"/images/logo/logo.svg"}
+              src={"/images/logo.png"}
               alt="Logo"
               priority
               className="hidden dark:block"
@@ -152,10 +158,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           {/* <!-- Sidebar Menu --> */}
           <nav className="mt-1 px-4 lg:px-6">
             {menuGroups.map((group, groupIndex) => (
-              <div key={groupIndex}>
-                <h3 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
-                  {group.name}
-                </h3>
+              <div key={groupIndex}>           
 
                 <ul className="mb-6 flex flex-col gap-2">
                   {group.menuItems.map((menuItem, menuIndex) => (

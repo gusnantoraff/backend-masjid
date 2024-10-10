@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import DefaultSelectOption from "@/components/SelectOption/DefaultSelectOption";
+import { ApexOptions } from "apexcharts";
 
 // Dynamic import ReactApexChart with ssr disabled
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -12,17 +13,13 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 const ChartPendapatan: React.FC = () => {
   const series = [
     {
-      name: "Sales",
+      name: "Statistik Pendapatan",
       data: [44, 55, 41, 67, 22, 43, 65],
-    },
-    {
-      name: "Revenue",
-      data: [13, 23, 20, 8, 13, 27, 15],
     },
   ];
 
-  const options = {
-    colors: ["#5750F1", "#0ABEF9"],
+  const options: ApexOptions = {
+    colors: ["#5286F8", "#5286F8"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
       type: "bar",
@@ -98,11 +95,11 @@ const ChartPendapatan: React.FC = () => {
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
-            Pengeluaran
+            Pendapatan
           </h4>
         </div>
         <div>
-          <DefaultSelectOption options={["This Week", "Last Week"]} />
+          <DefaultSelectOption options={["6 bulan", "1 tahun"]} />
         </div>
       </div>
       <div>
