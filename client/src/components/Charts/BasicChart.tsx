@@ -4,6 +4,7 @@ import ChartThree from "@/components/Charts/ChartThree";
 import React from "react";
 import ChartFive from "@/components/Charts/ChartFive";
 
+
 const BasicChart: React.FC = () => {
   return (
     <>

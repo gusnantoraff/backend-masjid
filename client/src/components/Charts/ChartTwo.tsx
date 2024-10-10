@@ -1,7 +1,13 @@
-import { ApexOptions } from "apexcharts";
+"use client";
+
+import dynamic from "next/dynamic";
 import React from "react";
-import ReactApexChart from "react-apexcharts";
 import DefaultSelectOption from "@/components/SelectOption/DefaultSelectOption";
+
+// Dynamic import ReactApexChart with ssr disabled
+const ReactApexChart = dynamic(() => import("react-apexcharts"), {
+  ssr: false,
+});
 
 const ChartTwo: React.FC = () => {
   const series = [
@@ -15,7 +21,7 @@ const ChartTwo: React.FC = () => {
     },
   ];
 
-  const options: ApexOptions = {
+  const options = {
     colors: ["#5750F1", "#0ABEF9"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
@@ -29,7 +35,6 @@ const ChartTwo: React.FC = () => {
         enabled: false,
       },
     },
-
     responsive: [
       {
         breakpoint: 1536,
@@ -55,7 +60,6 @@ const ChartTwo: React.FC = () => {
     dataLabels: {
       enabled: false,
     },
-
     grid: {
       strokeDashArray: 5,
       xaxis: {
@@ -69,7 +73,6 @@ const ChartTwo: React.FC = () => {
         },
       },
     },
-
     xaxis: {
       categories: ["M", "T", "W", "T", "F", "S", "S"],
     },
@@ -79,13 +82,10 @@ const ChartTwo: React.FC = () => {
       fontFamily: "Satoshi",
       fontWeight: 500,
       fontSize: "14px",
-
       markers: {
-        radius: 99,
-        width: 16,
-        height: 16,
         strokeWidth: 10,
         strokeColor: "transparent",
+        fillColors: ["#5750F1", "#0ABEF9"],
       },
     },
     fill: {
@@ -105,14 +105,13 @@ const ChartTwo: React.FC = () => {
           <DefaultSelectOption options={["This Week", "Last Week"]} />
         </div>
       </div>
-
       <div>
         <div id="chartTwo" className="-ml-3.5">
           <ReactApexChart
             options={options}
             series={series}
             type="bar"
-            height={370}
+            height={240}
           />
         </div>
       </div>
