@@ -14,15 +14,9 @@ class CreateJamaahTable extends Migration
             $table->date('birth');
             $table->enum('gender', ['pria', 'wanita']);
             $table->string('email')->unique();
-<<<<<<< Updated upstream
-            $table->string('kontak');
-            $table->enum('keterangan', ['mati', 'pindah', 'aktif']);
-            $table->text('alamat');
-=======
             $table->string('kontak')->nullable();
             $table->text('alamat')->nullable();
             $table->enum('keterangan', ['aktif', 'pindah', 'meninggal'])->default('aktif');
->>>>>>> Stashed changes
             $table->timestamps();
         });
     }
