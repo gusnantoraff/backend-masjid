@@ -29,7 +29,7 @@ class YatimDhuafaSeeder extends Seeder
                 'nama' => 'Budi Duafa',
                 'birth' => '2012-04-04',
                 'alamat' => 'Jl. Sudirman No. 2',
-                'keterangan' => 'duafa',
+                'keterangan' => 'dhuafa',
                 'kontak' => '081234567893',
                 'status' => 'pindah',
                 'created_at' => now(),

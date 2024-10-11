@@ -32,13 +32,13 @@ const menuGroups = [
         icon: 
         <FaHome size={24} className="fill-current" />,
         label: "Dashboard",
-        route: "#",
+        route: "/dashboard",
       },
       {
         icon: 
         <FaMosque size={24} className="fill-current" />,
         label: "Kelola Masjid",
-        route: "#",
+        route: "/kelolamasjid",
       },
       {
         icon: 
@@ -50,7 +50,7 @@ const menuGroups = [
         icon: 
         <FaPeopleGroup size={24} className="fill-current"/>,
         label: "Jemaah",
-        route: "#",
+        route: "/jamaah",
       },
       {
         icon: 
@@ -77,11 +77,7 @@ const menuGroups = [
       {
         icon: <FaPeopleRoof size={24} className="fill-current"/>,
         label: "Yatim & Dhuafa",
-        route: "#",
-        children: [
-          { label: "Yatim", route: "YatimDhuafa/Yatim" },
-          { label: "Dhuafa", route: "YatimDhuafa/Dhuafa" },
-        ],
+        route: "/YatimDhuafa"
       },
       {
         icon: <FaTools size={24} className="fill-current"/>,
