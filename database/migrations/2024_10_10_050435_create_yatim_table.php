@@ -11,7 +11,7 @@ class CreateYatimTable extends Migration
         Schema::create('yatim', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->integer('usia');
+            $table->date('birth')->nullable();
             $table->text('alamat')->nullable();
             $table->timestamps();
         });

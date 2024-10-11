@@ -13,6 +13,7 @@ class CreateDhuafaTable extends Migration
             $table->string('nama');
             $table->string('kontak')->nullable();
             $table->text('alamat')->nullable();
+            $table->date('birth')->nullable();
             $table->timestamps();
         });
     }

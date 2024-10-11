@@ -12,6 +12,7 @@ class JamaahSeeder extends Seeder
         DB::table('jamaah')->insert([
             [
                 'nama' => 'H. Sulaiman',
+                'email' => 'sulaimann@gmail.com',
                 'kontak' => '081234567896',
                 'alamat' => 'Jl. Melati No. 10, Jakarta',
                 'created_at' => now(),
@@ -19,6 +20,7 @@ class JamaahSeeder extends Seeder
             ],
             [
                 'nama' => 'Hj. Aminah',
+                'email' => 'aminah@gmail.com',
                 'kontak' => '081234567897',
                 'alamat' => 'Jl. Mawar No. 12, Bandung',
                 'created_at' => now(),

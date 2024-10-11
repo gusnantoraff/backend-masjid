@@ -11,6 +11,7 @@ class CreateJamaahTable extends Migration
         Schema::create('jamaah', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('email')->unique();
             $table->string('kontak')->nullable();
             $table->text('alamat')->nullable();
             $table->timestamps();
