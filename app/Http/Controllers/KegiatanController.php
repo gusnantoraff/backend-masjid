@@ -28,17 +28,12 @@ class KegiatanController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'judul' => 'required|string|max:255',
+            'nama_kegiatan' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
             'tanggal' => 'required|date',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'kategori' => 'required|in:khatib,muazin,umum',
+            'keterangan' => 'required|text',
         ]);
-
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $filePath = $file->store('images', 'public'); // Menyimpan di storage/app/public/images
-            $validatedData['foto'] = $filePath;
-        }
 
         $kegiatan = Kegiatan::create($validatedData);
 
@@ -78,17 +73,12 @@ class KegiatanController extends Controller
         }
 
         $validatedData = $request->validate([
-            'judul' => 'sometimes|string|max:255',
+            'nama_kegiatan' => 'sometimes|string|max:255',
             'lokasi' => 'sometimes|string|max:255',
             'tanggal' => 'sometimes|date',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'kategori' => 'sometimes|in:khatib,muazin,umum',
+            'keterangan' => 'sometimes|text',
         ]);
-
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $filePath = $file->store('images', 'public'); // Menyimpan di storage/app/public/images
-            $validatedData['foto'] = $filePath;
-        }
 
         $kegiatan->update($validatedData);
 

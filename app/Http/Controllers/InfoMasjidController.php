@@ -4,99 +4,103 @@ namespace App\Http\Controllers;
 
 use App\Models\InfoMasjid;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class InfoMasjidController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the info masjid.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $masjid = InfoMasjid::all();
-
-        return response()->json($masjid, Response::HTTP_OK);
+        $infoMasjid = InfoMasjid::all();
+        return response()->json($infoMasjid);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created info masjid in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'nama_masjid' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'kategori' => 'required|string',
-            'provinsi' => 'required|string|max:100',
-            'kota' => 'required|string|max:100',
-            'kecamatan' => 'required|string|max:100', // New field
-            'desa' => 'required|string|max:100', // New field
-            'RW' => 'required|string|max:10', // New field
-            'alamat_lengkap' => 'required|string|max:255', // New field
-            'description_text' => 'nullable|string', // New field
-            'luas_tanah' => 'required|numeric|min:0',
-            'status_tanah' => 'required|string|max:50',
-            'luas_bangunan' => 'required|numeric|min:0',
-            'tahun_berdiri' => 'required|digits:4|integer|min:1900|max:'.date('Y'),
-            'jumlah_jamaah' => 'nullable|integer|min:0',
-            'jumlah_muazin' => 'nullable|integer|min:0',
-            'jumlah_khatib' => 'nullable|integer|min:0',
-            'jumlah_remaja' => 'nullable|integer|min:0', // New field
-            'website' => 'nullable|string|max:255', // New field
+            'alamat' => 'required|string|max:500',
+            'kontak' => 'required|string|max:50',
+            'deskripsi' => 'nullable|string',
+            'ad-art' => 'nullable|string',
         ]);
 
-        $masjid = InfoMasjid::create($validated);
+        $infoMasjid = InfoMasjid::create($validatedData);
 
-        return response()->json($masjid, Response::HTTP_CREATED);
+        return response()->json(['message' => 'Info masjid created successfully', 'info_masjid' => $infoMasjid], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified info masjid.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(InfoMasjid $kelola_masjid)
+    public function show(int $id): JsonResponse
     {
-        return response()->json($kelola_masjid, Response::HTTP_OK);
+        $infoMasjid = InfoMasjid::find($id);
+
+        if (!$infoMasjid) {
+            return response()->json(['message' => 'Info masjid not found'], 404);
+        }
+
+        return response()->json($infoMasjid);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified info masjid in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, InfoMasjid $kelola_masjid)
+    public function update(Request $request, int $id): JsonResponse
     {
-        $validated = $request->validate([
-            'nama_masjid' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'kategori' => 'required|string',
-            'provinsi' => 'required|string|max:100',
-            'kota' => 'required|string|max:100',
-            'kecamatan' => 'required|string|max:100', // New field
-            'desa' => 'required|string|max:100', // New field
-            'RW' => 'required|string|max:10', // New field
-            'alamat_lengkap' => 'required|string|max:255', // New field
-            'description_text' => 'nullable|string', // New field
-            'luas_tanah' => 'required|numeric|min:0',
-            'status_tanah' => 'required|string|max:50',
-            'luas_bangunan' => 'required|numeric|min:0',
-            'tahun_berdiri' => 'required|digits:4|integer|min:1900|max:'.date('Y'),
-            'jumlah_jamaah' => 'nullable|integer|min:0',
-            'jumlah_muazin' => 'nullable|integer|min:0',
-            'jumlah_khatib' => 'nullable|integer|min:0',
-            'jumlah_remaja' => 'nullable|integer|min:0', // New field
-            'website' => 'nullable|string|max:255', // New field
+        $infoMasjid = InfoMasjid::find($id);
+
+        if (!$infoMasjid) {
+            return response()->json(['message' => 'Info masjid not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'nama_masjid' => 'sometimes|string|max:255',
+            'alamat' => 'sometimes|string|max:500',
+            'kontak' => 'sometimes|string|max:50',
+            'deskripsi' => 'nullable|string',
+            'ad-art' => 'nullable|string',
         ]);
 
-        $kelola_masjid->update($validated);
+        $infoMasjid->update($validatedData);
 
-        return response()->json($kelola_masjid, Response::HTTP_OK);
+        return response()->json(['message' => 'Info masjid updated successfully', 'info_masjid' => $infoMasjid]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified info masjid from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(InfoMasjid $kelola_masjid)
+    public function destroy(int $id): JsonResponse
     {
-        $kelola_masjid->delete();
+        $infoMasjid = InfoMasjid::find($id);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        if (!$infoMasjid) {
+            return response()->json(['message' => 'Info masjid not found'], 404);
+        }
+
+        $infoMasjid->delete();
+
+        return response()->json(['message' => 'Info masjid deleted successfully']);
     }
 }

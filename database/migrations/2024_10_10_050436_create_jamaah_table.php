@@ -16,7 +16,7 @@ class CreateJamaahTable extends Migration
             $table->string('email')->unique();
             $table->string('kontak')->nullable();
             $table->text('alamat')->nullable();
-            $table->enum('keterangan', ['aktif', 'pindah', 'meninggal'])->default('aktif');
+            $table->enum('keterangan', ['aktif', 'pindah', 'wafat'])->default('aktif');
             $table->timestamps();
         });
     }

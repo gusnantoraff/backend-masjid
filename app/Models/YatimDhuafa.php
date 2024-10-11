@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Yatim extends Model
+class YatimDhuafa extends Model
 {
     use HasFactory;
 
@@ -15,9 +15,13 @@ class Yatim extends Model
      * @var array<int, string>
      */
 
+    protected $table = 'yatim_dhuafa';
     protected $fillable = [
         'nama',
-        'usia',
+        'birth',
         'alamat',
+        'keterangan',
+        'kontak',
+        'status'
     ];
 }

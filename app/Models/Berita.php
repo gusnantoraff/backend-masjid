@@ -18,7 +18,8 @@ class Berita extends Model
     protected $table = 'berita';
     protected $fillable = [
         'judul',
-        'text_berita',
+        'konten',
+        'tanggal_publikasi',
         'kategori',
         'status',
         'foto'

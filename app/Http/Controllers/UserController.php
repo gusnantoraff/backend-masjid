@@ -54,7 +54,7 @@ class UserController extends Controller
             'phone' => ['sometimes', 'required', 'digits_between:10,13'],
             'birth' => ['sometimes', 'required', 'date'],
             'gender' => ['sometimes', 'required', 'in:Male,Female'],
-            'role' => ['sometimes', 'required', 'in:Super Admin,Admin,Jemaah'],
+            'role' => ['sometimes', 'required', 'in:ADMIN,PENGURUS_MASJID'],
         ]);
 
         if ($validator->fails()) {

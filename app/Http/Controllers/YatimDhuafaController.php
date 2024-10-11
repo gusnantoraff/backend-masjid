@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Orphan;
-use App\Models\Yatim;
+use App\Models\YatimDhuafa;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class YatimController extends Controller
+class YatimDhuafaController extends Controller
 {
     /**
      * Display a listing of the orphans.
@@ -16,7 +15,7 @@ class YatimController extends Controller
      */
     public function index(): JsonResponse
     {
-        $orphans = Yatim::all();
+        $orphans = YatimDhuafa::all();
         return response()->json($orphans);
     }
 
@@ -29,13 +28,16 @@ class YatimController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
             'birth' => 'required|date',
-            'info' => 'required|in:Yatim,Piatu,Yatim Piatu',
+            'keterangan' => 'required|in:yatim,piatu,yatim piatu',
+            'kontak' => 'required|string|max:255',
+            'status' => 'required|in:aktif,pindah,wafat',
+            
         ]);
 
-        $orphan = Yatim::create($validatedData);
+        $orphan = YatimDhuafa::create($validatedData);
 
         return response()->json(['message' => 'Orphan created successfully', 'orphan' => $orphan], 201);
     }
@@ -48,7 +50,7 @@ class YatimController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $orphan = Yatim::find($id);
+        $orphan = YatimDhuafa::find($id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
@@ -66,17 +68,19 @@ class YatimController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $orphan = Yatim::find($id);
+        $orphan = YatimDhuafa::find($id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
         }
 
         $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'address' => 'sometimes|required|string|max:255',
-            'birth' => 'sometimes|required|date',
-            'info' => 'sometimes|required|in:Yatim,Piatu,Yatim Piatu',
+            'nama' => 'sometimes|string|max:255',
+            'alamat' => 'sometimes|string|max:255',
+            'birth' => 'sometimes|date',
+            'keterangan' => 'sometimes|in:yatim,piatu,yatim piatu',
+            'kontak' => 'sometimes|string|max:255',
+            'status' => 'sometimes|in:aktif,pindah,wafat',
         ]);
 
         $orphan->update($validatedData);
@@ -92,7 +96,7 @@ class YatimController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $orphan = Yatim::find($id);
+        $orphan = YatimDhuafa::find($id);
 
         if (!$orphan) {
             return response()->json(['message' => 'Orphan not found'], 404);
