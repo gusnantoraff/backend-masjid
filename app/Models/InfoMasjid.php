@@ -15,8 +15,8 @@ class InfoMasjid extends Model
         'nama_masjid',
         'alamat',
         'kontak',
-        'email',
         'deskripsi',
+        'ad-art'
     ];
 
     /**

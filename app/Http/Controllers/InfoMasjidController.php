@@ -31,8 +31,8 @@ class InfoMasjidController extends Controller
             'nama_masjid' => 'required|string|max:255',
             'alamat' => 'required|string|max:500',
             'kontak' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255|unique:info_masjid,email',
             'deskripsi' => 'nullable|string|max:1000',
+            'ad-art' => 'nullable|string'
         ]);
 
         $infoMasjid = InfoMasjid::create($validatedData);
@@ -76,8 +76,8 @@ class InfoMasjidController extends Controller
             'nama_masjid' => 'sometimes|string|max:255',
             'alamat' => 'sometimes|string|max:500',
             'kontak' => 'nullable|string|max:20',
-            'email' => 'sometimes|email|max:255|unique:info_masjid,email,' . $id,
             'deskripsi' => 'nullable|string|max:1000',
+            'ad-art' => 'nullable|string'
         ]);
 
         $infoMasjid->update($validatedData);
