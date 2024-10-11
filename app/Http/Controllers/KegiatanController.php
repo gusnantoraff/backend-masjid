@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
+use App\Models\Images;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class KegiatanController extends Controller
 {
@@ -15,12 +17,12 @@ class KegiatanController extends Controller
      */
     public function index(): JsonResponse
     {
-        $kegiatan = Kegiatan::all();
+        $kegiatan = Kegiatan::with('images')->get();
         return response()->json($kegiatan);
     }
 
     /**
-     * Store a newly created kegiatan in storage.
+     * Store a newly created kegiatan in storage along with an associated image.
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -29,15 +31,33 @@ class KegiatanController extends Controller
     {
         $validatedData = $request->validate([
             'nama_kegiatan' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'kategori' => 'required|in:khatib,muazin,umum',
-            'keterangan' => 'required|text',
+            'keterangan' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $kegiatan = Kegiatan::create($validatedData);
+        // Create the Kegiatan
+        $kegiatan = Kegiatan::create([
+            'nama_kegiatan' => $validatedData['nama_kegiatan'],
+            'tanggal' => $validatedData['tanggal'],
+            'kategori' => $validatedData['kategori'],
+            'keterangan' => $validatedData['keterangan']
+        ]);
 
-        return response()->json(['message' => 'Kegiatan created successfully', 'kegiatan' => $kegiatan], 201);
+        // If an image is uploaded, create the associated image record
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filePath = $file->store('images', 'public');
+
+            $kegiatan->images()->create([
+                'image' => $filePath,
+                'kategori' => 'kegiatan', // Use 'kegiatan' as the kategori
+                'keterangan' => 'Foto: ' . $kegiatan->nama_kegiatan,
+            ]);
+        }
+
+        return response()->json(['message' => 'Kegiatan and associated image created successfully', 'kegiatan' => $kegiatan], 201);
     }
 
     /**
@@ -48,7 +68,7 @@ class KegiatanController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $kegiatan = Kegiatan::find($id);
+        $kegiatan = Kegiatan::with('images')->find($id);
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Kegiatan not found'], 404);
@@ -74,13 +94,34 @@ class KegiatanController extends Controller
 
         $validatedData = $request->validate([
             'nama_kegiatan' => 'sometimes|string|max:255',
-            'lokasi' => 'sometimes|string|max:255',
             'tanggal' => 'sometimes|date',
             'kategori' => 'sometimes|in:khatib,muazin,umum',
-            'keterangan' => 'sometimes|text',
+            'keterangan' => 'sometimes|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $kegiatan->update($validatedData);
+
+        // If an image is uploaded, update or create the associated image record
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filePath = $file->store('images', 'public');
+
+            if ($kegiatan->images()->exists()) {
+                $image = $kegiatan->images()->first();
+                Storage::disk('public')->delete($image->image);
+                $image->update([
+                    'image' => $filePath,
+                    'keterangan' => 'Updated Foto: ' . $kegiatan->nama_kegiatan,
+                ]);
+            } else {
+                $kegiatan->images()->create([
+                    'image' => $filePath,
+                    'kategori' => 'kegiatan',
+                    'keterangan' => 'Foto: ' . $kegiatan->nama_kegiatan,
+                ]);
+            }
+        }
 
         return response()->json(['message' => 'Kegiatan updated successfully', 'kegiatan' => $kegiatan]);
     }
@@ -97,6 +138,11 @@ class KegiatanController extends Controller
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Kegiatan not found'], 404);
+        }
+
+        foreach ($kegiatan->images as $image) {
+            Storage::disk('public')->delete($image->image);
+            $image->delete();
         }
 
         $kegiatan->delete();

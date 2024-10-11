@@ -23,4 +23,9 @@ class Kegiatan extends Model
         'kategori',
         'keterangan'
     ];
+    public function images()
+    {
+        return $this->hasMany(Images::class, 'imageable_id')->where('kategori', 'kegiatan');
+    }
+
 }

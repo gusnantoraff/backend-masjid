@@ -9,18 +9,18 @@ use Illuminate\Http\JsonResponse;
 class InfoMasjidController extends Controller
 {
     /**
-     * Display a listing of the info masjid.
+     * Display a listing of the info_masjid.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
-        $infoMasjid = InfoMasjid::all();
+        $infoMasjid = InfoMasjid::with(['fasilitas', 'mubaligh', 'strukturOrganisasi', 'rekeningBank'])->get();
         return response()->json($infoMasjid);
     }
 
     /**
-     * Store a newly created info masjid in storage.
+     * Store a newly created info_masjid in storage.
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -30,35 +30,35 @@ class InfoMasjidController extends Controller
         $validatedData = $request->validate([
             'nama_masjid' => 'required|string|max:255',
             'alamat' => 'required|string|max:500',
-            'kontak' => 'required|string|max:50',
-            'deskripsi' => 'nullable|string',
-            'ad-art' => 'nullable|string',
+            'kontak' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255|unique:info_masjid,email',
+            'deskripsi' => 'nullable|string|max:1000',
         ]);
 
         $infoMasjid = InfoMasjid::create($validatedData);
 
-        return response()->json(['message' => 'Info masjid created successfully', 'info_masjid' => $infoMasjid], 201);
+        return response()->json(['message' => 'Info Masjid created successfully', 'infoMasjid' => $infoMasjid], 201);
     }
 
     /**
-     * Display the specified info masjid.
+     * Display the specified info_masjid.
      *
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
-        $infoMasjid = InfoMasjid::find($id);
+        $infoMasjid = InfoMasjid::with(['fasilitas', 'mubaligh', 'strukturOrganisasi', 'rekeningBank'])->find($id);
 
         if (!$infoMasjid) {
-            return response()->json(['message' => 'Info masjid not found'], 404);
+            return response()->json(['message' => 'Info Masjid not found'], 404);
         }
 
         return response()->json($infoMasjid);
     }
 
     /**
-     * Update the specified info masjid in storage.
+     * Update the specified info_masjid in storage.
      *
      * @param \Illuminate\Http\Request $request
      * @param int $id
@@ -69,24 +69,24 @@ class InfoMasjidController extends Controller
         $infoMasjid = InfoMasjid::find($id);
 
         if (!$infoMasjid) {
-            return response()->json(['message' => 'Info masjid not found'], 404);
+            return response()->json(['message' => 'Info Masjid not found'], 404);
         }
 
         $validatedData = $request->validate([
             'nama_masjid' => 'sometimes|string|max:255',
             'alamat' => 'sometimes|string|max:500',
-            'kontak' => 'sometimes|string|max:50',
-            'deskripsi' => 'nullable|string',
-            'ad-art' => 'nullable|string',
+            'kontak' => 'nullable|string|max:20',
+            'email' => 'sometimes|email|max:255|unique:info_masjid,email,' . $id,
+            'deskripsi' => 'nullable|string|max:1000',
         ]);
 
         $infoMasjid->update($validatedData);
 
-        return response()->json(['message' => 'Info masjid updated successfully', 'info_masjid' => $infoMasjid]);
+        return response()->json(['message' => 'Info Masjid updated successfully', 'infoMasjid' => $infoMasjid]);
     }
 
     /**
-     * Remove the specified info masjid from storage.
+     * Remove the specified info_masjid from storage.
      *
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
@@ -96,11 +96,11 @@ class InfoMasjidController extends Controller
         $infoMasjid = InfoMasjid::find($id);
 
         if (!$infoMasjid) {
-            return response()->json(['message' => 'Info masjid not found'], 404);
+            return response()->json(['message' => 'Info Masjid not found'], 404);
         }
 
         $infoMasjid->delete();
 
-        return response()->json(['message' => 'Info masjid deleted successfully']);
+        return response()->json(['message' => 'Info Masjid deleted successfully']);
     }
 }
