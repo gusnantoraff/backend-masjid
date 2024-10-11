@@ -8,7 +8,7 @@ import Kegiatan from "@/components/Kegiatan";
 
 export const metadata: Metadata = {
   title:
-    "Next.js E-commerce Dashboard Page | NextAdmin - Next.js Dashboard Kit",
+    "SIstem Manajemen Masjid",
   description: "This is Next.js Home page for NextAdmin Dashboard Kit",
 };
 

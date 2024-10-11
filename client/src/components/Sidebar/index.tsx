@@ -56,7 +56,7 @@ const menuGroups = [
         icon: 
         <MdEventAvailable size={24} className="fill-current"/>,
         label: "Kegiatan",
-        route: "#",
+        route: "/kegiatan",
       },
       {
         icon: 

@@ -3,7 +3,13 @@ import DefaultLaout from "@/components/Layouts/DefaultLaout";
 import DataTable from '@/components/DataTable';
 import { Button, Box, Typography } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title:
+      "SIstem Manajemen Masjid",
+    description: "This is Next.js Home page for NextAdmin Dashboard Kit",
+  };
 
 export default function Jamaah() {
 
