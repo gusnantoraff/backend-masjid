@@ -9,7 +9,7 @@ class StrukurOrganisasiSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('strukur_organisasi')->insert([
+        DB::table('struktur_organisasi')->insert([
             [
                 'info_masjid_id' => 1,
                 'jabatan' => 'Ketua',
