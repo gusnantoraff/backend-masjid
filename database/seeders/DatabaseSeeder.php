@@ -33,15 +33,14 @@ class DatabaseSeeder extends Seeder
             JurnalUmumSeeder::class,
             PosisiKeuanganSeeder::class,
             PesanWebsiteSeeder::class,
-            DhuafaSeeder::class,
             LaporanKeuanganSeeder::class,
-            YatimSeeder::class,
             ImagesSeeder::class,
             JamaahSeeder::class,
             TemplateSuratSeeder::class,
             BeritaSeeder::class,
             JadwalSholatSeeder::class,
             KegiatanSeeder::class,
+            YatimDhuafaSeeder::class,
         ]);
     }
 }
