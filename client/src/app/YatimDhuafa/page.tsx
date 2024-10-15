@@ -75,7 +75,7 @@ export default function YatimDhuafa() {
       </Box>
           <DataTable columns={yatimColumns} fetchUrl={fetchUrl} />
         </div>
-        <ModalForm isOpen={isModalOpen} onClose={closeModal} />
+        <ModalForm isOpen={isModalOpen} onClose={closeModal}/>
       </DefaultLaout>
     );
   };

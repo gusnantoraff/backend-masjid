@@ -38,9 +38,20 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
     <div className="modal-backdrop">
       <div className="modal">
         <div className="modal-header">
-          <h2>Tambah Kegiatan</h2>
-          <button className="close-button" onClick={onClose}>
-            <BiX size={24} />
+          <h2 className="modal-title">Tambah Kegiatan</h2>
+          <button
+            className="close-button"
+            onClick={onClose}
+            style={{
+              backgroundColor: '#d50000',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '4px 4px',
+              cursor: 'pointer',
+            }}
+          >
+            <BiX size={20} />
           </button>
         </div>
         <div className="modal-body">
@@ -119,6 +130,10 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           align-items: center;
           margin-bottom: 20px;
         }
+        .modal-title {
+          color: black;
+          font-weight: 600; /* Semi-bold */
+        }
         .close-button {
           background-color: transparent;
           border: none;
@@ -142,15 +157,15 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           width: 100%;
         }
         .submit-button {
-          padding: 8px 12px;
-          background-color: #14B8A6;
+          padding: 8px 16px;
+          background-color: #d50000;
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 8px;
           cursor: pointer;
         }
         .submit-button:hover {
-          background-color: #0E8071;
+          background-color: #14B8A6;
         }
       `}</style>
     </div>
