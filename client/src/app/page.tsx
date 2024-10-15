@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState } from 'react';
 import styles from '../styles/LoginPage.module.css';
 import InputField from './InputField';
@@ -68,12 +67,12 @@ const LoginPage: React.FC = () => {
                   iconSrc="https://cdn.builder.io/api/v1/image/assets/TEMP/7daa5e8b61dc30306140a9b07e4c21364e6d726bcf3998aff700423ef6c7bd29?placeholderIfAbsent=true&apiKey=0071786d14794a0283243dd846096a5a"
                 />
                 {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-                <a href="#" className={styles.forgotPassword}>Lupa Kata Sandi?</a>
+                <a href="/password" className={styles.forgotPassword}>Lupa Kata Sandi?</a>
                 <button type="submit" className={styles.loginButton} disabled={isLoading}>
                   {isLoading ? 'Loading...' : 'Login'}
                 </button>
                 <p className={styles.signupPrompt}>
-                  Belum Punya Akun? <a href="#" className={styles.signupLink}>Daftar</a>
+                  Belum Punya Akun? <a href="/register" className={styles.signupLink}>Daftar</a>
                 </p>
               </form>
             </div>

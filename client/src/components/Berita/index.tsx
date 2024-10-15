@@ -1,20 +1,20 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 
 interface FormData {
-  title: string;
-  category: string;
+  judul: string;
+  kategori: string;
   status: string;
-  content: string;
-  image: File | null;
+  konten: string;
+  foto: File | null;
 }
 
 export default function ArticleForm() {
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    category: '',
+    judul: 'Masukan Judul',
+    kategori: 'Pilih Kategori',
     status: 'Draft',
-    content: '',
-    image: null,
+    konten: 'Placeholder text',
+    foto: null,
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -24,7 +24,7 @@ export default function ArticleForm() {
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFormData({ ...formData, image: e.target.files[0] });
+      setFormData({ ...formData, foto: e.target.files[0] });
     }
   };
 
@@ -40,13 +40,13 @@ export default function ArticleForm() {
 
         {/* Title Input */}
         <div style={styles.formGroup}>
-          <label htmlFor="title">Judul</label>
+          <label htmlFor="judul">Judul</label>
           <input
-            type="text"
-            id="title"
-            name="title"
+            type="judul"
+            id="judul"
+            name="judul"
             placeholder="Masukan Judul"
-            value={formData.title}
+            value={formData.judul}
             onChange={handleChange}
             style={styles.input}
           />
@@ -54,11 +54,11 @@ export default function ArticleForm() {
 
         {/* Category Dropdown */}
         <div style={styles.formGroup}>
-          <label htmlFor="category">Kategori</label>
+          <label htmlFor="kategori">Kategori</label>
           <select
-            id="category"
-            name="category"
-            value={formData.category}
+            id="kategori"
+            name="kategori"
+            value={formData.kategori}
             onChange={handleChange}
             style={styles.input}
           >
@@ -86,12 +86,12 @@ export default function ArticleForm() {
 
         {/* Content Textarea */}
         <div style={styles.formGroup}>
-          <label htmlFor="content">Konten</label>
+          <label htmlFor="konten">Konten</label>
           <textarea
-            id="content"
-            name="content"
+            id="konten"
+            name="konten"
             placeholder="Placeholder text"
-            value={formData.content}
+            value={formData.konten}
             onChange={handleChange}
             style={{ ...styles.input, minHeight: '100px' }}
           />
@@ -109,11 +109,11 @@ export default function ArticleForm() {
 
         {/* Image Upload */}
         <div style={styles.formGroup}>
-          <label htmlFor="image">Foto</label>
+          <label htmlFor="foto">Foto</label>
           <input
             type="file"
-            id="image"
-            name="image"
+            id="foto"
+            name="foto"
             onChange={handleImageChange}
             style={styles.input}
           />

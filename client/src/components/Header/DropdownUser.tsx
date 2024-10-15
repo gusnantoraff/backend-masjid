@@ -4,7 +4,7 @@ import Image from "next/image";
 import ClickOutside from "../ClickOutside";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
-import { BiHelpCircle } from "react-icons/bi";
+import { BiLock } from "react-icons/bi";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -96,11 +96,11 @@ const DropdownUser = () => {
                       </li>
                       <li>
                           <Link
-                              href="/bantuan"
+                              href="/ganti-password"
                               className="flex w-full items-center gap-2.5 rounded-[7px] p-2.5 text-sm font-medium text-dark-4 duration-300 ease-in-out hover:bg-gray-2 hover:text-dark dark:text-dark-6 dark:hover:bg-dark-3 dark:hover:text-white lg:text-base"
                           >
-                            <BiHelpCircle size={24} className="fill-current"/>
-                            <span>Bantuan</span>
+                            <BiLock size={24} className="fill-current"/>
+                            <span>Ganti Password</span>
                           </Link>
                       </li>
 
