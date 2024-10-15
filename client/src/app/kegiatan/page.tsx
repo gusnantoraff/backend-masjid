@@ -1,5 +1,5 @@
 "use client";
-import DefaultLayout from "../../components/Layouts/DefaultLaout";
+import DefaultLayout from "../../components/Layouts/DefaultLayout";
 import React, { useState } from "react";
 import ButtonDefault from '../../components/Buttons/ButtonDefault'
 import { BiPlus } from 'react-icons/bi'

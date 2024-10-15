@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import DefaultLaout from "@/components/Layouts/DefaultLaout";
+import DefaultLaout from "@/components/Layouts/DefaultLayout";
 import DataTable from '@/components/DataTable';
 import { Button, Box, Typography } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
