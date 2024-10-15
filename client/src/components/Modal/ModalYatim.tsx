@@ -113,7 +113,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
               >
                 <option value="aktif">Aktif</option>
                 <option value="pindah">Pindah</option>
-                <option value="mati">Mati</option>
+                <option value="wafat">Wafat</option>
               </select>
             </div>
             <button type="submit">Submit</button>
