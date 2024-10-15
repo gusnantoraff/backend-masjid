@@ -44,7 +44,7 @@ const menuGroups = [
         icon: 
         <GrMoney size={24} className="fill-current" />,
         label: "Keuangan",
-        route: "#",
+        route: "/keuangan",
       },
       {
         icon: 
