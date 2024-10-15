@@ -1,26 +1,39 @@
-import { Metadata } from "next";
+"use client";
 import DefaultLayout from "../../components/Layouts/DefaultLaout";
-import React from "react";
-import Kegiatan from "@/components/Kegiatan";
+import React, { useState } from "react";
+import ButtonDefault from '../../components/Buttons/ButtonDefault'
+import { BiPlus } from 'react-icons/bi'
+import Modal from '../../components/Modal/ModalKegiatan';
 
-export const metadata: Metadata = {
-  title:
-    "Sistem Manajemen Masjid",
-  description: "This is Next.js Home page for NextAdmin Dashboard Kit",
-};
+export default function Kegiatan() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-export default function Home() {
+  // Fungsi untuk membuka modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Fungsi untuk menutup modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <DefaultLayout>
-        <div className="grid grid-cols-1 xl:grid-cols-[70%_30%] gap-4">
-          <div className="col-span-1 xl:col-span-1">
-          </div>
-          <div className="col-span-1">
-            <Kegiatan/>
-          </div>
+        <div className="flex justify-end">
+          <ButtonDefault
+            customClasses="bg-red-500 text-white p-3 w-60 flex rounded-lg"
+            label="Tambah Kegiatan"
+            onClick={openModal} // Menambahkan onClick untuk membuka modal
+          >
+            <BiPlus />
+          </ButtonDefault>
         </div>
+
+        {/* Memanggil komponen Modal dan mengontrol visibilitasnya */}
+        <Modal isOpen={isModalOpen} onClose={closeModal} />
       </DefaultLayout>
-    </>
-  );
+      </>
+      );
 }
