@@ -3,6 +3,7 @@
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\InfoMasjidController;
+use App\Http\Controllers\RekeningBankController;
 use App\Http\Controllers\YatimDhuafaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MubalighController;
@@ -50,6 +51,7 @@ Route::apiResource('template-surat', TemplateSuratController::class);
 Route::apiResource('berita', BeritaController::class);
 Route::apiResource('jadwal-sholat', JadwalSholatController::class);
 Route::apiResource('kegiatan', KegiatanController::class);
+Route::apiResource('rekening-bank', RekeningBankController::class);
 Route::apiResource('users', UserController::class);
 
 

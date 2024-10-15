@@ -14,12 +14,12 @@ export default function RekeningMasjid() {
 
   const rekeningColumns = [
     { header: 'ID', accessor: 'id' },
-    { header: 'Nama Rekening', accessor: 'nama' },
-    { header: 'Nama Bank', accessor: 'nama' },
+    { header: 'Nama Bank', accessor: 'nama_bank' },
+    { header: 'Nomer Rekening', accessor: 'nomor_rekening' },
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/jamaah';
+  const fetchUrl = 'http://localhost:8000/api/rekening-bank';
 
   const RekeningMasjid = () => {
     return (

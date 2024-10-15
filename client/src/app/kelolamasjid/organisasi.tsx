@@ -20,7 +20,7 @@ export default function StrukturOrganisasi() {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/jamaah';
+  const fetchUrl = 'http://localhost:8000/api/struktur-organisasi';
 
   const StrukturOrganisasi = () => {
     return (

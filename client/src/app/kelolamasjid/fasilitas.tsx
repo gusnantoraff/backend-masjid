@@ -14,12 +14,12 @@ export default function FasilitasMasjid() {
 
   const fasilitasColumns = [
     { header: 'ID', accessor: 'id' },
-    { header: 'Nama Fasilitas', accessor: 'nama' },
+    { header: 'Nama Fasilitas', accessor: 'nama_fasilitas' },
     { header: 'Deskripsi', accessor: 'deskripsi' },
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/jamaah';
+  const fetchUrl = 'http://localhost:8000/api/fasilitas';
 
   const FasilitasMasjid = () => {
     return (

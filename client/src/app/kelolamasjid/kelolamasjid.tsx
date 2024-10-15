@@ -14,13 +14,13 @@ export default function KelolaMasjid() {
 
   const kelolaColumns = [
     { header: 'ID', accessor: 'id' },
-    { header: 'Nama Masjid', accessor: 'nama' },
+    { header: 'Nama Masjid', accessor: 'nama_masjid' },
     { header: 'Kontak', accessor: 'kontak' },
     { header: 'Alamat', accessor: 'alamat' },
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/jamaah';
+  const fetchUrl = 'http://localhost:8000/api/info-masjid';
 
   const KelolaMasjid = () => {
     return (
@@ -43,7 +43,7 @@ export default function KelolaMasjid() {
           component="h2" 
           sx={{ fontWeight: '600', fontFamily:'Nunito Sans' }} 
         >
-          Data Jamaah
+          Data Masjid
         </Typography>
         <Box>
           <Button 

@@ -20,7 +20,7 @@ export default function MubalighMasjid() {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/jamaah';
+  const fetchUrl = 'http://localhost:8000/api/mubaligh';
 
   const MubalighMasjid = () => {
     return (
