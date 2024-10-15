@@ -16,7 +16,7 @@ export default function Home() {
     return (
         <>
             <DefaultLayout>
-                <div className="rounded-lg border border-gray-500">
+                <div className="rounded-lg border border-gray-500 mb-4">
                     <div className="grid h-full grid-cols-1 gap-2 xl:grid-cols-[70%_30%]">
                         <div className="col-span-1 h-full p-4">
                             <img
@@ -42,7 +42,7 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-[70%_30%]">
-                    <div className="col-span-1 pt-4">
+                    <div className="col-span-1 pt-2">
                         <div className="mb-6">
                             <DataStatsOne />
                         </div>
@@ -57,9 +57,8 @@ export default function Home() {
                     </div>
 
                     {/* Right section: News */}
-                    <div className="col-span-1 pr-4">
-                        <Kegiatan />
-                        
+                    <div className="col-span-1 mr-4">
+                        <Kegiatan/>  
                     </div>
                 </div>
             </DefaultLayout>
