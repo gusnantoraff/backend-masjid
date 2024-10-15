@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box } from '@mui/material';
 import { BiTrash, BiEdit } from 'react-icons/bi';
+import AlertConfirm from "../Alerts/AlertConfirm";
 
 interface Column {
     header: string;
@@ -18,6 +19,8 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [selectedId, setSelectedId] = useState<any>(null);
 
     useEffect(() => {
         axios
@@ -32,15 +35,21 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
             });
     }, [fetchUrl]);
 
-    const handleDelete = async (id: any) => {
-        const confirmDelete = window.confirm('Apakah Anda yakin ingin menghapus data ini?');
-        if (confirmDelete) {
-            await fetch(`${fetchUrl}/${id}`, {
+    const handleDelete = async () => {
+        if (selectedId !== null) {
+            await fetch(`${fetchUrl}/${selectedId}`, {
                 method: 'DELETE',
             });
-            setData(data.filter(item => item.id !== id));
+            setData(data.filter((item) => item.id !== selectedId));
+            setShowConfirm(false);
         }
     };
+
+    const promptDelete = (id: any) => {
+        setSelectedId(id);
+        setShowConfirm(true);
+    };
+
 
     const handleEdit = (id: any) => {
         console.log('Edit data dengan ID:', id);
@@ -64,8 +73,16 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     }
 
     return (
-        <Box sx={{ width: '100%', overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: '10px'  }}>
-            <Table sx={{ width: '100%'}}>
+        <Box sx={{ width: '100%', overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: '10px' }}>
+            {showConfirm && (
+                <AlertConfirm
+                open={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={handleDelete}
+                message="Apakah Anda yakin ingin menghapus data ini?"
+              />
+            )}
+            <Table sx={{ width: '100%' }}>
                 <TableHead>
                     <TableRow>
                         {columns.map((column, idx) => (
@@ -99,7 +116,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                                 variant="contained"
                                                 color="error"
                                                 startIcon={<BiTrash />}
-                                                onClick={() => handleDelete(row.id)}
+                                                onClick={() => promptDelete(row.id)}
                                             >
                                                 Hapus
                                             </Button>
