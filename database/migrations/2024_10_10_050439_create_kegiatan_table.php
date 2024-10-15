@@ -12,6 +12,7 @@ class CreateKegiatanTable extends Migration
             $table->id();
             $table->string('nama_kegiatan');
             $table->date('tanggal');
+            $table->string('lokasi');
             $table->enum('kategori', ['khatib', 'muazin', 'umum']);
             $table->text('keterangan')->nullable();
             $table->timestamps();

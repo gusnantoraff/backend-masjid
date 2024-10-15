@@ -1,18 +1,22 @@
 "use client";
+import axios from 'axios';
 import React, { useState } from 'react';
-import { BiX } from 'react-icons/bi'; // Import ikon silang
+import { BiX } from 'react-icons/bi';
 
 interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: () => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    namaKegiatan: '',
+    nama_kegiatan: '',
     tanggal: '',
-    kategori: 'Umum',
+    lokasi: '',
+    kategori: 'umum',
     keterangan: '',
+    foto: null as File | null
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -23,11 +27,40 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      foto: file || null,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Lakukan sesuatu dengan data, misal: kirim ke server
-    console.log('Data form:', formData);
-    onClose(); // Tutup modal setelah submit
+    const data = new FormData();
+
+    data.append('nama_kegiatan', formData.nama_kegiatan);
+    data.append('tanggal', formData.tanggal);
+    data.append('lokasi', formData.lokasi);
+    data.append('kategori', formData.kategori);
+    data.append('keterangan', formData.keterangan);
+
+    if (formData.foto) {
+      data.append('foto', formData.foto);
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/kegiatan', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Response from API:', response.data);
+      onClose();
+      onSubmit();
+    } catch (error) {
+      console.error('Error posting data:', error);
+    }
   };
 
   if (!isOpen) {
@@ -57,12 +90,12 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="namaKegiatan">Nama Kegiatan:</label>
+              <label htmlFor="nama_kegiatan">Nama Kegiatan:</label>
               <input
                 type="text"
-                id="namaKegiatan"
-                name="namaKegiatan"
-                value={formData.namaKegiatan}
+                id="nama_kegiatan"
+                name="nama_kegiatan"
+                value={formData.nama_kegiatan}
                 onChange={handleChange}
               />
             </div>
@@ -77,6 +110,16 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
               />
             </div>
             <div>
+              <label htmlFor="lokasi">Lokasi:</label>
+              <input
+                type="text"
+                id="lokasi"
+                name="lokasi"
+                value={formData.lokasi}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
               <label htmlFor="kategori">Kategori:</label>
               <select
                 id="kategori"
@@ -84,9 +127,9 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 value={formData.kategori}
                 onChange={handleChange}
               >
-                <option value="Katib">Katib</option>
-                <option value="Muazin">Muazin</option>
-                <option value="Umum">Umum</option>
+                <option value="khatib">Khatib</option>
+                <option value="muazin">Muazin</option>
+                <option value="umum">Umum</option>
               </select>
             </div>
             <div>
@@ -97,6 +140,15 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 value={formData.keterangan}
                 onChange={handleChange}
                 rows={4}
+              />
+            </div>
+            <div>
+              <label htmlFor="foto">Foto:</label>
+              <input
+                type="file"
+                id="foto"
+                name="foto"
+                onChange={handleFileChange}
               />
             </div>
             <button type="submit" className="submit-button">Submit</button>
@@ -115,6 +167,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           display: flex;
           justify-content: center;
           align-items: center;
+          z-index: 9999;
         }
         .modal {
           background: white;

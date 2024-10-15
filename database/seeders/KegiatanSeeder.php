@@ -13,6 +13,7 @@ class KegiatanSeeder extends Seeder
             [
                 'nama_kegiatan' => 'Pengajian Rutin',
                 'tanggal' => '2024-10-20',
+                'lokasi' => 'Masjid Nabawi',
                 'kategori' => 'umum',
                 'keterangan' => 'Pengajian rutin bulanan setiap hari Minggu ketiga.',
                 'created_at' => now(),
@@ -21,6 +22,7 @@ class KegiatanSeeder extends Seeder
             [
                 'nama_kegiatan' => 'Shalat Jumat',
                 'tanggal' => '2024-10-25',
+                'lokasi' => 'Masjid Nabawi',
                 'kategori' => 'khatib',
                 'keterangan' => 'Shalat Jumat dengan khatib Ustadz Ahmad.',
                 'created_at' => now(),

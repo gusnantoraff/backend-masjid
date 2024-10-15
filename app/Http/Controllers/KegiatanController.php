@@ -32,6 +32,7 @@ class KegiatanController extends Controller
         $validatedData = $request->validate([
             'nama_kegiatan' => 'required|string|max:255',
             'tanggal' => 'required|date',
+            'lokasi' => 'required|string',
             'kategori' => 'required|in:khatib,muazin,umum',
             'keterangan' => 'required|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -41,6 +42,7 @@ class KegiatanController extends Controller
         $kegiatan = Kegiatan::create([
             'nama_kegiatan' => $validatedData['nama_kegiatan'],
             'tanggal' => $validatedData['tanggal'],
+            'lokasi' => $validatedData['lokasi'],
             'kategori' => $validatedData['kategori'],
             'keterangan' => $validatedData['keterangan']
         ]);
@@ -95,6 +97,7 @@ class KegiatanController extends Controller
         $validatedData = $request->validate([
             'nama_kegiatan' => 'sometimes|string|max:255',
             'tanggal' => 'sometimes|date',
+            'lokasi' => 'sometimes|string',
             'kategori' => 'sometimes|in:khatib,muazin,umum',
             'keterangan' => 'sometimes|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
