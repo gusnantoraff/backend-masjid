@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import DefaultLayout from "../../components/Layouts/DefaultLaout";
+import DefaultLayout from "../../components/Layouts/DefaultLayout";
 import React from "react";
 import { Box } from "@mui/material";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";

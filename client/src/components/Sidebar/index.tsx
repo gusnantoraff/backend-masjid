@@ -68,11 +68,7 @@ const menuGroups = [
         icon: 
         <FaNewspaper size={24} className="fill-current"/>,
         label: "Berita",
-        route: "#",
-        children: [
-          { label: "Form Elements", route: "/forms/form-elements" },
-          { label: "Form Layout", route: "/forms/form-layout" },
-        ],
+        route: "/berita",
       },
       {
         icon: <FaPeopleRoof size={24} className="fill-current"/>,
