@@ -1,0 +1,183 @@
+import axios from 'axios';
+import React, { useState } from 'react';
+
+interface ModalFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
+  const [formData, setFormData] = useState({
+    nama: '',
+    birth: '',
+    alamat: '',
+    keterangan: 'yatim',
+    kontak: '',
+    status: 'aktif',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+        const response = await axios.post('http://localhost:8000/api/yatim-dhuafa', formData);
+        console.log('Response from API:', response.data);
+  
+        onClose();
+      } catch (error) {
+        console.error('Error posting data:', error);
+      }
+    };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div className="modal-backdrop">
+      <div className="modal">
+        <div className="modal-header">
+          <h2>Tambah Data Yatim/Piatu/Dhuafa</h2>
+          <button onClick={onClose}>X</button>
+        </div>
+        <div className="modal-body">
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="nama">Nama:</label>
+              <input
+                type="text"
+                id="nama"
+                name="nama"
+                value={formData.nama}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="birth">Tanggal Lahir:</label>
+              <input
+                type="date"
+                id="birth"
+                name="birth"
+                value={formData.birth}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="alamat">Alamat:</label>
+              <input
+                type="text"
+                id="alamat"
+                name="alamat"
+                value={formData.alamat}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="keterangan">Keterangan:</label>
+              <select
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
+                onChange={handleChange}
+              >
+                <option value="yatim">Yatim</option>
+                <option value="piatu">Piatu</option>
+                <option value="yatim piatu">Yatim Piatu</option>
+                <option value="dhuafa">Dhuafa</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="kontak">Kontak:</label>
+              <input
+                type="text"
+                id="kontak"
+                name="kontak"
+                value={formData.kontak}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="status">Status:</label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="aktif">Aktif</option>
+                <option value="pindah">Pindah</option>
+                <option value="mati">Mati</option>
+              </select>
+            </div>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .modal-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
+        .modal {
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          max-width: 400px;
+          width: 100%;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .modal-body {
+          display: flex;
+          flex-direction: column;
+        }
+        form div {
+          margin-bottom: 10px;
+        }
+        label {
+          margin-right: 10px;
+        }
+        input, select {
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          width: 100%;
+        }
+        button {
+          padding: 8px 12px;
+          background-color: #0070f3;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        button:hover {
+          background-color: #005bb5;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default ModalForm;

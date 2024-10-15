@@ -13,7 +13,7 @@ class CreateYatimDhuafaTable extends Migration
             $table->string('nama');
             $table->date('birth')->nullable();
             $table->text('alamat')->nullable();
-            $table->enum('keterangan', ['yatim', 'dhuafa', 'yatim piatu']);
+            $table->enum('keterangan', ['yatim', 'piatu', 'dhuafa', 'yatim piatu']);
             $table->string('kontak');
             $table->enum('status', ['aktif', 'pindah', 'wafat'])->default('aktif');
             $table->timestamps();

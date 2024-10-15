@@ -31,7 +31,7 @@ class YatimDhuafaController extends Controller
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string|max:255',
             'birth' => 'required|date',
-            'keterangan' => 'required|in:yatim,piatu,yatim piatu',
+            'keterangan' => 'required|in:yatim,piatu,yatim piatu,dhuafa',
             'kontak' => 'required|string|max:255',
             'status' => 'required|in:aktif,pindah,wafat',
             
@@ -78,7 +78,7 @@ class YatimDhuafaController extends Controller
             'nama' => 'sometimes|string|max:255',
             'alamat' => 'sometimes|string|max:255',
             'birth' => 'sometimes|date',
-            'keterangan' => 'sometimes|in:yatim,piatu,yatim piatu',
+            'keterangan' => 'sometimes|in:yatim,piatu,yatim piatu,dhuafa',
             'kontak' => 'sometimes|string|max:255',
             'status' => 'sometimes|in:aktif,pindah,wafat',
         ]);

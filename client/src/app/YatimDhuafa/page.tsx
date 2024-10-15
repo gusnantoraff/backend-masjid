@@ -1,17 +1,22 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import DefaultLaout from "@/components/Layouts/DefaultLaout";
 import DataTable from '@/components/DataTable';
 import { Button, Box, Typography } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title:
-    "SIstem Manajemen Masjid",
-  description: "This is Next.js Home page for NextAdmin Dashboard Kit",
-};
+import ModalForm from '@/components/Modal/ModalYatim';
 
 export default function YatimDhuafa() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
 
   const yatimColumns = [
     { header: 'ID', accessor: 'id' },
@@ -55,6 +60,7 @@ export default function YatimDhuafa() {
             variant="contained" 
             sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }} 
             startIcon={<AiOutlinePlus />}
+            onClick={openModal}
           >
             Tambah Data
           </Button>
@@ -69,6 +75,7 @@ export default function YatimDhuafa() {
       </Box>
           <DataTable columns={yatimColumns} fetchUrl={fetchUrl} />
         </div>
+        <ModalForm isOpen={isModalOpen} onClose={closeModal} />
       </DefaultLaout>
     );
   };
