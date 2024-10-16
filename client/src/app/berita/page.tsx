@@ -14,41 +14,6 @@ export default function Artikel() {
 
   return (
     <DefaultLayout>
-      {/* Box component placed above the ArticleForm */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px',
-          padding: '15px',
-          backgroundColor: '#EDF1F8',
-          color: 'black',
-          borderRadius: '10px',
-          width: '100%'
-        }}
-      >
-        <Typography
-          variant="h6"
-          component="h2"
-          sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }}
-        >
-          Berita / Artikel
-        </Typography>
-        <Box>
-          {/* "X Batal" button */}
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: '#d50000', color: 'white' }}  // Red button
-            startIcon={<AiOutlineClose />}  // Icon for "X"
-            onClick={handleCancel}  // Attach the cancel action here
-          >
-            Batal
-          </Button>
-        </Box>
-      </Box>
-
-      {/* ArticleForm component */}
       <div>
         <ArticleForm />
       </div>
