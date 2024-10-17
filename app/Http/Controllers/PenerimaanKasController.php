@@ -3,27 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\PenerimaanKas;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PenerimaanKasController extends Controller
 {
     /**
      * Display a listing of the penerimaan_kas.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $penerimaanKas = PenerimaanKas::with('coa')->get();
+
         return response()->json($penerimaanKas);
     }
 
     /**
      * Store a newly created penerimaan_kas in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -32,7 +29,14 @@ class PenerimaanKasController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
             'keterangan' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
         ]);
+
+        if ($request->hasFile('image')) {
+            // Store the image in the 'public/storage/penerimaan_kas' folder
+            $imagePath = $request->file('image')->store('penerimaan_kas', 'public');
+            $validatedData['image'] = $imagePath;
+        }
 
         $penerimaanKas = PenerimaanKas::create($validatedData);
 
@@ -41,15 +45,12 @@ class PenerimaanKasController extends Controller
 
     /**
      * Display the specified penerimaan_kas.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $penerimaanKas = PenerimaanKas::with('coa')->find($id);
 
-        if (!$penerimaanKas) {
+        if (! $penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
         }
 
@@ -58,16 +59,12 @@ class PenerimaanKasController extends Controller
 
     /**
      * Update the specified penerimaan_kas in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $penerimaanKas = PenerimaanKas::find($id);
 
-        if (!$penerimaanKas) {
+        if (! $penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
         }
 
@@ -76,7 +73,19 @@ class PenerimaanKasController extends Controller
             'tanggal' => 'sometimes|date',
             'jumlah' => 'sometimes|numeric',
             'keterangan' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($penerimaanKas->image) {
+                Storage::disk('public')->delete($penerimaanKas->image);
+            }
+
+            // Store the new image in 'public/storage/penerimaan_kas'
+            $imagePath = $request->file('image')->store('penerimaan_kas', 'public');
+            $validatedData['image'] = $imagePath;
+        }
 
         $penerimaanKas->update($validatedData);
 
@@ -85,16 +94,18 @@ class PenerimaanKasController extends Controller
 
     /**
      * Remove the specified penerimaan_kas from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $penerimaanKas = PenerimaanKas::find($id);
 
-        if (!$penerimaanKas) {
+        if (! $penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
+        }
+
+        // Delete the image file if it exists
+        if ($penerimaanKas->image) {
+            Storage::disk('public')->delete($penerimaanKas->image);
         }
 
         $penerimaanKas->delete();

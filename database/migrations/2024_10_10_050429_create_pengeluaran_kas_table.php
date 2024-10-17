@@ -14,8 +14,8 @@ class CreatePengeluaranKasTable extends Migration
             $table->date('tanggal');
             $table->decimal('jumlah', 15, 2);
             $table->text('keterangan')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
-
             // Correct the foreign key constraint
             $table->foreign('coa_id')->references('id')->on('coa')->onDelete('cascade');
         });

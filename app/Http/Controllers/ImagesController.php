@@ -4,30 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Images;
 use App\Models\Kegiatan;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ImagesController extends Controller
 {
     /**
      * Display a listing of all images.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $images = Images::all();
+
         return response()->json($images);
     }
 
     /**
      * Store a newly created image in storage for a specific model.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param string $modelType
-     * @param int $modelId
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, string $modelType, int $modelId): JsonResponse
     {
@@ -35,7 +29,7 @@ class ImagesController extends Controller
         $modelClass = $this->getModelClass($modelType);
         $model = $modelClass::find($modelId);
 
-        if (!$model) {
+        if (! $model) {
             return response()->json(['message' => 'Model not found'], 404);
         }
 
@@ -60,15 +54,12 @@ class ImagesController extends Controller
 
     /**
      * Display the specified image.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $image = Images::with('imageable')->find($id);
 
-        if (!$image) {
+        if (! $image) {
             return response()->json(['message' => 'Image not found'], 404);
         }
 
@@ -77,16 +68,12 @@ class ImagesController extends Controller
 
     /**
      * Update the specified image in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $image = Images::find($id);
 
-        if (!$image) {
+        if (! $image) {
             return response()->json(['message' => 'Image not found'], 404);
         }
 
@@ -110,15 +97,12 @@ class ImagesController extends Controller
 
     /**
      * Remove the specified image from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $image = Images::find($id);
 
-        if (!$image) {
+        if (! $image) {
             return response()->json(['message' => 'Image not found'], 404);
         }
 
@@ -130,9 +114,6 @@ class ImagesController extends Controller
 
     /**
      * Get the fully qualified model class name.
-     *
-     * @param string $modelType
-     * @return string|null
      */
     private function getModelClass(string $modelType): ?string
     {

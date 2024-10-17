@@ -16,6 +16,7 @@ class PengeluaranKas extends Model
         'tanggal',
         'jumlah',
         'keterangan',
+        'image',
     ];
 
     /**

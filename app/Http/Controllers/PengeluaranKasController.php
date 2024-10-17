@@ -3,27 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\PengeluaranKas;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PengeluaranKasController extends Controller
 {
     /**
      * Display a listing of the pengeluaran_kas.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $pengeluaranKas = PengeluaranKas::with('coa')->get();
+
         return response()->json($pengeluaranKas);
     }
 
     /**
      * Store a newly created pengeluaran_kas in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -32,7 +29,19 @@ class PengeluaranKasController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
             'keterangan' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
         ]);
+
+        if ($request->hasFile('image')) {
+            // Ensure the 'pengeluaran_kas' directory exists
+            if (! Storage::disk('public')->exists('pengeluaran_kas')) {
+                Storage::disk('public')->makeDirectory('pengeluaran_kas');
+            }
+
+            // Store the image in the 'public/storage/pengeluaran_kas' directory
+            $imagePath = $request->file('image')->store('pengeluaran_kas', 'public');
+            $validatedData['image'] = $imagePath;
+        }
 
         $pengeluaranKas = PengeluaranKas::create($validatedData);
 
@@ -41,15 +50,12 @@ class PengeluaranKasController extends Controller
 
     /**
      * Display the specified pengeluaran_kas.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $pengeluaranKas = PengeluaranKas::with('coa')->find($id);
 
-        if (!$pengeluaranKas) {
+        if (! $pengeluaranKas) {
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
         }
 
@@ -58,16 +64,12 @@ class PengeluaranKasController extends Controller
 
     /**
      * Update the specified pengeluaran_kas in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $pengeluaranKas = PengeluaranKas::find($id);
 
-        if (!$pengeluaranKas) {
+        if (! $pengeluaranKas) {
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
         }
 
@@ -76,7 +78,24 @@ class PengeluaranKasController extends Controller
             'tanggal' => 'sometimes|date',
             'jumlah' => 'sometimes|numeric',
             'keterangan' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($pengeluaranKas->image) {
+                Storage::disk('public')->delete($pengeluaranKas->image);
+            }
+
+            // Ensure the 'pengeluaran_kas' directory exists
+            if (! Storage::disk('public')->exists('pengeluaran_kas')) {
+                Storage::disk('public')->makeDirectory('pengeluaran_kas');
+            }
+
+            // Store the new image in 'public/storage/pengeluaran_kas'
+            $imagePath = $request->file('image')->store('pengeluaran_kas', 'public');
+            $validatedData['image'] = $imagePath;
+        }
 
         $pengeluaranKas->update($validatedData);
 
@@ -85,16 +104,18 @@ class PengeluaranKasController extends Controller
 
     /**
      * Remove the specified pengeluaran_kas from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $pengeluaranKas = PengeluaranKas::find($id);
 
-        if (!$pengeluaranKas) {
+        if (! $pengeluaranKas) {
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
+        }
+
+        // Delete the image file if it exists
+        if ($pengeluaranKas->image) {
+            Storage::disk('public')->delete($pengeluaranKas->image);
         }
 
         $pengeluaranKas->delete();

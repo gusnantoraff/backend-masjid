@@ -16,6 +16,7 @@ class PenerimaanKas extends Model
         'tanggal',
         'jumlah',
         'keterangan',
+        'image',
     ];
 
     /**
