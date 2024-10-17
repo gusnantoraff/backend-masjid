@@ -214,11 +214,17 @@ export default function ProfileForm() {
 
       <Button
         variant="contained"
-        color={isEditing ? "error" : "primary"}
+        sx={{
+          backgroundColor: isEditing ? "#F97F30" : "#14B8A6",
+          '&:hover': {
+            backgroundColor: isEditing ? "#d96d28" : "#0D9488",
+          },
+        }}
         onClick={isEditing ? handleSubmit : handleEditToggle}
       >
         {isEditing ? "Submit" : "Update"}
       </Button>
+
     </Box>
   );
 }
