@@ -1,26 +1,27 @@
-"use client";
+import DefaultLayout from '@/components/Layouts/DefaultLayout'
+import React from 'react'
+import ProfilMasjid from './profilmasjid'
+import FasilitasMasjid from './fasilitas'
+import RekeningMasjid from './rekening'
+import MubalighMasjid from './mubaligh'
+import KeuanganMasjid from './keuangan'
+import StrukturOrganisasiMasjid from './organisasi'
 
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import React, { useState } from "react";
-import KelolaMasjid from "./kelolamasjid";
-import FasilitasMasjid from "./fasilitas";
-import MubalighMasjid from "./mubaligh";
-import StrukturOrganisasi from "./organisasi";
-import RekeningMasjid from "./rekeningbank";
-
-
-const InfoMasjid = () => {
+const InformasiMasjid = () => {
   return (
     <DefaultLayout>
-      <div>
-        <KelolaMasjid/>
-        <FasilitasMasjid/>
-        <MubalighMasjid/>
-        <StrukturOrganisasi/>
-        <RekeningMasjid/>
-      </div>
-</DefaultLayout>
-);
-};
+        <div>
+        <div>
+          <ProfilMasjid/>  
+          <FasilitasMasjid/>
+          <StrukturOrganisasiMasjid/>
+          <RekeningMasjid/>
+          <MubalighMasjid/>
+          <KeuanganMasjid/>
+        </div>
+        </div>
+    </DefaultLayout>
+  )
+}
 
-export default InfoMasjid;
+export default InformasiMasjid

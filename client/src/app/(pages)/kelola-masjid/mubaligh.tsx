@@ -1,71 +1,42 @@
-import React from 'react';
-import DataTable from '@/components/DataTable';
-import { Button, Box, Typography } from '@mui/material';
-import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
-import { Metadata } from "next";
+import ButtonDefault from '@/components/Buttons/ButtonDefault'
+import React from 'react'
 
-export const metadata: Metadata = {
-    title:
-      "SIstem Manajemen Masjid",
-    description: "This is Next.js Home page for NextAdmin Dashboard Kit",
-  };
-
-export default function MubalighMasjid() {
-
-  const mubalighColumns = [
-    { header: 'ID', accessor: 'id' },
-    { header: 'Nama Mubaligh', accessor: 'nama' },
-    { header: 'Kontak', accessor: 'kontak' },
-    { header: 'Alamat', accessor: 'alamat' },
-    { header: 'Tindakan', accessor: '' },
-  ];
-
-  const fetchUrl = 'http://localhost:8000/api/mubaligh';
-
-  const MubalighMasjid = () => {
-    return (
-        <div>
-        <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '20px', 
-          padding:'15px',
-          backgroundColor: '#EDF1F8',
-          color: 'black',
-          borderRadius: '10px',
-          width: '100%'
-        }}
-      >
-        <Typography 
-          variant="h6" 
-          component="h2" 
-          sx={{ fontWeight: '600', fontFamily:'Nunito Sans' }} 
-        >
-          Mubaligh
-        </Typography>
-        <Box>
-          <Button 
-            variant="contained" 
-            sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }} 
-            startIcon={<AiOutlinePlus />}
-          >
-            Tambah Data
-          </Button>
-          <Button 
-            variant="contained" 
-            color="warning" 
-            startIcon={<AiOutlineUpload />}
-          >
-            Import Data
-          </Button>
-        </Box>
-      </Box>
-          <DataTable columns={mubalighColumns} fetchUrl={fetchUrl} />
+const MubalighMasjid = () => {
+  return (
+    <div className="border rounded-lg border-grey-500 mt-4 mb-4 p-4 shadow-1">
+        <div className="flex justify-between">
+        <h1 className="text-heading-6 font-bold text-dark dark:text-white">Mubaligh Masjid</h1>
+        <ButtonDefault
+                    link="/edit-Mubaligh-masjid"
+                    customClasses="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center"
+                    label="Edit"
+                >
+                </ButtonDefault>
         </div>
-    );
-  };
+        <div className="grid grid-cols-2 gap-4">
+            <div className="cols-span-1 mt-2">
+            <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
+                  Nama Mubaligh
+                </label>
+                  <input
+                  type="text"
+                  placeholder="A.n. Bapak"
+                  className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+                />
+            </div>
+            <div className="cols-span-1 mt-2">
+            <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
+                  Nomor Kontak Mubaligh
+                </label>
+                  <input
+                  type="text"
+                  placeholder="0978797843729438"
+                  className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+                />
+            </div>
+        </div>
+    </div>
+  )
+}
 
-  return <MubalighMasjid />;
-};
+export default MubalighMasjid
