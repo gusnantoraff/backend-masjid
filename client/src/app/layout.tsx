@@ -1,26 +1,17 @@
 "use client";
-import "@/styles/LoginPage.module.css";
-import React, { useEffect, useState } from "react";
-import Loader from "@/components/common/Loader";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+import { ReactNode } from "react";
+import "@/css/globals.css";
 
-  // const pathname = usePathname();
+interface RootLayoutProps {
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true}>
-        {loading ? <Loader /> : children}
+      <body>
+        <main>{children}</main>
       </body>
     </html>
   );

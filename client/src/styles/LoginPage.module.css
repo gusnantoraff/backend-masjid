@@ -2,7 +2,16 @@
   max-width: none !important;
   background-color: #fff;
   padding: 0;
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.regisContainer {
+  max-width: none !important;
+  background-color: #fff;
+  padding: 0;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -35,14 +44,25 @@
   width: 50%;
   padding: 0 80px;
   justify-content: center;
+  overflow-y: auto;
 }
 
 .formWrapper {
   display: flex;
   flex-direction: column;
-  align-self: stretch;
+  align-self: center;
   font-family: Roboto, sans-serif;
   font-weight: 400;
+}
+
+.formWrapperRegis {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  margin-top: 40%;
+  padding-bottom: 90px;
 }
 
 .logo {
@@ -105,14 +125,25 @@
 }
 
 .inputIcon {
-  aspect-ratio: 1;
-  object-fit: contain;
-  object-position: center;
   width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: #C2C2C2;
+}
+
+.iconLeft .inputIcon {
+  margin-right: 10px;
+}
+
+.iconRight .inputIcon {
+  order: 2;
+  margin-left: 10px;
+  cursor: pointer;
 }
 
 .inputPlaceholder {
   flex: 1;
+  padding: 12px;
   border: none;
   background: transparent;
   color: #000;

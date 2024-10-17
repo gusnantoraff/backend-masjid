@@ -38,7 +38,7 @@ const menuGroups = [
         icon: 
         <FaMosque size={24} className="fill-current" />,
         label: "Kelola Masjid",
-        route: "/kelolamasjid",
+        route: "/kelola-masjid",
       },
       {
         icon: 
@@ -62,7 +62,7 @@ const menuGroups = [
         icon: 
         <FaRegEnvelope size={24} className="fill-current"/>,
         label: "Surat Menyurat",
-        route: "/Surat",
+        route: "/surat",
       },
       {
         icon: 
@@ -73,16 +73,12 @@ const menuGroups = [
       {
         icon: <FaPeopleRoof size={24} className="fill-current"/>,
         label: "Yatim & Dhuafa",
-        route: "/YatimDhuafa"
+        route: "/yatim-dhuafa"
       },
       {
         icon: <FaTools size={24} className="fill-current"/>,
-        label: "Tools",
-        route: "#",
-        children: [
-          { label: "Kalkulator Zakat", route: "/Tools/KalkulatorZakat" },
-          { label: "Jadwal Sholat", route: "/Tools/JadwalSholat" },
-        ],
+        label: "Jadwal Sholat",
+        route: "/jadwal-sholat",
       },
     ],
   },

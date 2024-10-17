@@ -22,14 +22,13 @@ use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\JamaahController;
 use App\Http\Controllers\TemplateSuratController;
 use App\Http\Controllers\JadwalSholatController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth.cookie')->get('/me', [AuthenticatedSessionController::class, 'me']);
 
 Route::apiResource('info-masjid', InfoMasjidController::class);
 Route::apiResource('mubaligh', MubalighController::class);
