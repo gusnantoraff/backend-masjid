@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
 
       const data = await response.json();
       console.log('Register successful:', data);
-      router.push('/');
+      router.push('/login');
     } catch (error: any) {
       setErrorMessage(error.message || 'An error occurred during register.');
     } finally {
