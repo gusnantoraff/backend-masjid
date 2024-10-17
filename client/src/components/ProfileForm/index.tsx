@@ -1,28 +1,107 @@
-"use client"; 
+"use client";
 
+import { useState, useEffect, useRef } from "react";
 import { Box, Button, TextField, MenuItem, Avatar, Typography } from "@mui/material";
-import { useState } from "react";
+import { useUser } from "@/context/UserContext";
 
 export default function ProfileForm() {
+  const { user, fetchUser } = useUser();
+  const userImage = user?.avatar
+    ? `http://localhost:8000/storage/${user.avatar}`
+    : "/images/user/user.png";
+
   const [formData, setFormData] = useState({
-    firstName: "Bonang",
-    lastName: "Panji Nur",
-    email: "bonang@gmail.com",
-    phone: "546-933-2772",
-    birthDate: "11-08-1995", // Adjusted format
-    gender: "Male",
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone: "",
+    birth: "",
+    gender: "",
+    role: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstname: user.firstname || "",
+        lastname: user.lastname || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        birth: user.birth ? user.birth.slice(0, 10) : "",
+        gender: user.gender || "",
+        role: user.role || "",
+      });
+    }
+  }, [user]);
+
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, files } = e.target;
+
+    if (name === "avatar" && files && files.length > 0) {
+      setSelectedFile(files[0]);
+      await handleAvatarUpload(files[0]);
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
-  const handleSubmit = () => {
-    // Handle form submission here
-    console.log(formData);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleEditPhotoClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/users/${user?.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update user data");
+      }
+      await fetchUser();
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/users/${user?.id}/avatar`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload avatar");
+      }
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+    }
   };
 
   return (
@@ -37,49 +116,61 @@ export default function ProfileForm() {
         textAlign: "center",
       }}
     >
-      {/* Avatar and Edit Photo */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
         <Avatar
           sx={{ width: 100, height: 100 }}
           alt="Profile Picture"
-          src="/profile-pic.jpg"
+          src={userImage}
         />
       </Box>
-      <Typography
-        sx={{
-          color: "#007bff",
-          cursor: "pointer",
-          marginBottom: "30px",
-        }}
-        onClick={() => alert("Edit Photo Clicked!")}
-      >
-        Edit Photo
-      </Typography>
 
-      {/* Form Fields */}
+      {isEditing && (
+        <>
+          <Typography
+            sx={{
+              color: "#007bff",
+              cursor: "pointer",
+              marginBottom: "30px",
+            }}
+            onClick={handleEditPhotoClick}
+          >
+            Edit Photo
+          </Typography>
+
+          <input
+            type="file"
+            name="avatar"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleChange}
+            style={{ display: "none" }}
+          />
+        </>
+      )}
+
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "40px", // Adjusted to match spacing
+          gap: "40px",
           mb: 5,
         }}
       >
         <TextField
           label="Nama Depan"
-          name="firstName"
-          value={formData.firstName}
+          name="firstname"
+          value={formData.firstname}
           onChange={handleChange}
           fullWidth
-          InputProps={{ sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
         />
         <TextField
           label="Nama Belakang"
-          name="lastName"
-          value={formData.lastName}
+          name="lastname"
+          value={formData.lastname}
           onChange={handleChange}
           fullWidth
-          InputProps={{ sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
         />
         <TextField
           label="Email"
@@ -87,25 +178,26 @@ export default function ProfileForm() {
           value={formData.email}
           onChange={handleChange}
           fullWidth
-          InputProps={{ sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
         />
         <TextField
-          label="Nomor Hp"
+          label="Nomor HP"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
           fullWidth
-          InputProps={{ sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
         />
         <TextField
           label="Tanggal Lahir"
-          name="birthDate"
-          value={formData.birthDate}
+          name="birth"
+          type="date"
+          value={formData.birth}
           onChange={handleChange}
           fullWidth
-          InputProps={{ sx: { backgroundColor: "#f6f8fc" } }}
-          placeholder="dd-mm-yyyy" // Ensure correct placeholder
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
         />
+
         <TextField
           label="Jenis Kelamin"
           name="gender"
@@ -113,27 +205,19 @@ export default function ProfileForm() {
           onChange={handleChange}
           fullWidth
           select
-          InputProps={{ sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc", textAlign: "left" } }}
         >
           <MenuItem value="Male">Male</MenuItem>
           <MenuItem value="Female">Female</MenuItem>
         </TextField>
       </Box>
 
-      {/* Update Button */}
       <Button
         variant="contained"
-        sx={{
-          backgroundColor: "#d50000",
-          color: "white",
-          width: "20%",
-          padding: "10px 0",
-          borderRadius: "8px",
-          fontWeight: "bold",
-        }}
-        onClick={handleSubmit}
+        color={isEditing ? "error" : "primary"}
+        onClick={isEditing ? handleSubmit : handleEditToggle}
       >
-        Update
+        {isEditing ? "Submit" : "Update"}
       </Button>
     </Box>
   );

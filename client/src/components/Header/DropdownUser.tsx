@@ -11,8 +11,10 @@ import { useRouter } from "next/navigation";
 
 const DropdownUser = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const user = useUser();
-    const userImage = user?.image || "/images/user/user.png";
+    const { user } = useUser();
+    const userImage = user?.avatar
+        ? `http://localhost:8000/storage/${user.avatar}`
+        : "/images/user/user.png";
 
     const router = useRouter();
     const handleLogout = async () => {
@@ -39,19 +41,16 @@ const DropdownUser = () => {
                 className="flex items-center gap-4"
                 href="#"
             >
-                <span className="h-12 w-12 rounded-full">
+                <span className="h-14 w-14 rounded-full overflow-hidden">
                     <Image
-                        width={112}
-                        height={112}
+                        width={120}
+                        height={120}
                         src={userImage}
-                        style={{
-                            width: "auto",
-                            height: "auto",
-                        }}
                         alt="User"
-                        className="overflow-hidden rounded-full"
+                        className="w-full h-full object-cover"
                     />
                 </span>
+
 
                 <span className="flex items-center gap-2 font-medium text-dark dark:text-dark-6">
                     <span className="hidden lg:block">{user ? `${user.firstname} ${user.lastname}` : "Guest"}</span>
@@ -81,19 +80,14 @@ const DropdownUser = () => {
                     className={`absolute right-0 mt-7.5 flex w-[280px] flex-col rounded-lg border-[0.5px] border-stroke bg-white shadow-default dark:border-dark-3 dark:bg-gray-dark`}
                 >
                     <div className="flex items-center gap-2.5 px-5 pb-5.5 pt-3.5">
-                        <span className="relative block h-12 w-12 rounded-full">
+                        <span className="h-14 w-14 rounded-full overflow-hidden">
                             <Image
-                                width={112}
-                                height={112}
+                                width={120}
+                                height={120}
                                 src={userImage}
-                                style={{
-                                    width: "auto",
-                                    height: "auto",
-                                }}
                                 alt="User"
-                                className="overflow-hidden rounded-full"
+                                className="w-full h-full object-cover"
                             />
-
                             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green dark:border-gray-dark"></span>
                         </span>
 

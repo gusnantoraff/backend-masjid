@@ -55,6 +55,10 @@ Route::apiResource('kegiatan', KegiatanController::class);
 Route::apiResource('rekening-bank', RekeningBankController::class);
 Route::apiResource('users', UserController::class);
 
+Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
+
+
+
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);
 });

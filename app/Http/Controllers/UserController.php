@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password as PasswordRule;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -38,33 +39,80 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    /**
+     * Update a user's data, including avatar.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, int $id): JsonResponse
     {
         $user = User::find($id);
-
+    
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-
+    
+        // Validasi data user (tanpa avatar)
         $validator = Validator::make($request->all(), [
-            'firstname' => ['sometimes', 'required', 'string', 'max:255'],
-            'lastname' => ['sometimes', 'required', 'string', 'max:255'],
-            'email' => ['sometimes', 'required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
-            'password' => ['sometimes', 'required', 'confirmed', PasswordRule::defaults()],
-            'phone' => ['sometimes', 'required', 'digits_between:10,13'],
-            'birth' => ['sometimes', 'required', 'date'],
-            'gender' => ['sometimes', 'required', 'in:Male,Female'],
-            'role' => ['sometimes', 'required', 'in:ADMIN,PENGURUS_MASJID'],
+            'firstname' => ['sometimes', 'string', 'max:255'],
+            'lastname' => ['sometimes', 'string', 'max:255'],
+            'email' => ['sometimes', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
+            'password' => ['sometimes', 'confirmed', PasswordRule::defaults()],
+            'phone' => ['sometimes', 'digits_between:10,13'],
+            'birth' => ['sometimes', 'date'],
+            'gender' => ['sometimes', 'in:Male,Female'],
+            'role' => ['sometimes', 'in:ADMIN,PENGURUS_MASJID'],
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        $user->update($request->only(['firstname', 'lastname', 'email', 'password', 'phone', 'birth', 'gender', 'role']));
-
-        return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+    
+        // Update field selain avatar
+        $user->update($request->all());
+    
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user,
+        ]);
     }
+
+    public function storeAvatar(Request $request, int $id): JsonResponse
+{
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    // Validasi avatar
+    $validator = Validator::make($request->all(), [
+        'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    // Hapus avatar lama (jika ada)
+    if ($user->avatar) {
+        Storage::disk('public')->delete($user->avatar);
+    }
+
+    // Simpan avatar baru
+    $imagePath = $request->file('avatar')->store('avatars', 'public');
+    $user->avatar = $imagePath;
+    $user->save();
+
+    return response()->json([
+        'message' => 'Avatar uploaded successfully',
+        'avatar' => $imagePath,
+    ]);
+}
+
+    
 
     /**
      * Delete a specific user by ID.

@@ -16,12 +16,17 @@ interface User {
   birth: string;
   gender: string;
   role: string;
-  image: string;
+  avatar: string;
   created_at: string;
   updated_at: string;
 }
 
-const UserContext = createContext<User | null>(null);
+interface UserContextValue {
+  user: User | null;
+  fetchUser: () => Promise<void>;
+}
+
+const UserContext = createContext<UserContextValue | null>(null);
 
 interface UserProviderProps {
   children: ReactNode;
@@ -30,31 +35,39 @@ interface UserProviderProps {
 export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/me", {
-          method: "GET",
-          credentials: "include",
-        });
+  const fetchUser = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/me", {
+        method: "GET",
+        credentials: "include",
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        const data = await response.json();
-        setUser(data.user);
-      } catch (error) {
-        console.error("Error fetching user:", error);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
       }
-    };
 
+      const data = await response.json();
+      setUser(data.user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchUser();
   }, []);
 
   return (
-    <UserContext.Provider value={user}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ user, fetchUser }}>
+      {children}
+    </UserContext.Provider>
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};
