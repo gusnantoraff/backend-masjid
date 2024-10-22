@@ -46,14 +46,59 @@ class UserController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
+
+
+    /**
+     * Create a new user.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        // Validasi data user
+        $validator = Validator::make($request->all(), [
+            'firstname' => ['required', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+            'phone' => ['required', 'digits_between:10,13'],
+            'birth' => ['required', 'date'],
+            'gender' => ['required', 'in:Male,Female'],
+            'role' => ['required', 'in:ADMIN,PENGURUS_MASJID'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Buat user baru
+        $user = User::create([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => bcrypt($request->password), // Enkripsi password
+            'phone' => $request->phone,
+            'birth' => $request->birth,
+            'gender' => $request->gender,
+            'role' => $request->role,
+        ]);
+
+        return response()->json([
+            'message' => 'User created successfully',
+            'user' => $user,
+        ], 201);
+    }
+
+
     public function update(Request $request, int $id): JsonResponse
     {
         $user = User::find($id);
-    
+
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-    
+
         // Validasi data user (tanpa avatar)
         $validator = Validator::make($request->all(), [
             'firstname' => ['sometimes', 'string', 'max:255'],
@@ -65,14 +110,14 @@ class UserController extends Controller
             'gender' => ['sometimes', 'in:Male,Female'],
             'role' => ['sometimes', 'in:ADMIN,PENGURUS_MASJID'],
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-    
+
         // Update field selain avatar
         $user->update($request->all());
-    
+
         return response()->json([
             'message' => 'User updated successfully',
             'user' => $user,
@@ -80,39 +125,39 @@ class UserController extends Controller
     }
 
     public function storeAvatar(Request $request, int $id): JsonResponse
-{
-    $user = User::find($id);
+    {
+        $user = User::find($id);
 
-    if (!$user) {
-        return response()->json(['message' => 'User not found'], 404);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Validasi avatar
+        $validator = Validator::make($request->all(), [
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Hapus avatar lama (jika ada)
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        // Simpan avatar baru
+        $imagePath = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $imagePath;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Avatar uploaded successfully',
+            'avatar' => $imagePath,
+        ]);
     }
 
-    // Validasi avatar
-    $validator = Validator::make($request->all(), [
-        'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-    ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
-    }
-
-    // Hapus avatar lama (jika ada)
-    if ($user->avatar) {
-        Storage::disk('public')->delete($user->avatar);
-    }
-
-    // Simpan avatar baru
-    $imagePath = $request->file('avatar')->store('avatars', 'public');
-    $user->avatar = $imagePath;
-    $user->save();
-
-    return response()->json([
-        'message' => 'Avatar uploaded successfully',
-        'avatar' => $imagePath,
-    ]);
-}
-
-    
 
     /**
      * Delete a specific user by ID.
