@@ -34,12 +34,12 @@ class DatabaseSeeder extends Seeder
             PosisiKeuanganSeeder::class,
             PesanWebsiteSeeder::class,
             LaporanKeuanganSeeder::class,
-            ImagesSeeder::class,
             JamaahSeeder::class,
             TemplateSuratSeeder::class,
             BeritaSeeder::class,
             JadwalSholatSeeder::class,
             KegiatanSeeder::class,
+            ImagesSeeder::class,
             YatimDhuafaSeeder::class,
         ]);
     }

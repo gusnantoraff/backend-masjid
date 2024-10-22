@@ -3,27 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coa;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CoaController extends Controller
 {
     /**
      * Display a listing of the COA.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $coa = Coa::with(['penerimaanKas', 'pengeluaranKas', 'jurnalUmum', 'generalLedger'])->get();
+
         return response()->json($coa);
     }
 
     /**
      * Store a newly created COA in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -39,15 +35,12 @@ class CoaController extends Controller
 
     /**
      * Display the specified COA.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $coa = Coa::with(['penerimaanKas', 'pengeluaranKas', 'jurnalUmum', 'generalLedger'])->find($id);
 
-        if (!$coa) {
+        if (! $coa) {
             return response()->json(['message' => 'COA not found'], 404);
         }
 
@@ -56,21 +49,17 @@ class CoaController extends Controller
 
     /**
      * Update the specified COA in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $coa = Coa::find($id);
 
-        if (!$coa) {
+        if (! $coa) {
             return response()->json(['message' => 'COA not found'], 404);
         }
 
         $validatedData = $request->validate([
-            'kode_akun' => 'sometimes|string|max:255|unique:coa,kode_akun,' . $id,
+            'kode_akun' => 'sometimes|string|max:255|unique:coa,kode_akun,'.$id,
             'nama_akun' => 'sometimes|string|max:255',
         ]);
 
@@ -81,15 +70,12 @@ class CoaController extends Controller
 
     /**
      * Remove the specified COA from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $coa = Coa::find($id);
 
-        if (!$coa) {
+        if (! $coa) {
             return response()->json(['message' => 'COA not found'], 404);
         }
 

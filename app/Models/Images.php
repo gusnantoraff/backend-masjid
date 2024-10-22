@@ -13,20 +13,12 @@ class Images extends Model
         'image',
         'keterangan',
         'kategori',
-        'imageable_id',
+        'kegiatan_id',
     ];
 
-    /**
-     * Get the parent model (Kegiatan, etc.) using imageable_id and kategori.
-     */
-    public function imageable()
+    // Define the inverse of the relationship: An image belongs to one kegiatan
+    public function kegiatan()
     {
-        // Determine the model class based on the kategori value
-        switch ($this->kategori) {
-            case 'kegiatan':
-                return $this->belongsTo(Kegiatan::class, 'imageable_id');
-            default:
-                return null;
-        }
+        return $this->belongsTo(Kegiatan::class);
     }
 }

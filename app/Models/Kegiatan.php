@@ -9,12 +9,6 @@ class Kegiatan extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-
     protected $table = 'kegiatan';
 
     protected $fillable = [
@@ -22,11 +16,12 @@ class Kegiatan extends Model
         'tanggal',
         'lokasi',
         'kategori',
-        'keterangan'
+        'keterangan',
     ];
+
+    // Define the one-to-many relationship: A kegiatan has many images
     public function images()
     {
-        return $this->hasMany(Images::class, 'imageable_id')->where('kategori', 'kegiatan');
+        return $this->hasMany(Images::class);
     }
-
 }
