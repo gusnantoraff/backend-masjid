@@ -31,6 +31,7 @@
     "react-quill": "^2.0.0",
     "react-select": "^5.8.0",
     "react-table": "^7.8.0",
+    "set-cookie-parser": "^2.7.1",
     "swiper": "^11.1.14"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-table": "^7.7.19",
+    "@types/set-cookie-parser": "^2.4.10",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
