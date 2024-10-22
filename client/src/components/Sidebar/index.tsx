@@ -38,13 +38,19 @@ const menuGroups = [
         icon: 
         <FaMosque size={24} className="fill-current" />,
         label: "Kelola Masjid",
-        route: "/kelola-masjid",
+        route: "/informasi-masjid",
       },
       {
         icon: 
         <GrMoney size={24} className="fill-current" />,
         label: "Keuangan",
-        route: "/keuangan",
+        route: "#",
+        children: [
+          { label: "Arus Kas", route: "/keuangan/arus-kas" },
+          { label: "Laporan Keuangan", route: "/keuangan/laporan" },
+          { label: "General Ledger", route: "/keuangan/general-ledger" },
+          { label: "Chart of Accounts", route: "/keuangan/CoA" },
+        ]
       },
       {
         icon: 
@@ -62,7 +68,7 @@ const menuGroups = [
         icon: 
         <FaRegEnvelope size={24} className="fill-current"/>,
         label: "Surat Menyurat",
-        route: "/surat",
+        route: "/Surat",
       },
       {
         icon: 
@@ -73,12 +79,16 @@ const menuGroups = [
       {
         icon: <FaPeopleRoof size={24} className="fill-current"/>,
         label: "Yatim & Dhuafa",
-        route: "/yatim-dhuafa"
+        route: "/YatimDhuafa"
       },
       {
         icon: <FaTools size={24} className="fill-current"/>,
-        label: "Jadwal Sholat",
-        route: "/jadwal-sholat",
+        label: "Tools",
+        route: "#",
+        children: [
+          { label: "Kalkulator Zakat", route: "/Tools/KalkulatorZakat" },
+          { label: "Jadwal Sholat", route: "/Tools/JadwalSholat" },
+        ],
       },
     ],
   },
