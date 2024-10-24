@@ -13,11 +13,11 @@ const InformasiMasjid = () => {
         <div>
         <div>
           <ProfilMasjid/>  
-          <FasilitasMasjid/>
           <StrukturOrganisasiMasjid/>
+          <FasilitasMasjid/>
           <RekeningMasjid/>
-          <MubalighMasjid/>
           <KeuanganMasjid/>
+          <MubalighMasjid/>  
         </div>
         </div>
     </DefaultLayout>

@@ -38,7 +38,7 @@ const menuGroups = [
         icon: 
         <FaMosque size={24} className="fill-current" />,
         label: "Kelola Masjid",
-        route: "/informasi-masjid",
+        route: "/kelola-masjid",
       },
       {
         icon: 
@@ -49,6 +49,8 @@ const menuGroups = [
           { label: "Arus Kas", route: "/keuangan/arus-kas" },
           { label: "Laporan Keuangan", route: "/keuangan/laporan" },
           { label: "General Ledger", route: "/keuangan/general-ledger" },
+          { label: "Penerimaan", route: "/keuangan/penerimaan" },
+          { label: "Pengeluaran", route: "/keuangan/pengeluaran" },
           { label: "Chart of Accounts", route: "/keuangan/CoA" },
         ]
       },
@@ -80,6 +82,16 @@ const menuGroups = [
         icon: <FaPeopleRoof size={24} className="fill-current"/>,
         label: "Yatim & Dhuafa",
         route: "/YatimDhuafa"
+      },
+      {
+        icon: <FaPeopleRoof size={24} className="fill-current"/>,
+        label: "Jadwal Sholat",
+        route: "/jadwal-sholat"
+      },
+      {
+        icon: <FaPeopleRoof size={24} className="fill-current"/>,
+        label: "Pengaturan Akun",
+        route: "/pengaturan-akun",
       },
       {
         icon: <FaTools size={24} className="fill-current"/>,
