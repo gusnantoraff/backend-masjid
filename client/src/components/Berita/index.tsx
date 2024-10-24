@@ -1,12 +1,5 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 
-// Import Roboto Regular from Google Fonts
-const robotoFontUrl = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap';
-const linkElement = document.createElement('link');
-linkElement.href = robotoFontUrl;
-linkElement.rel = 'stylesheet';
-document.head.appendChild(linkElement);
-
 interface FormData {
   judul: string;
   kategori: string;
