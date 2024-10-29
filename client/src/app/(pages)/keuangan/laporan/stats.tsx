@@ -39,8 +39,8 @@ const Stats = () => {
                     <div className="cols-span-1 pl-3 pb-4">
                         <div className={`px-2 py-2 rounded-full w-fit shadow-1 ${
                             item.growthRate > 0
-                                ? "border border-green-500 text-green-200 bg-white"
-                                : "border border-red-500 text-red-200 bg-white"
+                                ? "border border-green-500 bg-green-200"
+                                : "border border-red-500 bg-red-200"
                         }`}>
                             <span
                                 className={`flex items-center gap-1.5 text-body-sm font-medium ${
