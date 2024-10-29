@@ -50,7 +50,7 @@ const menuGroups = [
           { label: "General Ledger", route: "/keuangan/general-ledger" },
           { label: "Penerimaan", route: "/keuangan/penerimaan" },
           { label: "Pengeluaran", route: "/keuangan/pengeluaran" },
-          { label: "Chart of Accounts", route: "/keuangan/CoA" },
+          { label: "Chart of Accounts", route: "/keuangan/chart-of-accounts" },
         ]
       },
       {
