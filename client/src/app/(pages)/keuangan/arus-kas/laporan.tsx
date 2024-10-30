@@ -139,7 +139,9 @@ export default function AccessibleTable() {
               <TableRow key={row.name}>
                 <TableCell component="th" scope="row">{row.name}</TableCell>
                 <TableCell>{row.date}</TableCell>
-                <TableCell>{row.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</TableCell>
+                <TableCell style={{ color: row.amount < 0 ? 'red' : 'green' }}>
+        {row.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+      </TableCell>
                 <TableCell>{row.description}</TableCell>
                 <TableCell>{row.file}</TableCell>
                 <TableCell>{row.oleh}</TableCell>
