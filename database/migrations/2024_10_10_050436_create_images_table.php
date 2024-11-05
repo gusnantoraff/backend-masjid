@@ -10,11 +10,9 @@ class CreateImagesTable extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('kegiatan_id'); // foreign key column
-            $table->foreign('kegiatan_id')->references('id')->on('kegiatan')->onDelete('cascade'); // foreign key constraint
             $table->text('keterangan')->nullable();
             $table->string('kategori');
-            $table->text('image')->nullable(); // image field
+            $table->text('image')->nullable(); // Allow NULL values
             $table->timestamps();
         });
     }

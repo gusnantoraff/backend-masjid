@@ -3,42 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Models\Images;
+use App\Models\Kegiatan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ImagesController extends Controller
 {
+    /**
+     * Display a listing of all images.
+     */
     public function index(): JsonResponse
     {
-        $images = Images::with('kegiatan')->get();
+        $images = Images::all();
 
         return response()->json($images);
     }
 
-    public function store(Request $request): JsonResponse
+    /**
+     * Store a newly created image in storage for a specific model.
+     */
+    public function store(Request $request, string $modelType, int $modelId): JsonResponse
     {
-        $validatedData = $request->validate([
-            'kegiatan_id' => 'required|exists:kegiatan,id',
-            'kategori' => 'required|string',
-            'keterangan' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Image validation
-        ]);
+        // Determine the model class based on the type
+        $modelClass = $this->getModelClass($modelType);
+        $model = $modelClass::find($modelId);
 
-        if ($request->hasFile('image')) {
-            // Store image in public/storage/images
-            $path = $request->file('image')->store('images', 'public');
-            $validatedData['image'] = $path;
+        if (! $model) {
+            return response()->json(['message' => 'Model not found'], 404);
         }
 
-        $image = Images::create($validatedData);
+        $validatedData = $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'keterangan' => 'required|string',
+        ]);
+
+        // Handle the file upload
+        $file = $request->file('foto');
+        $filePath = $file->store('images', 'public');
+
+        // Create the image record
+        $image = $model->images()->create([
+            'image' => $filePath,
+            'kategori' => $modelType,
+            'keterangan' => $validatedData['keterangan'],
+        ]);
 
         return response()->json(['message' => 'Image uploaded successfully', 'image' => $image], 201);
     }
 
-    public function show($id): JsonResponse
+    /**
+     * Display the specified image.
+     */
+    public function show(int $id): JsonResponse
     {
-        $image = Images::with('kegiatan')->find($id);
+        $image = Images::with('imageable')->find($id);
 
         if (! $image) {
             return response()->json(['message' => 'Image not found'], 404);
@@ -47,7 +66,10 @@ class ImagesController extends Controller
         return response()->json($image);
     }
 
-    public function update(Request $request, $id): JsonResponse
+    /**
+     * Update the specified image in storage.
+     */
+    public function update(Request $request, int $id): JsonResponse
     {
         $image = Images::find($id);
 
@@ -56,18 +78,16 @@ class ImagesController extends Controller
         }
 
         $validatedData = $request->validate([
-            'kategori' => 'required|string',
-            'keterangan' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'keterangan' => 'sometimes|string',
         ]);
 
-        if ($request->hasFile('image')) {
-            // Delete the old image
+        // Handle file upload if exists
+        if ($request->hasFile('foto')) {
             Storage::disk('public')->delete($image->image);
-
-            // Store new image
-            $path = $request->file('image')->store('images', 'public');
-            $validatedData['image'] = $path;
+            $file = $request->file('foto');
+            $filePath = $file->store('images', 'public');
+            $image->update(['image' => $filePath]);
         }
 
         $image->update($validatedData);
@@ -75,7 +95,10 @@ class ImagesController extends Controller
         return response()->json(['message' => 'Image updated successfully', 'image' => $image]);
     }
 
-    public function destroy($id): JsonResponse
+    /**
+     * Remove the specified image from storage.
+     */
+    public function destroy(int $id): JsonResponse
     {
         $image = Images::find($id);
 
@@ -83,11 +106,22 @@ class ImagesController extends Controller
             return response()->json(['message' => 'Image not found'], 404);
         }
 
-        // Delete the image file
         Storage::disk('public')->delete($image->image);
-
         $image->delete();
 
         return response()->json(['message' => 'Image deleted successfully']);
+    }
+
+    /**
+     * Get the fully qualified model class name.
+     */
+    private function getModelClass(string $modelType): ?string
+    {
+        $models = [
+            'kegiatan' => Kegiatan::class,
+            // Add other models here as needed
+        ];
+
+        return $models[$modelType] ?? null;
     }
 }
