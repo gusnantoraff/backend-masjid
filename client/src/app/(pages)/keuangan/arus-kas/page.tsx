@@ -2,7 +2,7 @@
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { useState } from "react";
-import Stats from "./stats";
+import Stats from "../laporan/stats";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
 import LaporanKeuangan from "./laporan";

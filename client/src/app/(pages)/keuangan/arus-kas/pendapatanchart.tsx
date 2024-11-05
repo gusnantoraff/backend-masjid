@@ -1,7 +1,8 @@
+"use client"
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-export default function PengeluaranChart() {
+export default function PendapatanChart() {
   return (
     <PieChart
     margin={{ top: 10, bottom: 40, left: 10, right:10 }}

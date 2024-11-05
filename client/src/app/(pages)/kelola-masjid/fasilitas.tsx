@@ -82,8 +82,8 @@ const FasilitasMasjid = () => {
               type="text"
               value={item.deskripsi}
               onChange={(e) => isEditMode && editDeskripsi(index, e.target.value)}
-              readOnly={!isEditMode}
-              className={`mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition ${
+              disabled={!isEditMode}
+              className={`mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary ${
                 isEditMode ? 'focus:border-primary active:border-primary' : 'disabled:cursor-default disabled:bg-gray-2'
               } dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary`}
             />
@@ -115,7 +115,7 @@ const FasilitasMasjid = () => {
               placeholder="Deskripsi Fasilitas"
               value={newDeskripsi}
               onChange={(e) => setNewDeskripsi(e.target.value)}
-              className="w-full mb-4 rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+              className="w-full w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
             />
             <div className="flex justify-end space-x-2">
               <button

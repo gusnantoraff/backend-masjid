@@ -14,11 +14,10 @@ import { MdEventAvailable } from "react-icons/md";
 import { FaRegEnvelope } from "react-icons/fa";
 import { FaNewspaper } from "react-icons/fa6";
 import { FaPeopleRoof } from "react-icons/fa6";
-import { FaTools } from "react-icons/fa";
+import { FaClock } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
-import { IoSettingsOutline } from "react-icons/io5";
-import { BiHelpCircle } from "react-icons/bi";
-import { BiLogOut } from "react-icons/bi";
+import { FaCommentDots } from "react-icons/fa";
+import { FaCog } from "react-icons/fa";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -38,7 +37,7 @@ const menuGroups = [
         icon: 
         <FaMosque size={24} className="fill-current" />,
         label: "Kelola Masjid",
-        route: "/informasi-masjid",
+        route: "/kelola-masjid",
       },
       {
         icon: 
@@ -49,7 +48,9 @@ const menuGroups = [
           { label: "Arus Kas", route: "/keuangan/arus-kas" },
           { label: "Laporan Keuangan", route: "/keuangan/laporan" },
           { label: "General Ledger", route: "/keuangan/general-ledger" },
-          { label: "Chart of Accounts", route: "/keuangan/CoA" },
+          { label: "Penerimaan", route: "/keuangan/penerimaan" },
+          { label: "Pengeluaran", route: "/keuangan/pengeluaran" },
+          { label: "Chart of Accounts", route: "/keuangan/chart-of-accounts" },
         ]
       },
       {
@@ -79,16 +80,22 @@ const menuGroups = [
       {
         icon: <FaPeopleRoof size={24} className="fill-current"/>,
         label: "Yatim & Dhuafa",
-        route: "/YatimDhuafa"
+        route: "/yatim-dhuafa"
       },
       {
-        icon: <FaTools size={24} className="fill-current"/>,
-        label: "Tools",
-        route: "#",
-        children: [
-          { label: "Kalkulator Zakat", route: "/Tools/KalkulatorZakat" },
-          { label: "Jadwal Sholat", route: "/Tools/JadwalSholat" },
-        ],
+        icon: <FaClock size={24} className="fill-current"/>,
+        label: "Jadwal Sholat",
+        route: "/jadwal-sholat",
+      },
+      {
+        icon: <FaCommentDots size={24} className="fill-current"/>,
+        label: "Pesan & Pengaduan",
+        route: "/pesan-pengaduan",
+      },
+      {
+        icon: <FaCog size={24} className="fill-current"/>,
+        label: "Pengaturan Akun",
+        route: "/pengaturan-akun",
       },
     ],
   },
