@@ -19,6 +19,7 @@
     "@mui/material": "^6.1.4",
     "@mui/x-charts": "^7.20.0",
     "@nextui-org/react": "^2.4.8",
+    "aos": "^2.3.4",
     "apexcharts": "^3.45.2",
     "axios": "^1.7.7",
     "flatpickr": "^4.6.13",
@@ -36,6 +37,7 @@
     "swiper": "^11.1.14"
   },
   "devDependencies": {
+    "@types/aos": "^3.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

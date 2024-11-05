@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import "@/css/globals.css";
+import 'aos/dist/aos.css';
 
 interface RootLayoutProps {
   children: ReactNode;

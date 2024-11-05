@@ -70,7 +70,7 @@ const JadwalSholat = () => {
               <td className="border px-4 py-2">{jadwal.subuh}</td>
               <td className="border px-4 py-2">{jadwal.dzuhur}</td>
               <td className="border px-4 py-2">{jadwal.ashar}</td>
-              <td className="border px-4 py-2 font-semibold text-orange-600">{jadwal.maghrib}</td>
+              <td className="border px-4 py-2">{jadwal.maghrib}</td>
               <td className="border px-4 py-2">{jadwal.isya}</td>
             </tr>
           </tbody>

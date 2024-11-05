@@ -7,6 +7,10 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    'aos-init',
+    'aos-animate',
+  ],
   darkMode: "class",
   theme: {
     fontFamily: {
