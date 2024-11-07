@@ -69,7 +69,7 @@ export default function YatimDhuafa() {
             color="warning" 
             startIcon={<AiOutlineUpload />}
           >
-            Import Data
+            Export Data
           </Button>
         </Box>
       </Box>

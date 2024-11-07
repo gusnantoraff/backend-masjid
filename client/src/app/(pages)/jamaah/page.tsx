@@ -18,7 +18,7 @@ export default function Jamaah() {
   };
 
   const yatimColumns = [
-    { header: 'ID', accessor: 'id' },
+    { header: 'Nomor', accessor: 'id' },
     { header: 'Nama', accessor: 'nama' },
     { header: 'Jenis Kelamin', accessor: 'gender' },
     { header: 'Kontak', accessor: 'kontak' },
@@ -68,7 +68,7 @@ export default function Jamaah() {
             color="warning" 
             startIcon={<AiOutlineUpload />}
           >
-            Import Data
+            Export Data
           </Button>
         </Box>
       </Box>

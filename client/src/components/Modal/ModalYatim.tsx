@@ -17,11 +17,11 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
     status: 'aktif',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement| HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]:  name === 'kontak' ? value.replace(/^\+62/, '') : value,
     }));
   };
 
@@ -85,14 +85,20 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <label htmlFor="alamat">Alamat:</label>
-              <input
-                type="text"
+              <textarea
                 id="alamat"
                 name="alamat"
                 value={formData.alamat}
                 onChange={handleChange}
+                rows={2}
+                minLength={10}
+                required
               />
+              {formData.alamat.length < 10 && (
+                <p style={{ color: "red" }}>Alamat harus memiliki minimal 10 karakter.</p>
+              )}
             </div>
+
             <div>
               <label htmlFor="keterangan">Keterangan:</label>
               <select
@@ -107,16 +113,21 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 <option value="dhuafa">Dhuafa</option>
               </select>
             </div>
-            <div>
-              <label htmlFor="kontak">Kontak:</label>
+
+            <label htmlFor="kontak">Kontak:</label>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc',borderRadius:'4px',marginRight:'2px' }}>+62</span>
               <input
                 type="text"
                 id="kontak"
                 name="kontak"
                 value={formData.kontak}
                 onChange={handleChange}
+                placeholder="81234567890" // Show example format after +62
+                style={{ flex: 1 }}
               />
             </div>
+
             <div>
               <label htmlFor="status">Status:</label>
               <select
@@ -182,7 +193,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         label {
           margin-right: 10px;
         }
-        input, select {
+        input, select, textarea {
           padding: 8px;
           border: 1px solid #ccc;
           border-radius: 4px;

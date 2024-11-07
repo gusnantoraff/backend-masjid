@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { BiX } from 'react-icons/bi'; 
+import { BiX } from 'react-icons/bi';
 
 interface ModalFormProps {
   isOpen: boolean;
@@ -10,33 +10,33 @@ interface ModalFormProps {
 const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     nama: '',
-    gender:'pria',
+    gender: 'pria',
     birth: '',
     alamat: '',
     kontak: '',
-    email:'',
+    email: '',
     keterangan: 'aktif',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'kontak' ? value.replace(/^\+62/, '') : value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await axios.post('http://localhost:8000/api/jamaah', formData);
-        console.log('Response from API:', response.data);
-  
-        onClose();
-      } catch (error) {
-        console.error('Error posting data:', error);
-      }
-    };
+      const response = await axios.post('http://localhost:8000/api/jamaah', formData);
+      console.log('Response from API:', response.data);
+
+      onClose();
+    } catch (error) {
+      console.error('Error posting data:', error);
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -74,6 +74,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 onChange={handleChange}
               />
             </div>
+            
             <div>
               <label htmlFor="gender">Jenis Kelamin:</label>
               <select
@@ -86,6 +87,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 <option value="wanita">Wanita</option>
               </select>
             </div>
+
             <div>
               <label htmlFor="birth">Tanggal Lahir:</label>
               <input
@@ -96,36 +98,49 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 onChange={handleChange}
               />
             </div>
+
             <div>
               <label htmlFor="alamat">Alamat:</label>
-              <input
-                type="text"
+              <textarea
                 id="alamat"
                 name="alamat"
                 value={formData.alamat}
                 onChange={handleChange}
+                rows={2}
+                minLength={10}
+                required
               />
+              {formData.alamat.length < 10 && (
+                <p style={{ color: "red" }}>Alamat harus memiliki minimal 10 karakter.</p>
+              )}
             </div>
-            <div>
-              <label htmlFor="kontak">Kontak:</label>
+
+            <label htmlFor="kontak">Kontak:</label>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc',borderRadius:'4px',marginRight:'2px' }}>+62</span>
               <input
                 type="text"
                 id="kontak"
                 name="kontak"
                 value={formData.kontak}
                 onChange={handleChange}
+                placeholder="81234567890" // Show example format after +62
+                style={{ flex: 1 }}
               />
             </div>
+
             <div>
               <label htmlFor="email">Email:</label>
               <input
                 type="email"
                 id="email"
                 name="email"
+                placeholder="yourname@gmail.com" // Hint for expected email format
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
+
             <div>
               <label htmlFor="keterangan">Status:</label>
               <select
@@ -191,7 +206,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         label {
           margin-right: 10px;
         }
-        input, select {
+        input, select, textarea {
           padding: 8px;
           border: 1px solid #ccc;
           border-radius: 4px;
