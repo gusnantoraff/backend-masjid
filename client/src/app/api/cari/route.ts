@@ -12,8 +12,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const provinsi = searchParams.get('provinsi') || 'd.i. yogyakarta';
-    const kota = searchParams.get('kota') || 'kab. bantul';
+    const provinsi = searchParams.get('provinsi') || 'd.i.+yogyakarta';
+    const kota = searchParams.get('kota') || 'kab.+bantul';
     const { bulan, tahun } = {
       bulan: searchParams.get('bulan') || getTodayDate().bulan,
       tahun: searchParams.get('tahun') || getTodayDate().tahun,

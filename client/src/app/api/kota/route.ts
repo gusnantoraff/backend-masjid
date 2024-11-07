@@ -4,7 +4,7 @@ import axios from 'axios';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const provinsi = searchParams.get('provinsi') || 'd.i. yogyakarta';
+    const provinsi = searchParams.get('provinsi') || 'd.i.+yogyakarta';
 
     const response = await axios.get(
       `https://jadwal-sholat-api-iota.vercel.app/api/kota?provinsi=${encodeURIComponent(provinsi)}`
