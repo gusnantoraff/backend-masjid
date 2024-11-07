@@ -24,10 +24,10 @@ const Stats = () => {
             {dataStatsList.map((item) => (
             <div 
                 key={item.title}
-                className={`cols-span-1 rounded-2xl px-2 py-2 shadow-md mt-2 ${
-                    item.title === "Total Sisa Kas" ? "bg-yellow-200 border-yellow-300" :
-                    item.title === "Total Pemasukan" ? "bg-teal-200 border-green-300" :
-                    item.title === "Total Pengeluaran" ? "bg-red-200 border-red-300" : 
+                className={`cols-span-1 rounded-2xl bg-white px-2 py-2 shadow-md mt-2 ${
+                    item.title === "Total Sisa Kas" ? "border border-amber-500 border-2" :
+                    item.title === "Total Pemasukan" ? "border border-red-500 border-2" :
+                    item.title === "Total Pengeluaran" ? "border border-green-500 border-2" : 
                     "border-gray-300"
                 }`}
             >

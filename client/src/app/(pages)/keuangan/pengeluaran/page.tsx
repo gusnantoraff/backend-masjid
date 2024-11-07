@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import DefaultLayout from "../../../components/Layouts/DefaultLayout";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React from "react";
 import MonthlyFilter from "../arus-kas/DateFilter";
 import PengeluaranChart from "../arus-kas/pengeluaranchart";
@@ -15,16 +15,13 @@ export default function Home() {
     return (
         <>
             <DefaultLayout>
-                <div className="flex justify-between">
-                    <div className="col-span-1">
+                
                         <h1 className="p-2 text-4xl font-bold text-black">
                            Pengeluaran
                         </h1>
-                    </div>
-                    <div className="col-span-1 mb-2">
+                 
                            <MonthlyFilter/>
-                    </div>
-                </div>
+                
                 <div className="grid grid-cols-2 gap-4">
                     <div className="cols-span-1 rounded-xl px-2 py-2 shadow-md w-full border border-gray-300">
                     <h2 className="w-auto text-3xl font-medium text-black p-2 flex justify-center">

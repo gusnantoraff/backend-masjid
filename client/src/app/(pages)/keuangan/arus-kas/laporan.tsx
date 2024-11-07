@@ -75,56 +75,66 @@ export default function AccessibleTable() {
   const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-      <p className='text-2xl font-bold text-black mb-4 px-2'>Jurnal</p>
-      {/* Filter Form */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', paddingTop: '10px' }}>
-        <TextField
-          label="Tanggal Mulai"
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          label="Tanggal Akhir"
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          select
-          label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          style={{ minWidth: 120 }}
-        >
-          <MenuItem value="">Semua</MenuItem>
-          <MenuItem value="pemasukan">Pemasukan</MenuItem>
-          <MenuItem value="pengeluaran">Pengeluaran</MenuItem>
-        </TextField>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            setStartDate('');
-            setEndDate('');
-            setStatus('');
-          }}
-        >
-          Reset Filter
-        </Button>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+  <p className='text-3xl font-bold text-black mb-4 px-2'>Jurnal</p>
 
-      {/* Table */}
-      <TableContainer component={Paper} style={{ width: '100%' }}>
+  {/* Filter Form */}
+  <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', paddingTop: '10px', justifyContent: 'flex-start' }}>
+    <TextField
+      label="Tanggal Mulai"
+      type="date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+      InputLabelProps={{
+        shrink: true,
+      }}
+    />
+    <TextField
+      label="Tanggal Akhir"
+      type="date"
+      value={endDate}
+      onChange={(e) => setEndDate(e.target.value)}
+      InputLabelProps={{
+        shrink: true,
+      }}
+    />
+    <TextField
+  select
+  label="Status"
+  value={status}
+  onChange={(e) => setStatus(e.target.value)}
+  style={{ minWidth: 120 }}
+>
+  <MenuItem value="">
+    <span>Semua</span>
+  </MenuItem>
+  <MenuItem value="pemasukan">
+    <ArrowDownwardIcon style={{ marginRight: '8px', color: 'green' }} />
+    <span>Pemasukan</span>
+  </MenuItem>
+  <MenuItem value="pengeluaran">
+    <ArrowUpwardIcon style={{ marginRight: '8px', color: 'red' }} />
+    <span>Pengeluaran</span>
+  </MenuItem>
+</TextField>
+    <Button
+      variant="contained"
+      onClick={() => {
+        setStartDate('');
+        setEndDate('');
+        setStatus('');
+      }}
+    >
+      Reset Filter
+    </Button>
+  </div>
+
+
+    {/* Table */}
+      <TableContainer component={Paper} style={{ width: '100%'}}>
         <Table sx={{ width: '100%', tableLayout: 'auto' }} aria-label="caption table">
           <TableHead>
-            <TableRow>
+            <TableRow >
               <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Jenis</TableCell>
               <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Tanggal</TableCell>
               <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Jumlah</TableCell>
@@ -135,8 +145,11 @@ export default function AccessibleTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayedRows.map((row) => (
-              <TableRow key={row.name}>
+            {displayedRows.map((row, index) => (
+              <TableRow key={row.name} 
+              sx={{
+                backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+              }}>
                 <TableCell component="th" scope="row">{row.name}</TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell style={{ color: row.amount < 0 ? 'red' : 'green' }}>

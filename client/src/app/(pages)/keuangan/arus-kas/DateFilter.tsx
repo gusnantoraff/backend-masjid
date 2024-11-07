@@ -1,6 +1,6 @@
-'use client'
-import React, { useState } from 'react';
-import { TextField, MenuItem } from '@mui/material';
+"use client";
+import React, { useState } from "react";
+import { TextField, MenuItem, Button } from "@mui/material";
 
 const MonthlyFilter = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -8,18 +8,24 @@ const MonthlyFilter = () => {
 
     const handleMonthChange = (event) => {
         setSelectedMonth(event.target.value);
-        // Tambahkan logika untuk melakukan filter berdasarkan bulan yang dipilih
-        console.log(`Bulan yang dipilih: ${event.target.value + 1}/${selectedYear}`);
+        console.log(
+            `Bulan yang dipilih: ${event.target.value + 1}/${selectedYear}`,
+        );
     };
 
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
-        // Tambahkan logika untuk melakukan filter berdasarkan tahun yang dipilih
-        console.log(`Tahun yang dipilih: ${selectedMonth + 1}/${event.target.value}`);
+        console.log(
+            `Tahun yang dipilih: ${selectedMonth + 1}/${event.target.value}`,
+        );
+    };
+
+    const handleSearch = () => {
+        console.log(`Mencari data untuk bulan ${selectedMonth + 1} dan tahun ${selectedYear}`);
     };
 
     return (
-        <div>
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', paddingTop: '10px',alignItems: 'center', }}>
             <TextField
                 select
                 label="Bulan"
@@ -27,11 +33,13 @@ const MonthlyFilter = () => {
                 onChange={handleMonthChange}
                 variant="outlined"
                 margin="dense"
-                style={{ marginRight: '16px' }}
+                style={{ width: "130px" }}
             >
                 {Array.from({ length: 12 }, (_, index) => (
                     <MenuItem key={index} value={index}>
-                        {new Date(0, index).toLocaleString('default', { month: 'long' })}
+                        {new Date(0, index).toLocaleString("default", {
+                            month: "long",
+                        })}
                     </MenuItem>
                 ))}
             </TextField>
@@ -42,8 +50,16 @@ const MonthlyFilter = () => {
                 onChange={handleYearChange}
                 variant="outlined"
                 margin="dense"
-                style={{ width: '100px' }}
+                style={{ width: "100px" }}
             />
+            <Button
+                variant="contained"
+                color="primary"
+                style={{ height:"57px" , marginTop:"3px"}}
+                onClick={handleSearch}
+            >
+                Cari
+            </Button>
         </div>
     );
 };

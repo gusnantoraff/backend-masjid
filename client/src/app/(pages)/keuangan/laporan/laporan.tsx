@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,25 +8,24 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Button from '@mui/material/Button';
 import TablePagination from '@mui/material/TablePagination';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import "@/css/satoshi.css";
+import { BiSolidFileExport } from 'react-icons/bi';
+import { AiOutlineExport } from 'react-icons/ai';
 
-// Dummy data
-function createData(
-  name: string,
-  date: string,
-  amount: number,
-  description: string,
-  file: string,
-  oleh: string,
-) {
+// Dummy data function
+function createData(name: string, date: string, amount: number, description: string, file: string, oleh: string) {
   return { name, date, amount, description, file, oleh };
 }
 
+// Dummy data
 const rows = [
   createData('Gaji', '2023-10-12', 5000000, 'Pemasukan bulanan', 'img.jpg', 'Hamba Allah'),
   createData('Bayar Listrik', '2023-10-12', -200000, 'Pengeluaran bulanan', 'img.jpg', 'Hamba Allah'),
@@ -38,6 +37,7 @@ export default function AccessibleTable() {
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
   const [status, setStatus] = React.useState('');
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   // Pagination states
   const [page, setPage] = React.useState(0);
@@ -49,8 +49,7 @@ export default function AccessibleTable() {
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
 
-    const isDateInRange =
-      (!start || rowDate >= start) && (!end || rowDate <= end);
+    const isDateInRange = (!start || rowDate >= start) && (!end || rowDate <= end);
     
     const isStatusMatch =
       (status === 'pemasukan' && row.amount > 0) ||
@@ -74,56 +73,87 @@ export default function AccessibleTable() {
   // Calculate displayed rows for the current page
   const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+  // Handle Menu Open/Close
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleExport = (format: string) => {
+    handleClose();
+    console.log(`Exporting to ${format}`); // Implement the export functionality here
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-      <p className='text-2xl font-bold text-black mb-4 px-2'>Jurnal</p>
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      {/* Title */}
+      <p className='text-3xl font-bold text-black mb-4 px-2'>Jurnal Laporan</p>
+
       {/* Filter Form */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', paddingTop: '10px' }}>
-        <TextField
-          label="Tanggal Mulai"
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          label="Tanggal Akhir"
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          select
-          label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          style={{ minWidth: 120 }}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '16px', paddingTop: '10px' }}>
+          <TextField
+            label="Tanggal Mulai"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            label="Tanggal Akhir"
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+  select
+  label="Status"
+  value={status}
+  onChange={(e) => setStatus(e.target.value)}
+  style={{ minWidth: 120 }}
+>
+  <MenuItem value="">
+    <span>Semua</span>
+  </MenuItem>
+  <MenuItem value="pemasukan">
+    <ArrowDownwardIcon style={{ marginRight: '8px', color: 'green' }} />
+    <span>Pemasukan</span>
+  </MenuItem>
+  <MenuItem value="pengeluaran">
+    <ArrowUpwardIcon style={{ marginRight: '8px', color: 'red' }} />
+    <span>Pengeluaran</span>
+  </MenuItem>
+</TextField>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setStartDate('');
+              setEndDate('');
+              setStatus('');
+            }}
+          >
+            Reset Filter
+          </Button>
+          <IconButton onClick={handleClick}>
+          <AiOutlineExport />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
         >
-          <MenuItem value="">Semua</MenuItem>
-          <MenuItem value="pemasukan">Pemasukan</MenuItem>
-          <MenuItem value="pengeluaran">Pengeluaran</MenuItem>
-        </TextField>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            setStartDate('');
-            setEndDate('');
-            setStatus('');
-          }}
-        >
-          Reset Filter
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {}}
-        >
-          Export
-        </Button>
+          <MenuItem onClick={() => handleExport('CSV')}>Export to CSV</MenuItem>
+          <MenuItem onClick={() => handleExport('PDF')}>Export to PDF</MenuItem>
+        </Menu>
+        </div>
       </div>
 
       {/* Table */}
@@ -141,13 +171,16 @@ export default function AccessibleTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayedRows.map((row) => (
-              <TableRow key={row.name}>
+            {displayedRows.map((row, index) => (
+              <TableRow key={row.name} 
+                sx={{
+                  backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+                }}>
                 <TableCell component="th" scope="row">{row.name}</TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell style={{ color: row.amount < 0 ? 'red' : 'green' }}>
-        {row.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
-      </TableCell>
+                  {row.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+                </TableCell>
                 <TableCell>{row.description}</TableCell>
                 <TableCell>{row.file}</TableCell>
                 <TableCell>{row.oleh}</TableCell>

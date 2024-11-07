@@ -9,8 +9,8 @@ export default function PendapatanChart() {
       series={[
         {
           data: [
-            { id: 0, value: 10, label: 'Infaq' },
-            { id: 1, value: 15, label: 'Donasi' },
+            { id: 0, value: 100000, label: 'Infaq' },
+            { id: 1, value: 300000, label: 'Donasi' },
           ],
         },
       ]}

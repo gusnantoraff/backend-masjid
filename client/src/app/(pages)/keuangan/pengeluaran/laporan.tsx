@@ -14,6 +14,9 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Button from '@mui/material/Button';
 import TablePagination from '@mui/material/TablePagination';
 import "@/css/satoshi.css";
+import { IconButton } from '@mui/material';
+import Menu from '@mui/material/Menu';
+import { AiOutlineExport } from 'react-icons/ai';
 
 // Dummy data
 function createData(
@@ -38,6 +41,7 @@ export default function AccessibleTable() {
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
   const [status, setStatus] = React.useState('');
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   // Pagination states
   const [page, setPage] = React.useState(0);
@@ -73,11 +77,28 @@ const filteredRows = rows.filter((row) => {
   // Calculate displayed rows for the current page
   const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+      // Handle Menu Open/Close
+      const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
+    
+      const handleExport = (format: string) => {
+        handleClose();
+        console.log(`Exporting to ${format}`); // Implement the export functionality here
+      };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-      <p className='text-2xl font-bold text-black mb-4 px-2'>Jurnal</p>
-      {/* Filter Form */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', paddingTop: '10px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+    {/* Title */}
+    <p className='text-3xl font-bold text-black mb-4 px-2 mt-2'>Jurnal Pengeluaran</p>
+
+    {/* Filter Form */}
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', gap: '16px', paddingTop: '10px' }}>
         <TextField
           label="Tanggal Mulai"
           type="date"
@@ -97,7 +118,7 @@ const filteredRows = rows.filter((row) => {
           }}
         />
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => {
             setStartDate('');
             setEndDate('');
@@ -106,12 +127,18 @@ const filteredRows = rows.filter((row) => {
         >
           Reset Filter
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => {}}
+        <IconButton onClick={handleClick}>
+        <AiOutlineExport />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
         >
-          Export
-        </Button>
+          <MenuItem onClick={() => handleExport('CSV')}>Export to CSV</MenuItem>
+          <MenuItem onClick={() => handleExport('PDF')}>Export to PDF</MenuItem>
+        </Menu>
+      </div>
       </div>
 
       {/* Table */}
@@ -129,8 +156,10 @@ const filteredRows = rows.filter((row) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayedRows.map((row) => (
-              <TableRow key={row.name}>
+            {displayedRows.map((row,index) => (
+              <TableRow key={row.name}sx={{
+                backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+              }}>
                 <TableCell component="th" scope="row">{row.name}</TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell style={{ color: row.amount < 0 ? 'red' : 'green' }}>
