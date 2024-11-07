@@ -57,12 +57,12 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
         // tambahin logika
     };
 
-    const capitalizeFirstLetter = (value: any) => {
-        if (typeof value === 'string') {
+    const capitalizeFirstLetter = (value: any, accessor: string) => {
+        if (typeof value === 'string' && accessor !== 'email') {
             return value.charAt(0).toUpperCase() + value.slice(1);
         }
         return value;
-    };
+    };    
 
     if (loading) {
         return <p>Loading data...</p>;
@@ -94,7 +94,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                     padding: '16px',
                                 }}
                             >
-                                {capitalizeFirstLetter(column.header)}
+                                {capitalizeFirstLetter(column.header, column.accessor)}
                             </TableCell>
                         ))}
                     </TableRow>
@@ -110,7 +110,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                         borderBottom: '1px solid #E0E0E0',
                                     }}
                                 >
-                                    {column.accessor ? capitalizeFirstLetter(row[column.accessor]) : (
+                                    {column.accessor ? capitalizeFirstLetter(row[column.accessor], column.accessor) : (
                                         <Box>
                                             <Button
                                                 variant="contained"
