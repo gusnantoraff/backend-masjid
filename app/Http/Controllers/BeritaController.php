@@ -3,27 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berita;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class BeritaController extends Controller
 {
     /**
      * Display a listing of the berita.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $berita = Berita::all();
+
         return response()->json($berita);
     }
 
     /**
      * Store a newly created berita in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -33,7 +29,7 @@ class BeritaController extends Controller
             'tanggal_publikasi' => 'required|date',
             'kategori' => 'required|string|max:255',
             'status' => 'required|in:draft,published,archived',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -49,15 +45,12 @@ class BeritaController extends Controller
 
     /**
      * Display the specified berita.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $berita = Berita::find($id);
 
-        if (!$berita) {
+        if (! $berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 
@@ -66,16 +59,12 @@ class BeritaController extends Controller
 
     /**
      * Update the specified berita in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $berita = Berita::find($id);
 
-        if (!$berita) {
+        if (! $berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 
@@ -101,15 +90,12 @@ class BeritaController extends Controller
 
     /**
      * Remove the specified berita from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $berita = Berita::find($id);
 
-        if (!$berita) {
+        if (! $berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 

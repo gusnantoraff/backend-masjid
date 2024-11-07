@@ -10,15 +10,15 @@ import ListKegiatan from "@/components/KegiatanComponents/ListKegiatan";
 
 export default function Home() {
     const [refreshList, setRefreshList] = useState(false);
-    
+
     const handleRefresh = () => {
-        setRefreshList(prev => !prev); 
-      };
+        setRefreshList((prev) => !prev);
+    };
 
     return (
         <>
             <DefaultLayout>
-                <div className="rounded-lg border border-gray-500 mb-4">
+                <div className="mb-4 rounded-lg border border-gray-500">
                     <div className="grid h-full grid-cols-1 gap-2 xl:grid-cols-[70%_30%]">
                         <div className="col-span-1 h-full p-4">
                             <img
@@ -60,7 +60,7 @@ export default function Home() {
 
                     {/* Right section: News */}
                     <div className="col-span-1 mr-1">
-                        <Kegiatan/>  
+                        <Kegiatan />
                         <ListKegiatan refresh={refreshList} />
                     </div>
                 </div>

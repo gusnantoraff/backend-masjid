@@ -5,7 +5,7 @@ import { BiDonateHeart } from "react-icons/bi";
 
 const InfoMasjid = () => {
     return (
-        <div className="mb-6 mt-4 text-left h-full">
+        <div className="mb-6 mt-4 h-full text-left">
             <div className="mb-4 flex justify-center gap-4">
                 <img
                     src="/images/masjid.jpg"

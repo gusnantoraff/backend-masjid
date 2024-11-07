@@ -29,7 +29,7 @@ class PenerimaanKasController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
             'keterangan' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
         ]);
 
         if ($request->hasFile('image')) {
@@ -73,7 +73,7 @@ class PenerimaanKasController extends Controller
             'tanggal' => 'sometimes|date',
             'jumlah' => 'sometimes|numeric',
             'keterangan' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
         ]);
 
         if ($request->hasFile('image')) {
