@@ -69,7 +69,7 @@ const menuGroups = [
             {
                 icon: <FaRegEnvelope size={24} className="fill-current" />,
                 label: "Surat Menyurat",
-                route: "/Surat",
+                route: "/surat",
             },
             {
                 icon: <FaNewspaper size={24} className="fill-current" />,
