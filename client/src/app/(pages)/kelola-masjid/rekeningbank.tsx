@@ -1,5 +1,5 @@
 import React from 'react';
-import DataTable from '@/components/DataTable';
+import DataTable from '@/components/DataTable/DataTabel1';
 import { Button, Box, Typography } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import { Metadata } from "next";

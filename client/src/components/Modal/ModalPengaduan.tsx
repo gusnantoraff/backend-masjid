@@ -1,140 +1,84 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { BiX } from 'react-icons/bi'; 
+import { useState, useEffect } from "react";
 
 interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: (data: any) => void;
+  initialData?: { nama_pengirim: string; email: string; pesan: string; tanggal: string };
+  loading: boolean;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    nama: '',
-    birth: '',
-    alamat: '',
-    keterangan: 'yatim',
-    kontak: '',
-    status: 'aktif',
-    pesan: '',
-    
-  });
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, initialData, loading }) => {
+  const [namaPengirim, setNamaPengirim] = useState(initialData?.nama_pengirim || "");
+  const [email, setEmail] = useState(initialData?.email || "");
+  const [newMessage, setNewMessage] = useState(initialData?.pesan || "");
+  const [tanggal, setTanggal] = useState(initialData?.tanggal || new Date().toISOString().slice(0, 10));
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  useEffect(() => {
+    if (initialData) {
+      setNamaPengirim(initialData.nama_pengirim);
+      setEmail(initialData.email);
+      setNewMessage(initialData.pesan);
+      setTanggal(initialData.tanggal);
+    }
+  }, [initialData]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ nama_pengirim: namaPengirim, email, pesan: newMessage, tanggal });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-        const response = await axios.post('http://localhost:8000/api/yatim-dhuafa', formData);
-        console.log('Response from API:', response.data);
-  
-        onClose();
-      } catch (error) {
-        console.error('Error posting data:', error);
-      }
-    };
-
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
     <div className="modal-backdrop">
       <div className="modal">
         <div className="modal-header">
-          <h2 className="modal-title">Tambah Data Yatim/Piatu/Dhuafa</h2>
-          <button
-            className="close-button"
-            onClick={onClose}
-            style={{
-              backgroundColor: '#d50000',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              padding: '4px 4px',
-              cursor: 'pointer',
-            }}
-          >
-            <BiX size={20} />
+          <h2 className="modal-title">{initialData ? "Edit Pesan" : "Tambah Pesan"}</h2>
+          <button className="close-button" onClick={onClose}>
+            &times;
           </button>
         </div>
-        <div className="modal-body">
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="nama">Nama:</label>
-              <input
-                type="text"
-                id="nama"
-                name="nama"
-                value={formData.nama}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="birth">Tanggal Lahir:</label>
-              <input
-                type="date"
-                id="birth"
-                name="birth"
-                value={formData.birth}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="alamat">Alamat:</label>
-              <input
-                type="text"
-                id="alamat"
-                name="alamat"
-                value={formData.alamat}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="keterangan">Keterangan:</label>
-              <select
-                id="keterangan"
-                name="keterangan"
-                value={formData.keterangan}
-                onChange={handleChange}
-              >
-                <option value="yatim">Yatim</option>
-                <option value="piatu">Piatu</option>
-                <option value="yatim piatu">Yatim Piatu</option>
-                <option value="dhuafa">Dhuafa</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="kontak">Kontak:</label>
-              <input
-                type="text"
-                id="kontak"
-                name="kontak"
-                value={formData.kontak}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="status">Status:</label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-              >
-                <option value="aktif">Aktif</option>
-                <option value="pindah">Pindah</option>
-                <option value="wafat">Wafat</option>
-              </select>
-            </div>
-            <button type="submit" className="submit-button">Submit</button>
-          </form>
-        </div>
+        <form onSubmit={handleSubmit} className="modal-body">
+          <div>
+            <label>Nama Pengirim</label>
+            <input
+              type="text"
+              value={namaPengirim}
+              onChange={(e) => setNamaPengirim(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Pesan</label>
+            <textarea
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              required
+            ></textarea>
+          </div>
+          <div>
+            <label>Tanggal</label>
+            <input
+              type="date"
+              value={tanggal}
+              onChange={(e) => setTanggal(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? "Mengirim..." : initialData ? "Update Pesan" : "Kirim Pesan"}
+          </button>
+        </form>
       </div>
 
       <style jsx>{`
@@ -166,13 +110,14 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         }
         .modal-title {
           color: black;
-          font-weight: 600; /* Semi-bold */
+          font-weight: 600;
         }
         .close-button {
           background-color: transparent;
           border: none;
-          color: #CA0A37;
+          color: #ca0a37;
           cursor: pointer;
+          font-size: 24px;
         }
         .modal-body {
           display: flex;
@@ -184,7 +129,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         label {
           margin-right: 10px;
         }
-        input, select {
+        input, select, textarea {
           padding: 8px;
           border: 1px solid #ccc;
           border-radius: 4px;
@@ -199,7 +144,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           cursor: pointer;
         }
         .submit-button:hover {
-          background-color: #14B8A6;
+          background-color: #14b8a6;
         }
       `}</style>
     </div>
