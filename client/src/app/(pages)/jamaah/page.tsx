@@ -21,6 +21,7 @@ export default function Jamaah() {
     { header: 'No', accessor: 'id' },
     { header: 'Nama', accessor: 'nama' },
     { header: 'Jenis Kelamin', accessor: 'gender' },
+    { header: 'Tanggal Lahir', accessor: 'birth' },
     { header: 'Kontak', accessor: 'kontak' },
     { header: 'Email', accessor: 'email' },
     { header: 'Alamat', accessor: 'alamat' },

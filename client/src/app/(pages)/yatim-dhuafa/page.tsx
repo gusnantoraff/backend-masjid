@@ -19,7 +19,7 @@ export default function YatimDhuafa() {
 
 
   const yatimColumns = [
-    { header: 'ID', accessor: 'id' },
+    { header: 'No', accessor: 'id' },
     { header: 'Nama', accessor: 'nama' },
     { header: 'Kontak', accessor: 'kontak' },
     { header: 'Tanggal Lahir', accessor: 'birth' },

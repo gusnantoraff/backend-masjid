@@ -19,7 +19,7 @@ export default function YatimDhuafa() {
 
 
   const akunColumns = [
-    { header: 'ID', accessor: 'id' },
+    { header: 'No', accessor: 'id' },
     { header: 'First Name', accessor: 'firstname' },
     { header: 'Last Name', accessor: 'lastname' },
     { header: 'Email', accessor: 'email' },

@@ -114,6 +114,17 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                 <p style={{ color: "red" }}>Alamat harus memiliki minimal 10 karakter.</p>
               )}
             </div>
+            
+            <div>
+              <label htmlFor="birth">Tanggal Lahir:</label>
+              <input
+                type="date"
+                id="birth"
+                name="birth"
+                value={formData.birth}
+                onChange={handleChange}
+              />
+            </div>
 
             <label htmlFor="kontak">Kontak:</label>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -184,7 +195,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 25px;
         }
         .modal-title {
           color: black;

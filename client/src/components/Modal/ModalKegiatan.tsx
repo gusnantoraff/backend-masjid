@@ -16,8 +16,10 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
     lokasi: '',
     kategori: 'umum',
     keterangan: '',
-    foto: null as File | null
+    foto: null as File | null,
   });
+
+  const [fileError, setFileError] = useState(''); // State for the file error message
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -29,6 +31,23 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const maxFileSize = 8 * 1024 * 1024; // 8MB in bytes
+    const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
+
+    if (file) {
+      if (file.size > maxFileSize) {
+        setFileError('Foto maks 8MB.');
+        e.target.value = ''; // Reset input
+        return;
+      } else if (!allowedFormats.includes(file.type)) {
+        setFileError('Format foto hanya diperbolehkan JPG, JPEG, dan PNG.');
+        e.target.value = ''; // Reset input
+        return;
+      } else {
+        setFileError(''); // Clear error if file is valid
+      }
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       foto: file || null,
@@ -148,8 +167,10 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
                 type="file"
                 id="foto"
                 name="foto"
+                accept="image/jpeg, image/jpg, image/png"
                 onChange={handleFileChange}
               />
+              {fileError && <p style={{ color: "red" }}>{fileError}</p>} {/* Error message for file */}
             </div>
             <button type="submit" className="submit-button">Submit</button>
           </form>
@@ -185,7 +206,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
         }
         .modal-title {
           color: black;
-          font-weight: 600; /* Semi-bold */
+          font-weight: 600;
         }
         .close-button {
           background-color: transparent;
@@ -208,6 +229,11 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
           border: 1px solid #ccc;
           border-radius: 4px;
           width: 100%;
+        }
+        .error-message {
+          color: #d50000;
+          font-size: 0.875rem;
+          margin-top: 4px;
         }
         .submit-button {
           padding: 8px 16px;

@@ -117,7 +117,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                 <TableCell
                                     key={column.accessor}
                                     sx={{
-                                        padding: '15px',
+                                        padding: '10px',
                                         borderBottom: '1px solid #E0E0E0',
                                     }}
                                 >
