@@ -1,47 +1,89 @@
-import { useState, ChangeEvent, FormEvent } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, ChangeEvent, FormEvent, useRef } from 'react';
+import axios from 'axios';
+import dynamic from 'next/dynamic';
 
-interface FormData {
-  judul: string;
-  kategori: string;
-  status: string;
-  konten: string;
-  foto: File | null;
+const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
+
+
+interface ArticleFormProps {
+  onSubmit: () => void;
 }
 
-export default function ArticleForm() {
-  const [formData, setFormData] = useState<FormData>({
+export default function ArticleForm({ onSubmit }: ArticleFormProps) {
+  const editor = useRef(null);
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const initialFormData = {
     judul: '',
-    kategori: '',
-    status: 'Draft',
-    konten: '',
-    foto: null,
-  });
+    tanggal_publikasi: new Date(),
+    kategori: 'berita',
+    status: 'published',
+    foto: null as File | null
+  };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const [formData, setFormData] = useState(initialFormData);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFormData({ ...formData, foto: e.target.files[0] });
-    }
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      foto: file || null,
+    }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    const data = new FormData();
+
+    data.append('judul', formData.judul);
+    data.append('tanggal_publikasi', formData.tanggal_publikasi.toISOString().split("T")[0]);
+    data.append('kategori', formData.kategori);
+    data.append('status', formData.status);
+    data.append('konten', content);
+
+    if (formData.foto) {
+      data.append('foto', formData.foto);
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/berita', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Response from API:', response.data);
+      setFormData(initialFormData);
+      setContent('');
+      onSubmit();
+    } catch (error) {
+      console.error('Error posting data:', error);
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   return (
     <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
-        
+
         <div style={styles.formBody}>
-          
+
           {/* Left Column */}
           <div style={styles.leftColumn}>
-            
+
             {/* Title Input */}
             <div style={styles.formGroup}>
               <label htmlFor="judul" style={styles.label}>Judul</label>
@@ -56,33 +98,21 @@ export default function ArticleForm() {
               />
             </div>
 
-            {/* Content Textarea */}
+            {/* Content Editor */}
             <div style={styles.formGroup}>
               <label htmlFor="konten" style={styles.label}>Konten</label>
-              <div style={styles.toolbar}>
-                <button type="button" style={styles.toolbarButton}><b>B</b></button>
-                <button type="button" style={styles.toolbarButton}><i>I</i></button>
-                <button type="button" style={styles.toolbarButton}><u>U</u></button>
-                <button type="button" style={styles.toolbarButton}>H1</button>
-                <button type="button" style={styles.toolbarButton}>H2</button>
-                <button type="button" style={styles.toolbarButton}>H3</button>
-                <button type="button" style={styles.toolbarButton}>Link</button>
-                <button type="button" style={styles.toolbarButton}>Quote</button>
-              </div>
-              <textarea
-                id="konten"
-                name="konten"
-                placeholder="Placeholder text"
-                value={formData.konten}
-                onChange={handleChange}
-                style={{ ...styles.textarea, ...styles.input }}
+              <JoditEditor
+                ref={editor}
+                value={content}
+                onBlur={newContent => setContent(newContent)}
+                onChange={newContent => setContent(newContent)}
               />
             </div>
           </div>
 
           {/* Right Column */}
           <div style={styles.rightColumn}>
-            
+
             {/* Category Dropdown */}
             <div style={styles.formGroup}>
               <label htmlFor="kategori" style={styles.label}>Kategori</label>
@@ -93,10 +123,13 @@ export default function ArticleForm() {
                 onChange={handleChange}
                 style={styles.input}
               >
-                <option value="">Pilih Kategori</option>
-                <option value="News">News</option>
-                <option value="Sport">Sport</option>
-                <option value="Technology">Technology</option>
+                <optgroup label="Pilih Kategori">
+                  <option value="berita">Berita</option>
+                  <option value="sport">Sport</option>
+                  <option value="teknologi">Teknologi</option>
+                  <option value="pendidikan">Pendidikan</option>
+                  <option value="lainnya">Lainnya</option>
+                </optgroup>
               </select>
             </div>
 
@@ -110,9 +143,9 @@ export default function ArticleForm() {
                 onChange={handleChange}
                 style={styles.input}
               >
-                <option value="Draft">Draft</option>
-                <option value="Published">Published</option>
-                <option value="Archived">Archived</option>
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="archived">Archived</option>
               </select>
             </div>
 
@@ -123,7 +156,7 @@ export default function ArticleForm() {
                 type="file"
                 id="foto"
                 name="foto"
-                onChange={handleImageChange}
+                onChange={handleFileChange}
                 style={styles.input}
               />
             </div>
@@ -132,7 +165,9 @@ export default function ArticleForm() {
 
         {/* Footer with Submit Button */}
         <div style={styles.footer}>
-          <button type="submit" style={styles.saveButton}>Simpan</button>
+          <button type="submit" style={styles.saveButton}>
+          {loading ? 'Loading...' : 'Simpan'}
+            </button>
         </div>
       </form>
     </div>
@@ -170,7 +205,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   label: {
     fontFamily: "'Roboto', sans-serif",
-    fontWeight: 400, // Roboto Regular (normal weight)
+    fontWeight: 400,
     color: '#000',
     fontSize: '16px',
     marginBottom: '5px',
@@ -181,21 +216,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '10px',
     border: '1px solid #ccc',
     borderRadius: '5px',
-  },
-  toolbar: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '10px',
-  },
-  toolbarButton: {
-    padding: '5px 10px',
-    cursor: 'pointer',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    backgroundColor: '#f1f1f1',
-  },
-  textarea: {
-    minHeight: '150px',
   },
   saveButton: {
     backgroundColor: '#14B8A6',

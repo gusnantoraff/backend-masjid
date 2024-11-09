@@ -1,9 +1,9 @@
-"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
 import { BiTrash, BiEdit } from 'react-icons/bi';
 import AlertConfirm from "../Alerts/AlertConfirm";
+import { AiOutlineEye } from "react-icons/ai";
 
 interface Column {
     header: string;
@@ -13,27 +13,30 @@ interface Column {
 interface DataTableProps {
     columns: Column[];
     fetchUrl: string;
+    reloadData: boolean;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  }) => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<any>(null);
 
-    useEffect(() => {
-        axios
-            .get(fetchUrl)
-            .then((response) => {
-                setData(response.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err);
-                setLoading(false);
-            });
-    }, [fetchUrl]);
+   useEffect(() => {
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(fetchUrl);
+            setData(response.data);
+            setLoading(false);
+        } catch (err) {
+            setLoading(false);
+        }
+    };
+
+    fetchData();
+}, [fetchUrl, reloadData]);
+
 
     const handleDelete = async () => {
         if (selectedId !== null) {
@@ -50,7 +53,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
         setShowConfirm(true);
     };
 
-
     const handleEdit = (id: any) => {
         console.log('Edit data dengan ID:', id);
 
@@ -62,25 +64,26 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
             return value.charAt(0).toUpperCase() + value.slice(1);
         }
         return value;
-    };    
+    };
+
+    const truncateContent = (content: string, limit: number = 30) => {
+        const text = content.replace(/<[^>]*>/g, '');
+        return text.length > limit ? text.substring(0, limit) + '...' : text;
+      };
 
     if (loading) {
         return <p>Loading data...</p>;
-    }
-
-    if (error) {
-        return <p>Error loading data: {error.message}</p>;
     }
 
     return (
         <Box sx={{ width: '100%', overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: '10px' }}>
             {showConfirm && (
                 <AlertConfirm
-                open={showConfirm}
-                onClose={() => setShowConfirm(false)}
-                onConfirm={handleDelete}
-                message="Apakah Anda yakin ingin menghapus data ini?"
-              />
+                    open={showConfirm}
+                    onClose={() => setShowConfirm(false)}
+                    onConfirm={handleDelete}
+                    message="Apakah Anda yakin ingin menghapus data ini?"
+                />
             )}
             <Table sx={{ width: '100%' }}>
                 <TableHead>
@@ -110,7 +113,13 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                         borderBottom: '1px solid #E0E0E0',
                                     }}
                                 >
-                                    {column.accessor ? capitalizeFirstLetter(row[column.accessor], column.accessor) : (
+                                    {column.accessor === 'nomor'
+                                        ? idxData + 1
+                                        : column.accessor === 'konten' || column.accessor === 'judul'
+                                        ? truncateContent(row[column.accessor])
+                                        : capitalizeFirstLetter(row[column.accessor], column.accessor)
+                                    }
+                                    {column.accessor === '' && (
                                         <Box>
                                             <Button
                                                 variant="contained"
@@ -128,6 +137,19 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                             >
                                                 Edit
                                             </Button>
+                                            <Link href={`/berita/${row.id}`}>
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    backgroundColor: '#2379DC',
+                                                    color: 'white',
+                                                    marginLeft: '8px',
+                                                }}
+                                                startIcon={<AiOutlineEye />}
+                                            >
+                                                Detail
+                                            </Button>
+                                            </Link>
                                         </Box>
                                     )}
                                 </TableCell>

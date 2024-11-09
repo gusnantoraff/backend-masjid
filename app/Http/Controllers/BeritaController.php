@@ -27,7 +27,7 @@ class BeritaController extends Controller
             'judul' => 'required|string|max:255',
             'konten' => 'required|string',
             'tanggal_publikasi' => 'required|date',
-            'kategori' => 'required|string|max:255',
+            'kategori' => 'required|in:berita,sport,teknologi,pendidikan,lainnya',
             'status' => 'required|in:draft,published,archived',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -72,14 +72,14 @@ class BeritaController extends Controller
             'judul' => 'sometimes|string|max:255',
             'konten' => 'sometimes|string',
             'tanggal_publikasi' => 'sometimes|date',
-            'kategori' => 'sometimes|string|max:255',
+            'kategori' => 'sometimes|in:berita,sport,teknologi,pendidikan,lainnya',
             'status' => 'sometimes|in:draft,published,archived',
             'foto' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $filePath = $file->store('images', 'public'); // Menyimpan di storage/app/public/images
+            $filePath = $file->store('images', 'public');
             $validatedData['foto'] = $filePath;
         }
 

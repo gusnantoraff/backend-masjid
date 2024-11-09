@@ -13,9 +13,9 @@ class CreateBeritaTable extends Migration
             $table->string('judul');
             $table->text('konten');
             $table->date('tanggal_publikasi');
-            $table->string('kategori');
+            $table->enum('kategori',['berita','sport','teknologi','pendidikan','lainnya']);
             $table->enum('status', ['draft', 'published', 'archived']);
-            $table->string('foto');
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
     }
