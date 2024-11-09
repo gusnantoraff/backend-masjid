@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { BiX } from 'react-icons/bi'; 
+import { BiX } from 'react-icons/bi';
 
 interface ModalFormProps {
   isOpen: boolean;
@@ -14,8 +14,8 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
     email: "",
     phone: "",
     birth: "",
-    password:"",
-    password_confirmation:"",
+    password: "",
+    password_confirmation: "",
     gender: "Male",
     role: "ADMIN",
     avatar: null
@@ -32,14 +32,14 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await axios.post('http://localhost:8000/api/users', formData);
-        console.log('Response from API:', response.data);
-  
-        onClose();
-      } catch (error) {
-        console.error('Error posting data:', error);
-      }
-    };
+      const response = await axios.post('http://localhost:8000/api/users', formData);
+      console.log('Response from API:', response.data);
+
+      onClose();
+    } catch (error) {
+      console.error('Error posting data:', error);
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -183,7 +183,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           background: white;
           padding: 20px;
           border-radius: 8px;
-          max-width: 400px;
+          max-width: 700px;
           width: 100%;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
@@ -207,6 +207,11 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           display: flex;
           flex-direction: column;
         }
+        form {
+          display: grid;
+          grid-template-columns: 1fr 1fr; /* Membuat dua kolom */
+          gap: 15px; /* Jarak antar elemen */
+  }
         form div {
           margin-bottom: 10px;
         }
@@ -220,6 +225,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           width: 100%;
         }
         .submit-button {
+           grid-column: span 2;
           padding: 6px 16px;
           background-color: #d50000;
           color: white;
