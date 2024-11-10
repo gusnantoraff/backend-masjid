@@ -1,8 +1,7 @@
-"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box } from '@mui/material';
-import { BiTrash, BiEdit } from 'react-icons/bi';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
+import { BiTrash } from 'react-icons/bi';
 import AlertConfirm from "../Alerts/AlertConfirm";
 import { AiOutlineEye } from 'react-icons/ai';
 
@@ -15,27 +14,31 @@ interface Column {
 interface DataTableProps {
     columns: Column[];
     fetchUrl: string;
+    reloadData: boolean;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+    const [error] = useState<Error | null>(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<any>(null);
 
     useEffect(() => {
-        axios
-            .get(fetchUrl)
-            .then((response) => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(fetchUrl);
                 setData(response.data);
                 setLoading(false);
-            })
-            .catch((err) => {
-                setError(err);
+            } catch (err) {
                 setLoading(false);
-            });
-    }, [fetchUrl]);
+            }
+        };
+    
+        fetchData();
+    }, [fetchUrl, reloadData]);
+    
 
     const handleDelete = async () => {
         if (selectedId !== null) {
@@ -51,11 +54,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
         setSelectedId(id);
         setShowConfirm(true);
     };
-
-    const handleRead = (id: number) => {
-        // Logika untuk menampilkan atau membaca detail berdasarkan ID
-        console.log(`Reading entry with ID: ${id}`);
-      };
       
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
@@ -64,6 +62,11 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
         }
         return value;
     };
+
+    const truncateContent = (content: string, limit: number = 30) => {
+        const text = content.replace(/<[^>]*>/g, '');
+        return text.length > limit ? text.substring(0, limit) + '...' : text;
+      };
 
     if (loading) {
         return <p>Loading data...</p>;
@@ -121,14 +124,15 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                             >
                                                 Hapus
                                             </Button>
+                                            <Link href={`/pesan-pengaduan/${row.id}`}>
                                             <Button
                                                 variant="contained"
                                                 sx={{ backgroundColor: '#2379DC', color: 'white', marginLeft: '8px' }}
                                                 startIcon={<AiOutlineEye />}  
-                                                onClick={() => handleRead(row.id)} 
                                             >
                                                 Detail
                                             </Button>
+                                            </Link>
 
                                         </Box>
                                     )}
