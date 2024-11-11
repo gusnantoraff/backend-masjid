@@ -64,7 +64,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     };
 
     const handleWhatsApp = (id: number) => {
-        const waLink = `https://wa.me/?text=Halo, ini informasi untuk item dengan ID: ${id}`;
+        const waLink = `https://wa.me/?text=Halo,: ${id}`;
         window.open(waLink, '_blank'); // Membuka WhatsApp di tab baru
       };
 

@@ -211,7 +211,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           display: grid;
           grid-template-columns: 1fr 1fr; /* Membuat dua kolom */
           gap: 15px; /* Jarak antar elemen */
-  }
+        }
         form div {
           margin-bottom: 10px;
         }
@@ -225,7 +225,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           width: 100%;
         }
         .submit-button {
-           grid-column: span 2;
+          grid-column: span 2;
           padding: 6px 16px;
           background-color: #d50000;
           color: white;

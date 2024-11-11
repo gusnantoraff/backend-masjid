@@ -63,11 +63,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
         return value;
     };
 
-    const truncateContent = (content: string, limit: number = 30) => {
-        const text = content.replace(/<[^>]*>/g, '');
-        return text.length > limit ? text.substring(0, limit) + '...' : text;
-      };
-
     if (loading) {
         return <p>Loading data...</p>;
     }

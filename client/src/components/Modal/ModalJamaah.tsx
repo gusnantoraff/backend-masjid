@@ -31,7 +31,6 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
     try {
       const response = await axios.post('http://localhost:8000/api/jamaah', formData);
       console.log('Response from API:', response.data);
-
       onClose();
     } catch (error) {
       console.error('Error posting data:', error);
@@ -100,6 +99,49 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
             </div>
 
             <div>
+              <label htmlFor="keterangan">Status:</label>
+              <select
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
+                onChange={handleChange}
+              >
+                <option value="aktif">Aktif</option>
+                <option value="pindah">Pindah</option>
+                <option value="wafat">Wafat</option>
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="kontak">Kontak:</label>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', marginRight: '2px' }}>+62</span>
+                <input
+                  type="text"
+                  id="kontak"
+                  name="kontak"
+                  value={formData.kontak}
+                  onChange={handleChange}
+                  placeholder="81234567890"
+                  style={{ flex: 1 }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="yourname@gmail.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Form Alamat (Textarea) Mengambil Kolom Penuh */}
+            <div style={{ gridColumn: 'span 2' }}>
               <label htmlFor="alamat">Alamat:</label>
               <textarea
                 id="alamat"
@@ -115,56 +157,6 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
               )}
             </div>
             
-            <div>
-              <label htmlFor="birth">Tanggal Lahir:</label>
-              <input
-                type="date"
-                id="birth"
-                name="birth"
-                value={formData.birth}
-                onChange={handleChange}
-              />
-            </div>
-
-            <label htmlFor="kontak">Kontak:</label>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc',borderRadius:'4px',marginRight:'2px' }}>+62</span>
-              <input
-                type="text"
-                id="kontak"
-                name="kontak"
-                value={formData.kontak}
-                onChange={handleChange}
-                placeholder="81234567890" // Show example format after +62
-                style={{ flex: 1 }}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email">Email:</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="yourname@gmail.com" // Hint for expected email format
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="keterangan">Status:</label>
-              <select
-                id="keterangan"
-                name="keterangan"
-                value={formData.keterangan}
-                onChange={handleChange}
-              >
-                <option value="aktif">Aktif</option>
-                <option value="pindah">Pindah</option>
-                <option value="wafat">Wafat</option>
-              </select>
-            </div>
             <button type="submit" className="submit-button">Submit</button>
           </form>
         </div>
@@ -187,7 +179,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           background: white;
           padding: 20px;
           border-radius: 8px;
-          max-width: 400px;
+          max-width: 700px;
           width: 100%;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
@@ -195,11 +187,11 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 25px;
+          margin-bottom: 20px;
         }
         .modal-title {
           color: black;
-          font-weight: 600; /* Semi-bold */
+          font-weight: 600;
         }
         .close-button {
           background-color: transparent;
@@ -210,6 +202,11 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
         .modal-body {
           display: flex;
           flex-direction: column;
+        }
+        form {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
         }
         form div {
           margin-bottom: 10px;
@@ -223,7 +220,9 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           border-radius: 4px;
           width: 100%;
         }
+        
         .submit-button {
+          grid-column: span 2;
           padding: 6px 16px;
           background-color: #d50000;
           color: white;

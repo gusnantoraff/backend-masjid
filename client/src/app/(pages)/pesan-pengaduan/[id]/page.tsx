@@ -84,7 +84,7 @@ const PesanDetail = ({ params }: { params: { id: string } }) => {
                 borderRadius: "12px",
                 boxShadow: "0px 6px 16px rgba(0, 0, 0, 0.08)",
                 marginBottom: "24px",
-                maxWidth: "720px",
+                maxWidth: "full",
                 overflowWrap: "break-word",
                 fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                 position: "relative",
