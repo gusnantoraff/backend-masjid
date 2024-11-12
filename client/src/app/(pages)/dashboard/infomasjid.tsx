@@ -7,35 +7,11 @@ const InfoMasjid = () => {
     return (
         <div className="mb-6 mt-4 h-full text-left">
             <div className="mb-4 flex justify-center gap-4">
-                <img
-                    src="/images/masjid.jpg"
-                    alt="Logo Masjid"
-                    className="h-20 w-20"
-                />
                 <div className="flex flex-col justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">Masjid</h1>
-                    </div>
-                    <div className="mt-2">
-                        <h1 className="text-2xl font-bold">Al-Ikhlas</h1>
+                        <h1 className="text-3xl font-bold">Masjid Al-Huda</h1>
                     </div>
                 </div>
-            </div>
-            <div className="mb-4 flex justify-center gap-4">
-                <ButtonDefault
-                    link="/website"
-                    customClasses="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center"
-                    label="Website"
-                >
-                    <FiGlobe className="mr-2" />
-                </ButtonDefault>
-                <ButtonDefault
-                    link="/donasi"
-                    customClasses="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center"
-                    label="Donasi"
-                >
-                    <BiDonateHeart className="mr-2" />
-                </ButtonDefault>
             </div>
             <div className="m-2 grid grid-cols-1 gap-4">
                 {/* Kontak - Nomor Telepon */}
@@ -67,6 +43,14 @@ const InfoMasjid = () => {
                         loading="lazy"
                         title="Peta Lokasi Masjid"
                     ></iframe>
+                </div>
+                <div>
+                        <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1>
+                        Lorem, ipsum dolor sit amet consectetur adipisicing
+                        elit. Commodi impedit quidem error magnam nulla deleniti
+                        eum porro, praesentium fugit ipsa exercitationem
+                        corrupti voluptatem minus rem! Molestiae culpa cumque
+                        quos labore?
                 </div>
             </div>
         </div>
