@@ -13,6 +13,7 @@ class PengeluaranKas extends Model
 
     protected $fillable = [
         'coa_id',
+        'jenis',
         'tanggal',
         'jumlah',
         'keterangan',

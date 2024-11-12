@@ -11,6 +11,7 @@ class CreatePengeluaranKasTable extends Migration
         Schema::create('pengeluaran_kas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('coa_id');
+            $table->text('jenis')->nullable();
             $table->date('tanggal');
             $table->decimal('jumlah', 15, 2);
             $table->text('keterangan')->nullable();

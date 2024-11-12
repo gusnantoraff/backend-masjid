@@ -30,6 +30,7 @@ class PengeluaranKasController extends Controller
             'jumlah' => 'required|numeric',
             'keterangan' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
+            'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
 
         if ($request->hasFile('image')) {
@@ -79,6 +80,7 @@ class PengeluaranKasController extends Controller
             'jumlah' => 'sometimes|numeric',
             'keterangan' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
+            'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
 
         if ($request->hasFile('image')) {
