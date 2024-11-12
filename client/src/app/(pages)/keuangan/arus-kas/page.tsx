@@ -10,7 +10,7 @@ import PendapatanChart from "./pendapatanchart";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
 
-const fetchUrl = 'http://localhost:8000/api/arus-kas';
+const fetchUrl = "http://localhost:8000/api/arus-kas";
 
 // Modal Component
 const Modal = ({ isOpen, onClose, onSubmit }) => {
@@ -199,11 +199,9 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            
-            <div className="flex grid flex-col items-left justify-left">
-                <div
-                    className="mt-2"
-                >
+
+            <div className="items-left justify-left flex grid flex-col">
+                <div className="mt-2">
                     <DateFilter />
                 </div>
             </div>

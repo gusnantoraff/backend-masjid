@@ -20,7 +20,7 @@ class RekeningBankSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'info_masjid_id' => 2,
+                'info_masjid_id' => 1,
                 'nama_bank' => 'Bank BRI',
                 'nomor_rekening' => '0987654321',
                 'atas_nama' => 'Masjid Al-Ikhlas',

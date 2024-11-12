@@ -18,7 +18,7 @@ class FasilitasSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'info_masjid_id' => 2,
+                'info_masjid_id' => 1,
                 'nama_fasilitas' => 'Ruang Ibadah Ber-AC',
                 'deskripsi' => 'Ruang ibadah dilengkapi dengan pendingin ruangan untuk kenyamanan jamaah.',
                 'created_at' => now(),

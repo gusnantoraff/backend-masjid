@@ -19,7 +19,7 @@ class MubalighSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'info_masjid_id' => 2,
+                'info_masjid_id' => 1,
                 'nama' => 'Ustadz Adi Hidayat',
                 'kontak' => '081234567893',
                 'alamat' => 'Jl. Diponegoro No. 7, Bandung',

@@ -19,7 +19,7 @@ class StrukurOrganisasiSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'info_masjid_id' => 2,
+                'info_masjid_id' => 1,
                 'jabatan' => 'Sekretaris',
                 'nama' => 'H. Budi',
                 'kontak' => '081234567891',
