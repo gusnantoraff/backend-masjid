@@ -90,7 +90,7 @@ export default function AccessibleTable() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       {/* Title */}
-      <p className='text-3xl font-bold text-black mb-4 px-2'>Jurnal Laporan</p>
+      <p className='text-3xl font-bold text-black mb-4 px-2 text-center'>Jurnal Laporan</p>
 
       {/* Filter Form */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -98,6 +98,7 @@ export default function AccessibleTable() {
           <TextField
             label="Tanggal Mulai"
             type="date"
+            size="small"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             InputLabelProps={{
@@ -107,6 +108,7 @@ export default function AccessibleTable() {
           <TextField
             label="Tanggal Akhir"
             type="date"
+            size="small"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             InputLabelProps={{
@@ -116,6 +118,7 @@ export default function AccessibleTable() {
           <TextField
   select
   label="Status"
+  size="small"
   value={status}
   onChange={(e) => setStatus(e.target.value)}
   style={{ minWidth: 120 }}

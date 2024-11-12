@@ -1,11 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box } from '@mui/material';
-import { BiTrash, BiEdit } from 'react-icons/bi';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Button,
+    Box,
+} from "@mui/material";
+import { BiTrash, BiEdit } from "react-icons/bi";
 import AlertConfirm from "../Alerts/AlertConfirm";
-import { AiOutlineEye } from 'react-icons/ai';
-import { AiOutlineWhatsApp } from 'react-icons/ai';
+import { AiOutlineEye } from "react-icons/ai";
+import { AiOutlineWhatsApp } from "react-icons/ai";
 
 interface Column {
     header: string;
@@ -40,7 +48,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     const handleDelete = async () => {
         if (selectedId !== null) {
             await fetch(`${fetchUrl}/${selectedId}`, {
-                method: 'DELETE',
+                method: "DELETE",
             });
             setData(data.filter((item) => item.id !== selectedId));
             setShowConfirm(false);
@@ -53,7 +61,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     };
 
     const handleEdit = (id: any) => {
-        console.log('Edit data dengan ID:', id);
+        console.log("Edit data dengan ID:", id);
 
         // tambahin logika
     };
@@ -64,12 +72,31 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     };
 
     const handleWhatsApp = (id: number) => {
-        const waLink = `https://wa.me/?text=Halo,: ${id}`;
-        window.open(waLink, '_blank'); // Membuka WhatsApp di tab baru
-      };
+        // Mencari jamaah berdasarkan ID
+        const jamaah = data.find((j) => j.id === id);
+
+        if (!jamaah || !jamaah.kontak) {
+            console.error("Jamaah atau nomor kontak tidak ditemukan");
+            return;
+        }
+
+        // Fungsi untuk mengubah angka 0 di depan nomor menjadi 62
+        const formatKontak = (kontak: any) => {
+            if (kontak.startsWith("0")) {
+                return "62" + kontak.slice(1);
+            }
+            return kontak;
+        };
+
+        // Membuat link WhatsApp
+        const waLink = `https://wa.me/${formatKontak(jamaah.kontak)}?text=Halo jamaah Al-Huda, ${jamaah.nama} Apa kabar`;
+
+        // Membuka WhatsApp di tab baru
+        window.open(waLink, "_blank");
+    };
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
-        if (typeof value === 'string' && accessor !== 'email') {
+        if (typeof value === "string" && accessor !== "email") {
             return value.charAt(0).toUpperCase() + value.slice(1);
         }
         return value;
@@ -84,7 +111,14 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
     }
 
     return (
-        <Box sx={{ width: '100%', overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: '10px' }}>
+        <Box
+            sx={{
+                width: "100%",
+                overflowX: "auto",
+                border: "1px solid #E0E0E0",
+                borderRadius: "10px",
+            }}
+        >
             {showConfirm && (
                 <AlertConfirm
                     open={showConfirm}
@@ -93,19 +127,22 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                     message="Apakah Anda yakin ingin menghapus data ini?"
                 />
             )}
-            <Table sx={{ width: '100%' }}>
+            <Table sx={{ width: "100%" }}>
                 <TableHead>
                     <TableRow>
                         {columns.map((column, idx) => (
                             <TableCell
                                 key={idx}
                                 sx={{
-                                    fontWeight: 'bold',
-                                    textAlign: 'left',
-                                    padding: '16px',
+                                    fontWeight: "bold",
+                                    textAlign: "left",
+                                    padding: "16px",
                                 }}
                             >
-                                {capitalizeFirstLetter(column.header, column.accessor)}
+                                {capitalizeFirstLetter(
+                                    column.header,
+                                    column.accessor,
+                                )}
                             </TableCell>
                         ))}
                     </TableRow>
@@ -117,78 +154,92 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl }) => {
                                 <TableCell
                                     key={column.accessor}
                                     sx={{
-                                        padding: '10px',
-                                        borderBottom: '1px solid #E0E0E0',
+                                        padding: "10px",
+                                        borderBottom: "1px solid #E0E0E0",
                                     }}
                                 >
-                                    {column.accessor ? capitalizeFirstLetter(row[column.accessor], column.accessor) : (
-                                       <Box
-                                       sx={{
-                                           display: 'flex',
-                                           gap: 0, // Menambah jarak antar tombol
-                                           flexWrap: 'wrap', // Membungkus tombol jika ukuran layar kecil
-                                       }}
-                                   >
-                                       <Button
-                                           variant="contained"
-                                           color="error"
-                                           sx={{
-                                               padding: '4px 8px',
-                                               minWidth: 'auto', // Memastikan tombol tidak terlalu lebar
-                                               fontSize: '0.7rem',
-                                           }}
-                                           startIcon={<BiTrash />}
-                                           onClick={() => promptDelete(row.id)}
-                                       >
-                                           Hapus
-                                       </Button>
-                                       <Button
-                                           variant="contained"
-                                           sx={{
-                                               backgroundColor: '#14B8A6',
-                                               color: 'white',
-                                               marginLeft: '8px',
-                                               padding: '4px 8px',
-                                               minWidth: 'auto',
-                                               fontSize: '0.7rem',
-                                           }}
-                                           startIcon={<BiEdit />}
-                                           onClick={() => handleEdit(row.id)}
-                                       >
-                                           Edit
-                                       </Button>
-                                       <Button
-                                           variant="contained"
-                                           sx={{
-                                               backgroundColor: '#2379DC',
-                                               color: 'white',
-                                               marginLeft: '8px',
-                                               padding: '4px 8px',
-                                               minWidth: 'auto',
-                                               fontSize: '0.7rem',
-                                           }}
-                                           startIcon={<AiOutlineEye />}
-                                           onClick={() => handleRead(row.id)}
-                                       >
-                                           Detail
-                                       </Button>
-                                       <Button
-                                           variant="contained"
-                                           sx={{
-                                               backgroundColor: '#25D366',
-                                               color: 'white',
-                                               marginLeft: '8px',
-                                               padding: '4px 8px',
-                                               minWidth: 'auto',
-                                               fontSize: '0.7rem',
-                                           }}
-                                           startIcon={<AiOutlineWhatsApp />}
-                                           onClick={() => handleWhatsApp(row.id)}
-                                       >
-                                           WA
-                                       </Button>
-                                   </Box>
-                                   
+                                    {column.accessor ? (
+                                        capitalizeFirstLetter(
+                                            row[column.accessor],
+                                            column.accessor,
+                                        )
+                                    ) : (
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                gap: 0, // Menambah jarak antar tombol
+                                                flexWrap: "wrap", // Membungkus tombol jika ukuran layar kecil
+                                            }}
+                                        >
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                sx={{
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto", // Memastikan tombol tidak terlalu lebar
+                                                    fontSize: "0.7rem",
+                                                }}
+                                                startIcon={<BiTrash />}
+                                                onClick={() =>
+                                                    promptDelete(row.id)
+                                                }
+                                            >
+                                                Hapus
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    backgroundColor: "#14B8A6",
+                                                    color: "white",
+                                                    marginLeft: "8px",
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto",
+                                                    fontSize: "0.7rem",
+                                                }}
+                                                startIcon={<BiEdit />}
+                                                onClick={() =>
+                                                    handleEdit(row.id)
+                                                }
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    backgroundColor: "#2379DC",
+                                                    color: "white",
+                                                    marginLeft: "8px",
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto",
+                                                    fontSize: "0.7rem",
+                                                }}
+                                                startIcon={<AiOutlineEye />}
+                                                onClick={() =>
+                                                    handleRead(row.id)
+                                                }
+                                            >
+                                                Detail
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    backgroundColor: "#25D366",
+                                                    color: "white",
+                                                    marginLeft: "8px",
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto",
+                                                    fontSize: "0.7rem",
+                                                }}
+                                                startIcon={
+                                                    <AiOutlineWhatsApp />
+                                                }
+                                                onClick={() =>
+                                                    handleWhatsApp(row.id)
+                                                }
+                                            >
+                                                WA
+                                            </Button>
+                                        </Box>
                                     )}
                                 </TableCell>
                             ))}

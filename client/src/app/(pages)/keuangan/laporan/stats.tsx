@@ -26,8 +26,8 @@ const Stats = () => {
                 key={item.title}
                 className={`cols-span-1 rounded-2xl bg-white px-2 py-2 shadow-md mt-2 ${
                     item.title === "Total Sisa Kas" ? "border border-amber-500 border-2" :
-                    item.title === "Total Pemasukan" ? "border border-red-500 border-2" :
-                    item.title === "Total Pengeluaran" ? "border border-green-500 border-2" : 
+                    item.title === "Total Pemasukan" ? "border border-green-500 border-2" :
+                    item.title === "Total Pengeluaran" ? "border border-red-500 border-2" : 
                     "border-gray-300"
                 }`}
             >

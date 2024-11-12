@@ -94,7 +94,7 @@ const filteredRows = rows.filter((row) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
     {/* Title */}
-    <p className='text-3xl font-bold text-black mb-4 px-2 mt-2'>Jurnal Penerimaan</p>
+    <p className='text-3xl font-bold text-black mb-4 px-2 mt-2 text-center'>Jurnal Penerimaan</p>
 
     {/* Filter Form */}
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -102,6 +102,7 @@ const filteredRows = rows.filter((row) => {
         <TextField
           label="Tanggal Mulai"
           type="date"
+          size="small"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           InputLabelProps={{
@@ -111,6 +112,7 @@ const filteredRows = rows.filter((row) => {
         <TextField
           label="Tanggal Akhir"
           type="date"
+          size="small"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
           InputLabelProps={{

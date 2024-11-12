@@ -2,15 +2,15 @@
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { useState } from "react";
-import Stats from "../laporan/stats";
 import StatsArus from "./stats";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
 import LaporanKeuangan from "./laporan";
 import PendapatanChart from "./pendapatanchart";
-import ChartPendapatan from "@/components/Charts/ChartPendapatan";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
+
+const fetchUrl = 'http://localhost:8000/api/arus-kas';
 
 // Modal Component
 const Modal = ({ isOpen, onClose, onSubmit }) => {
@@ -201,22 +201,12 @@ export default function Home() {
             </div>
             
             <div className="flex grid flex-col items-left justify-left">
-                {/* <h1 className="mt-5 text-center text-4xl font-bold text-black">
-                    Grafik Arus Kas
-                </h1> */}
                 <div
                     className="mt-2"
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "left",
-                        width: "100%",
-                    }}
                 >
                     <DateFilter />
                 </div>
             </div>
-            <Stats />
             <StatsArus />
             <div className="grid grid-cols-2 gap-4 text-center">
                 <div className="cols-span-1">
@@ -231,7 +221,7 @@ export default function Home() {
                     <h1 className="mt-5 text-center text-2xl font-bold text-black">
                         Pengeluaran
                     </h1>
-                    <div className="mt-5 flex h-auto rounded-xl border border-gray-300 px-4 py-4 shadow-md">
+                    <div className="mt-5 flex grid h-auto rounded-xl border border-gray-300 px-4 py-4 shadow-md">
                         <PengeluaranChart />
                     </div>
                 </div>

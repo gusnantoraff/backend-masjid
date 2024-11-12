@@ -26,8 +26,8 @@ const StatsArus = () => {
                 key={item.title}
                 className={`cols-span-1 rounded-2xl px-2 py-2 shadow-md mt-2 ${
                     item.title === "Total Sisa Kas" ? "bg-amber-500 border-2" :
-                    item.title === "Total Pemasukan" ? "bg-red-600 border-2" :
-                    item.title === "Total Pengeluaran" ? "bg-green-200 border-2" : 
+                    item.title === "Total Pemasukan" ? "bg-green-200 border-2" :
+                    item.title === "Total Pengeluaran" ? "bg-red-600 border-2" : 
                     "border-gray-300"
                 }`}
             >
@@ -40,13 +40,13 @@ const StatsArus = () => {
                         <div className={`px-2 py-2 rounded-full w-fit shadow-1 ${
                             item.growthRate > 0
                                 ? "border border-green-500 bg-green-700"
-                                : "border border-red-500 bg-red-200"
+                                : "border border-red-400 bg-red-700"
                         }`}>
                             <span
                                 className={`flex items-center gap-1.5 text-body-sm font-medium ${
                                     item.growthRate > 0
                                         ? "text-white"
-                                        : "text-red-700"
+                                        : "text-white"
                                 }`}
                             >
                                 {item.growthRate}%

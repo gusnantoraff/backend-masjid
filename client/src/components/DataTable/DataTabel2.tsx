@@ -54,6 +54,27 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
         setSelectedId(id);
         setShowConfirm(true);
     };
+
+    const handleEmail = (id: any) => {
+        // Pastikan data jamaah sudah tersedia
+        const jamaah = data.find((j) => j.id === id);  // Mengambil data dari state data yang sudah di-fetch
+        
+        if (!jamaah || !jamaah.email) {
+            console.error("Jamaah atau email tidak ditemukan");
+            return;
+        }
+        
+        // Membuat subjek dan pesan email
+        const subject = encodeURIComponent(`Halo, ${jamaah.nama_pengirim}`);
+        const body = encodeURIComponent(`Hai ${jamaah.nama_pengirim},\n\nIni adalah pesan untuk Anda.`);
+    
+        // Membuat link email (mailto)
+        const mailtoLink = `mailto:${jamaah.email}?subject=${subject}&body=${body}`;
+        
+        // Membuka aplikasi email dengan link mailto
+        window.location.href = mailtoLink;
+    };
+    
       
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
@@ -126,6 +147,25 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
                                                 startIcon={<AiOutlineEye />}  
                                             >
                                                 Detail
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    backgroundColor: "#25D366",
+                                                    color: "white",
+                                                    marginLeft: "8px",
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto",
+                                                    fontSize: "0.7rem",
+                                                }}
+                                                // startIcon={
+                                                //     <AiOutlineWhatsApp />
+                                                // }
+                                                onClick={() =>
+                                                    handleEmail(row.id)
+                                                }
+                                            >
+                                                Email
                                             </Button>
                                             </Link>
 

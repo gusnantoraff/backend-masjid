@@ -23,7 +23,7 @@ export default function Home() {
                            <MonthlyFilter/>
                     
                
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 justify-center">
                     <div className="cols-span-1 rounded-xl px-2 py-2 shadow-md w-full border border-gray-300">
                     <h2 className="w-auto text-3xl font-medium text-black p-2 flex justify-center">
                     Total Penerimaan

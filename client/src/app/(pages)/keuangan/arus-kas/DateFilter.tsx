@@ -33,7 +33,8 @@ const MonthlyFilter = () => {
                 onChange={handleMonthChange}
                 variant="outlined"
                 margin="dense"
-                style={{ width: "130px" }}
+                size="small"
+                style={{ width: "130px"}}
             >
                 {Array.from({ length: 12 }, (_, index) => (
                     <MenuItem key={index} value={index}>
@@ -50,12 +51,13 @@ const MonthlyFilter = () => {
                 onChange={handleYearChange}
                 variant="outlined"
                 margin="dense"
+                size="small"
                 style={{ width: "100px" }}
             />
             <Button
                 variant="contained"
                 color="primary"
-                style={{ height:"57px" , marginTop:"3px"}}
+                style={{ height:"42px", marginTop:"3px"}}
                 onClick={handleSearch}
             >
                 Cari
