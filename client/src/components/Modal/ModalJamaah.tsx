@@ -1,241 +1,277 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { BiX } from 'react-icons/bi';
+import React, { useState } from "react";
+import { BiX } from "react-icons/bi";
 
 interface ModalFormProps {
-  isOpen: boolean;
-  onClose: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    nama: '',
-    gender: 'pria',
-    birth: '',
-    alamat: '',
-    kontak: '',
-    email: '',
-    keterangan: 'aktif',
-  });
+    const [formData, setFormData] = useState({
+        nama: "",
+        gender: "pria",
+        birth: "",
+        alamat: "",
+        kontak: "",
+        email: "",
+        keterangan: "aktif",
+    });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: name === 'kontak' ? value.replace(/^\+62/, '') : value,
-    }));
-  };
+    const handleChange = (
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        >,
+    ) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: name === "kontak" ? value.replace(/^\+62/, "") : value,
+        }));
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8000/api/jamaah', formData);
-      console.log('Response from API:', response.data);
-      onClose();
-    } catch (error) {
-      console.error('Error posting data:', error);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:8000/api/jamaah", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const responseData = await response.json();
+            console.log("Response from API:", responseData);
+            onClose(); // Hanya menutup modal jika pengiriman data berhasil
+        } catch (error) {
+            console.error("Error posting data:", error);
+        }
+    };
+
+    if (!isOpen) {
+        return null;
     }
-  };
 
-  if (!isOpen) {
-    return null;
-  }
+    return (
+        <div className="modal-backdrop">
+            <div className="modal">
+                <div className="modal-header">
+                    <h2 className="modal-title">Tambah Data Jamaah</h2>
+                    <button
+                        className="close-button"
+                        onClick={onClose}
+                        style={{
+                            backgroundColor: "#d50000",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "5px",
+                            padding: "4px 4px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        <BiX size={20} />
+                    </button>
+                </div>
+                <div className="modal-body">
+                    <form onSubmit={handleSubmit}>
+                        <div>
+                            <label htmlFor="nama">Nama:</label>
+                            <input
+                                type="text"
+                                id="nama"
+                                name="nama"
+                                value={formData.nama}
+                                onChange={handleChange}
+                            />
+                        </div>
 
-  return (
-    <div className="modal-backdrop">
-      <div className="modal">
-        <div className="modal-header">
-          <h2 className="modal-title">Tambah Data Jamaah</h2>
-          <button
-            className="close-button"
-            onClick={onClose}
-            style={{
-              backgroundColor: '#d50000',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              padding: '4px 4px',
-              cursor: 'pointer',
-            }}
-          >
-            <BiX size={20} />
-          </button>
+                        <div>
+                            <label htmlFor="gender">Jenis Kelamin:</label>
+                            <select
+                                id="gender"
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                            >
+                                <option value="pria">Pria</option>
+                                <option value="wanita">Wanita</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label htmlFor="birth">Tanggal Lahir:</label>
+                            <input
+                                type="date"
+                                id="birth"
+                                name="birth"
+                                value={formData.birth}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="keterangan">Status:</label>
+                            <select
+                                id="keterangan"
+                                name="keterangan"
+                                value={formData.keterangan}
+                                onChange={handleChange}
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="pindah">Pindah</option>
+                                <option value="wafat">Wafat</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label htmlFor="kontak">Kontak:</label>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        padding: "8px",
+                                        background: "#f0f0f0",
+                                        border: "1px solid #ccc",
+                                        borderRadius: "4px",
+                                        marginRight: "2px",
+                                    }}
+                                >
+                                    +62
+                                </span>
+                                <input
+                                    type="text"
+                                    id="kontak"
+                                    name="kontak"
+                                    value={formData.kontak}
+                                    onChange={handleChange}
+                                    placeholder="81234567890"
+                                    style={{ flex: 1 }}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="email">Email:</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="yourname@gmail.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        {/* Form Alamat (Textarea) Mengambil Kolom Penuh */}
+                        <div style={{ gridColumn: "span 2" }}>
+                            <label htmlFor="alamat">Alamat:</label>
+                            <textarea
+                                id="alamat"
+                                name="alamat"
+                                value={formData.alamat}
+                                onChange={handleChange}
+                                rows={2}
+                                minLength={10}
+                                required
+                            />
+                            {formData.alamat.length < 10 && (
+                                <p style={{ color: "red" }}>
+                                    Alamat harus memiliki minimal 10 karakter.
+                                </p>
+                            )}
+                        </div>
+
+                        <button type="submit" className="submit-button">
+                            Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <style jsx>{`
+                .modal-backdrop {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                }
+                .modal {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    max-width: 700px;
+                    width: 100%;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                }
+                .modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+                .modal-title {
+                    color: black;
+                    font-weight: 600;
+                }
+                .close-button {
+                    background-color: transparent;
+                    border: none;
+                    color: #ca0a37;
+                    cursor: pointer;
+                }
+                .modal-body {
+                    display: flex;
+                    flex-direction: column;
+                }
+                form {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                }
+                form div {
+                    margin-bottom: 10px;
+                }
+                label {
+                    margin-right: 10px;
+                }
+                input,
+                select,
+                textarea {
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    width: 100%;
+                }
+
+                .submit-button {
+                    grid-column: span 2;
+                    padding: 6px 16px;
+                    background-color: #d50000;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                }
+                .submit-button:hover {
+                    background-color: #14b8a6;
+                }
+            `}</style>
         </div>
-        <div className="modal-body">
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="nama">Nama:</label>
-              <input
-                type="text"
-                id="nama"
-                name="nama"
-                value={formData.nama}
-                onChange={handleChange}
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="gender">Jenis Kelamin:</label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-              >
-                <option value="pria">Pria</option>
-                <option value="wanita">Wanita</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="birth">Tanggal Lahir:</label>
-              <input
-                type="date"
-                id="birth"
-                name="birth"
-                value={formData.birth}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="keterangan">Status:</label>
-              <select
-                id="keterangan"
-                name="keterangan"
-                value={formData.keterangan}
-                onChange={handleChange}
-              >
-                <option value="aktif">Aktif</option>
-                <option value="pindah">Pindah</option>
-                <option value="wafat">Wafat</option>
-              </select>
-            </div>
-            
-            <div>
-              <label htmlFor="kontak">Kontak:</label>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', marginRight: '2px' }}>+62</span>
-                <input
-                  type="text"
-                  id="kontak"
-                  name="kontak"
-                  value={formData.kontak}
-                  onChange={handleChange}
-                  placeholder="81234567890"
-                  style={{ flex: 1 }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email">Email:</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="yourname@gmail.com"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Form Alamat (Textarea) Mengambil Kolom Penuh */}
-            <div style={{ gridColumn: 'span 2' }}>
-              <label htmlFor="alamat">Alamat:</label>
-              <textarea
-                id="alamat"
-                name="alamat"
-                value={formData.alamat}
-                onChange={handleChange}
-                rows={2}
-                minLength={10}
-                required
-              />
-              {formData.alamat.length < 10 && (
-                <p style={{ color: "red" }}>Alamat harus memiliki minimal 10 karakter.</p>
-              )}
-            </div>
-            
-            <button type="submit" className="submit-button">Submit</button>
-          </form>
-        </div>
-      </div>
-
-      <style jsx>{`
-        .modal-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-        }
-        .modal {
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          max-width: 700px;
-          width: 100%;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-        .modal-title {
-          color: black;
-          font-weight: 600;
-        }
-        .close-button {
-          background-color: transparent;
-          border: none;
-          color: #CA0A37;
-          cursor: pointer;
-        }
-        .modal-body {
-          display: flex;
-          flex-direction: column;
-        }
-        form {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 15px;
-        }
-        form div {
-          margin-bottom: 10px;
-        }
-        label {
-          margin-right: 10px;
-        }
-        input, select, textarea {
-          padding: 8px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          width: 100%;
-        }
-        
-        .submit-button {
-          grid-column: span 2;
-          padding: 6px 16px;
-          background-color: #d50000;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-        .submit-button:hover {
-          background-color: #14B8A6;
-        }
-      `}</style>
-    </div>
-  );
+    );
 };
 
 export default ModalForm;

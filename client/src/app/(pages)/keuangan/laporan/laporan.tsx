@@ -12,69 +12,69 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Button from '@mui/material/Button';
 import TablePagination from '@mui/material/TablePagination';
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import "@/css/satoshi.css";
-import { BiSolidFileExport } from 'react-icons/bi';
 import { AiOutlineExport } from 'react-icons/ai';
+import { ListItemIcon, ListItemText } from '@mui/material';
+import GridOnIcon from '@mui/icons-material/GridOn';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 // Dummy data function
-function createData(name: string, date: string, amount: number, description: string, file: string, oleh: string) {
+function createData(name, date, amount, description, file, oleh) {
   return { name, date, amount, description, file, oleh };
 }
 
-// Dummy data
-const rows = [
+// Define dummy data outside the component to ensure stability
+const initialRows = [
   createData('Gaji', '2023-10-12', 5000000, 'Pemasukan bulanan', 'img.jpg', 'Hamba Allah'),
   createData('Bayar Listrik', '2023-10-12', -200000, 'Pengeluaran bulanan', 'img.jpg', 'Hamba Allah'),
   createData('Donasi Masjid', '2023-10-12', 1000000, 'Pemasukan', 'img.jpg', 'Hamba Allah'),
-  // Tambahkan lebih banyak data jika perlu
+  // Add more data as needed
 ];
 
 export default function AccessibleTable() {
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
   const [status, setStatus] = React.useState('');
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  // Pagination states
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const rowsPerPage = 10; // Fixed rows per page
 
-  // Filtered rows based on date and status
-  const filteredRows = rows.filter((row) => {
-    const rowDate = new Date(row.date);
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
+  // Memoized filtered rows based on date and status
+  const filteredRows = React.useMemo(() => {
+    return initialRows.filter((row) => {
+      const rowDate = new Date(row.date);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
 
-    const isDateInRange = (!start || rowDate >= start) && (!end || rowDate <= end);
-    
-    const isStatusMatch =
-      (status === 'pemasukan' && row.amount > 0) ||
-      (status === 'pengeluaran' && row.amount < 0) ||
-      !status;
+      const isDateInRange = (!start || rowDate >= start) && (!end || rowDate <= end);
+      const isStatusMatch =
+        (status === 'pemasukan' && row.amount > 0) ||
+        (status === 'pengeluaran' && row.amount < 0) ||
+        !status;
 
-    return isDateInRange && isStatusMatch;
-  });
+      return isDateInRange && isStatusMatch;
+    });
+  }, [startDate, endDate, status]);
 
-  // Handle page change
-  const handleChangePage = (event: unknown, newPage: number) => {
+  // Reset page when filters change
+  React.useEffect(() => {
+    setPage(0);
+  }, [startDate, endDate, status]);
+
+  // Slice data for the current page
+  const paginatedRows = React.useMemo(
+    () => filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [page, rowsPerPage, filteredRows]
+  );
+
+  const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  // Handle rows per page change
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset ke halaman pertama saat jumlah baris per halaman diubah
-  };
-
-  // Calculate displayed rows for the current page
-  const displayedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
   // Handle Menu Open/Close
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -82,9 +82,9 @@ export default function AccessibleTable() {
     setAnchorEl(null);
   };
 
-  const handleExport = (format: string) => {
+  const handleExport = (format) => {
     handleClose();
-    console.log(`Exporting to ${format}`); // Implement the export functionality here
+    console.log(`Exporting to ${format}`);
   };
 
   return (
@@ -101,9 +101,7 @@ export default function AccessibleTable() {
             size="small"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             label="Tanggal Akhir"
@@ -111,30 +109,28 @@ export default function AccessibleTable() {
             size="small"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
-  select
-  label="Status"
-  size="small"
-  value={status}
-  onChange={(e) => setStatus(e.target.value)}
-  style={{ minWidth: 120 }}
->
-  <MenuItem value="">
-    <span>Semua</span>
-  </MenuItem>
-  <MenuItem value="pemasukan">
-    <ArrowDownwardIcon style={{ marginRight: '8px', color: 'green' }} />
-    <span>Pemasukan</span>
-  </MenuItem>
-  <MenuItem value="pengeluaran">
-    <ArrowUpwardIcon style={{ marginRight: '8px', color: 'red' }} />
-    <span>Pengeluaran</span>
-  </MenuItem>
-</TextField>
+            select
+            label="Status"
+            size="small"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            style={{ minWidth: 120 }}
+          >
+            <MenuItem value="">
+              <span>Semua</span>
+            </MenuItem>
+            <MenuItem value="pemasukan">
+              <ArrowDownwardIcon style={{ marginRight: '8px', color: 'green' }} />
+              <span>Pemasukan</span>
+            </MenuItem>
+            <MenuItem value="pengeluaran">
+              <ArrowUpwardIcon style={{ marginRight: '8px', color: 'red' }} />
+              <span>Pengeluaran</span>
+            </MenuItem>
+          </TextField>
           <Button
             variant="contained"
             onClick={() => {
@@ -145,17 +141,35 @@ export default function AccessibleTable() {
           >
             Reset Filter
           </Button>
-          <IconButton onClick={handleClick}>
-          <AiOutlineExport />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={() => handleExport('CSV')}>Export to CSV</MenuItem>
-          <MenuItem onClick={() => handleExport('PDF')}>Export to PDF</MenuItem>
-        </Menu>
+          <Button
+            onClick={handleClick}
+            aria-controls="export-menu"
+            aria-haspopup="true"
+            variant="outlined"
+            startIcon={<AiOutlineExport />}
+            style={{ color: 'blue', borderColor: 'blue' }}
+          >
+            Export
+          </Button>
+          <Menu
+            id="export-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={() => handleExport('CSV')}>
+              <ListItemIcon>
+                <GridOnIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Export to CSV" />
+            </MenuItem>
+            <MenuItem onClick={() => handleExport('PDF')}>
+              <ListItemIcon>
+                <PictureAsPdfIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Export to PDF" />
+            </MenuItem>
+          </Menu>
         </div>
       </div>
 
@@ -174,11 +188,8 @@ export default function AccessibleTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayedRows.map((row, index) => (
-              <TableRow key={row.name} 
-                sx={{
-                  backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
-                }}>
+            {paginatedRows.map((row, index) => (
+              <TableRow key={row.name} sx={{ backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff' }}>
                 <TableCell component="th" scope="row">{row.name}</TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell style={{ color: row.amount < 0 ? 'red' : 'green' }}>
@@ -208,13 +219,11 @@ export default function AccessibleTable() {
 
       {/* Pagination */}
       <TablePagination
-        rowsPerPageOptions={[10, 25]}
         component="div"
         count={filteredRows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </div>
   );

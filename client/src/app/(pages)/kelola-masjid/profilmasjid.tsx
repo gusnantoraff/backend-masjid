@@ -92,46 +92,8 @@ const ProfilMasjid = () => {
             disabled={!isEditing}
             className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
-          <div className="grid grid-cols-2 gap-2">
-            <div className="cols-span-1">
-              <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-                Luas Tanah
-              </label>
-              <input
-                type="text"
-                name="luasTanah"
-                value={formData.luasTanah}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-              />
-            </div>
-            <div className="cols-span-1">
-              <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-                Luas Bangunan
-              </label>
-              <input
-                type="text"
-                name="luasBangunan"
-                value={formData.luasBangunan}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-              />
-            </div>
-          </div>
 
-          <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-            Tahun Berdiri
-          </label>
-          <input
-            type="text"
-            name="tahunBerdiri"
-            value={formData.tahunBerdiri}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
+
           <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
             Deskripsi Masjid
           </label>

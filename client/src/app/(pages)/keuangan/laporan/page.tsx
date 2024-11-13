@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React from "react";
-import Stats from "./stats";
+import Stats from "../arus-kas/stats";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
 import StatsLine from "@/components/DataStats/stats1";

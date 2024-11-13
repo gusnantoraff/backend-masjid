@@ -1,6 +1,6 @@
 import ButtonDefault from '@/components/Buttons/ButtonDefault'
 import React from 'react'
-import Stats from '../keuangan/laporan/stats'
+import Stats from '../keuangan/arus-kas/stats'
 
 const KeuanganMasjid = () => {
   return (

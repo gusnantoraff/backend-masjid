@@ -190,7 +190,7 @@ export default function Home() {
                 <div className="cols-span-1 gap-4">
                     <div className="flex justify-end">
                         <ButtonDefault
-                            customClasses="mt-2 bg-cyan-400 text-white px-4 py-2 rounded-xl flex items-center"
+                            customClasses="mt-2 bg-blue-600 text-white px-4 py-2 rounded-xl flex items-center"
                             label="Tambah Arus Kas"
                             onClick={() => setShowModal(true)} // Open modal for income
                         >

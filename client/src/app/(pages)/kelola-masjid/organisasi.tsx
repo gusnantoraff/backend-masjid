@@ -1,186 +1,393 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
 
 const StrukturOrganisasiMasjid = () => {
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [struktur, setStruktur] = useState([
-    { jabatan: 'Ketua', nama: 'Cristiano Ronaldo', kontak: '0978797843729438' },
-  ]);
+    const [struktur, setStruktur] = useState([]);
+    const [newStruktur, setNewStruktur] = useState([]);
+    const [newJabatan, setNewJabatan] = useState("");
+    const [newNama, setNewNama] = useState("");
+    const [newKontak, setNewKontak] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deleteItemId, setDeleteItemId] = useState(null);
 
-  const [newStruktur, setNewStruktur] = useState([...struktur]);
-  const [newJabatan, setNewJabatan] = useState('');
-  const [newNama, setNewNama] = useState('');
-  const [newKontak, setNewKontak] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    useEffect(() => {
+        fetchStrukturOrganisasi();
+    }, []);
 
-  const toggleEditMode = () => {
-    if (isEditMode) {
-      setNewStruktur([...struktur]);
-    }
-    setIsEditMode(!isEditMode);
-  };
+    const fetchStrukturOrganisasi = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8000/api/struktur-organisasi",
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch data");
+            }
+            const data = await response.json();
+            setStruktur(data);
+            setNewStruktur(data);
+        } catch (error) {
+            console.error("Error fetching struktur organisasi:", error);
+        }
+    };
 
-  const handleInputChange = (index, field, value) => {
-    const updatedStruktur = newStruktur.map((item, i) =>
-      i === index ? { ...item, [field]: value } : item
-    );
-    setNewStruktur(updatedStruktur);
-  };
+    const addStruktur = async () => {
+        if (!newJabatan || !newNama) {
+            setErrorMessage("Jabatan and Nama are required fields.");
+            return;
+        }
 
-  const addStruktur = () => {
-    if (newJabatan && newNama && newKontak) {
-      const newEntry = { jabatan: newJabatan, nama: newNama, kontak: newKontak };
-      setNewStruktur([...newStruktur, newEntry]);
-      setNewJabatan('');
-      setNewNama('');
-      setNewKontak('');
-      setIsModalOpen(false);
-    }
-  };
+        const newEntry = {
+            info_masjid_id: 1,
+            jabatan: newJabatan,
+            nama: newNama,
+            kontak: newKontak,
+        };
 
-  const saveChanges = () => {
-    setStruktur(newStruktur);
-    setIsEditMode(false);
-  };
+        try {
+            const response = await fetch(
+                "http://localhost:8000/api/struktur-organisasi",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newEntry),
+                },
+            );
 
-  const deleteStruktur = (index) => {
-    const updatedStruktur = newStruktur.filter((_, i) => i !== index);
-    setNewStruktur(updatedStruktur);
-  };
+            if (!response.ok) {
+                const errorData = await response.json();
+                setErrorMessage(
+                    `Failed to add data: ${errorData.message || "Unknown error"}`,
+                );
+                console.error("Error adding data:", errorData);
+                return;
+            }
 
-  return (
-    <div className="border rounded-lg border-grey-500 mt-4 mb-4 p-4 shadow-1">
-      <div className="flex justify-between mb-4">
-        <h1 className="text-heading-6 font-bold text-dark dark:text-white">Struktur Organisasi Masjid</h1>
-        {!isEditMode ? (
-          <button
-            className="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center"
-            onClick={toggleEditMode}
-          >
-            Edit
-          </button>
-        ) : (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg"
-            >
-              Tambah Struktur
-            </button>
-            <button
-              onClick={saveChanges}
-              className="bg-yellow-500 text-white px-4 py-2 rounded-lg"
-            >
-              Simpan
-            </button>
-          </div>
-        )}
-      </div>
+            const data = await response.json();
+            const { id, ...strukturData } = data.strukturOrganisasi;
+            setStruktur([...struktur, { id: id, ...strukturData }]);
+            setNewStruktur([...newStruktur, { id: id, ...strukturData }]);
+            setNewJabatan("");
+            setNewNama("");
+            setNewKontak("");
+            setIsModalOpen(false);
+            setErrorMessage("");
+            setSuccessMessage("Data berhasil ditambahkan.");
+        } catch (error) {
+            console.error("Error adding struktur organisasi:", error);
+            setErrorMessage("Error adding data. Please try again.");
+        }
+    };
 
-      <div className="grid grid-cols-3 gap-4">
-        {newStruktur.map((item, index) => (
-          <React.Fragment key={index}>
-            <div className="col-span-1">
-              <label className="mb-2 block text-sm font-medium text-dark dark:text-white">
-                Jabatan
-              </label>
-              <input
-                type="text"
-                value={item.jabatan}
-                onChange={(e) => isEditMode && handleInputChange(index, 'jabatan', e.target.value)}
-                disabled = {!isEditMode}
-                className={`mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary ${
-                    isEditMode ? 'focus:border-primary active:border-primary' : 'disabled:cursor-default disabled:bg-gray-2'
-                  } dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary`}
-              />
-            </div>
-            <div className="col-span-1">
-              <label className="mb-2 block text-sm font-medium text-dark dark:text-white">
-                Nama
-              </label>
-              <input
-                type="text"
-                value={item.nama}
-                onChange={(e) => isEditMode && handleInputChange(index, 'nama', e.target.value)}
-                disabled={!isEditMode}
-                className={`mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary ${
-                    isEditMode ? 'focus:border-primary active:border-primary' : 'disabled:cursor-default disabled:bg-gray-2'
-                  } dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary`}
-              />
-            </div>
-            <div className="col-span-1">
-              <label className="mb-2 block text-sm font-medium text-dark dark:text-white">
-                Kontak
-              </label>
-              <input
-                type="text"
-                value={item.kontak}
-                onChange={(e) => isEditMode && handleInputChange(index, 'kontak', e.target.value)}
-                disabled={!isEditMode}
-                className={`mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary ${
-                    isEditMode ? 'focus:border-primary active:border-primary' : 'disabled:cursor-default disabled:bg-gray-2'
-                  } dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary`}
-              />
-            </div>
-            {isEditMode && (
-              <div className="col-span-3 flex justify-start">
+    const updateStruktur = async (id) => {
+        const updatedEntry = newStruktur.find((item) => item.id === id);
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/struktur-organisasi/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedEntry),
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update data");
+            }
+
+            const updatedData = await response.json();
+            setStruktur(
+                struktur.map((item) =>
+                    item.id === id ? updatedData.strukturOrganisasi : item,
+                ),
+            );
+            setIsEditing(null);
+            setSuccessMessage("Data berhasil diperbarui.");
+        } catch (error) {
+            console.error("Error updating struktur organisasi:", error);
+            setErrorMessage("Error updating data. Please try again.");
+        }
+    };
+    const handleEditChange = (id, field, value) => {
+        setNewStruktur((prevStruktur) =>
+            prevStruktur.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item,
+            ),
+        );
+    };
+
+    const deleteStruktur = async (id) => {
+        setDeleteItemId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/struktur-organisasi/${deleteItemId}`,
+                {
+                    method: "DELETE",
+                },
+            );
+            if (!response.ok) {
+                throw new Error("Failed to delete data");
+            }
+            const updatedStruktur = newStruktur.filter(
+                (item) => item.id !== deleteItemId,
+            );
+            setNewStruktur(updatedStruktur);
+            setStruktur(updatedStruktur);
+            setSuccessMessage("Data berhasil dihapus.");
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error("Error deleting struktur organisasi:", error);
+        }
+    };
+
+    const cancelDelete = () => {
+        setIsDeleteModalOpen(false);
+    };
+
+    const closeAlert = () => {
+        setErrorMessage("");
+        setSuccessMessage("");
+    };
+
+    return (
+        <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-1">
+            <div className="mb-4 flex justify-between">
+                <h1 className="text-heading-6 font-bold text-dark dark:text-white">
+                    Struktur Organisasi Masjid
+                </h1>
                 <button
-                  onClick={() => deleteStruktur(index)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    onClick={() => setIsModalOpen(true)}
+                    className="rounded-lg bg-blue-500 px-4 py-2 text-white"
                 >
-                  Hapus
+                    Tambah
                 </button>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white dark:bg-dark-2 p-6 rounded-lg shadow-lg w-1/3">
-            <h2 className="text-xl font-bold mb-4">Tambah Struktur</h2>
-            <input
-              type="text"
-              placeholder="Jabatan"
-              value={newJabatan}
-              onChange={(e) => setNewJabatan(e.target.value)}
-              className="w-full mb-4 rounded-md border p-2"
-            />
-            <input
-              type="text"
-              placeholder="Nama"
-              value={newNama}
-              onChange={(e) => setNewNama(e.target.value)}
-              className="w-full mb-4 rounded-md border p-2"
-            />
-            <input
-              type="text"
-              placeholder="Kontak"
-              value={newKontak}
-              onChange={(e) => setNewKontak(e.target.value)}
-              className="w-full mb-4 rounded-md border p-2"
-            />
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg"
-              >
-                Batal
-              </button>
-              <button
-                onClick={addStruktur}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Tambah
-              </button>
             </div>
-          </div>
+
+            {errorMessage && (
+                <div className="mb-4 flex items-center justify-between rounded-lg bg-red-500 p-4 text-white">
+                    {errorMessage}
+                    <button
+                        onClick={closeAlert}
+                        className="text-white hover:text-gray-300"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
+            {successMessage && (
+                <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
+                    {successMessage}
+                    <button
+                        onClick={closeAlert}
+                        className="text-white hover:text-gray-300"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
+
+            <table className="border-grey-200 min-w-full border bg-white dark:bg-dark-2 dark:text-white">
+                <thead>
+                    <tr>
+                        <th className="border-b px-4 py-2">No</th>
+                        <th className="border-b px-4 py-2">Jabatan</th>
+                        <th className="border-b px-4 py-2">Nama</th>
+                        <th className="border-b px-4 py-2">Kontak</th>
+                        <th className="border-b px-4 py-2">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {newStruktur.map((item, index) => (
+                        <tr key={item.id}>
+                            <td className="border-b px-4 py-2">{index + 1}</td>
+                            <td className="border-b px-4 py-2">
+                                {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.jabatan}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "jabatan",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.jabatan
+                                )}
+                            </td>
+                            <td className="border-b px-4 py-2">
+                                {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.nama}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "nama",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.nama
+                                )}
+                            </td>
+                            <td className="border-b px-4 py-2">
+                                {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.kontak}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "kontak",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.kontak
+                                )}
+                            </td>
+                            <td className="border-b px-4 py-2">
+                                <div className="flex space-x-2">
+                                    {isEditing === item.id ? (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    updateStruktur(item.id)
+                                                }
+                                                className="text-green-500"
+                                            >
+                                                <FaCheck />
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setIsEditing(null);
+                                                }}
+                                                className="text-gray-500"
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    setIsEditing(item.id)
+                                                }
+                                                className="text-yellow-500"
+                                            >
+                                                <FaEdit />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    deleteStruktur(item.id)
+                                                }
+                                                className="text-red-500"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+                    <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+                        <h2 className="mb-4 text-xl font-bold">
+                            Tambah Struktur
+                        </h2>
+                        <input
+                            type="text"
+                            placeholder="Jabatan"
+                            value={newJabatan}
+                            onChange={(e) => setNewJabatan(e.target.value)}
+                            className="mb-4 w-full rounded-md border p-2"
+                            required
+                        />
+                        <input
+                            type="text"
+                            placeholder="Nama"
+                            value={newNama}
+                            onChange={(e) => setNewNama(e.target.value)}
+                            className="mb-4 w-full rounded-md border p-2"
+                            required
+                        />
+                        <input
+                            type="text"
+                            placeholder="Kontak"
+                            value={newKontak}
+                            onChange={(e) => setNewKontak(e.target.value)}
+                            className="mb-4 w-full rounded-md border p-2"
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="rounded-lg bg-gray-500 px-4 py-2 text-white"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={addStruktur}
+                                className="rounded-lg bg-blue-500 px-4 py-2 text-white"
+                            >
+                                Tambah
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isDeleteModalOpen && ( // Tampilkan modal konfirmasi hapus
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+                    <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+                        <h2 className="mb-4 text-xl font-bold">
+                            Konfirmasi Penghapusan
+                        </h2>
+                        <p>Apakah Anda yakin ingin menghapus data ini?</p>
+                        <div className="mt-4 flex justify-end space-x-2">
+                            <button
+                                onClick={cancelDelete}
+                                className="rounded-lg bg-gray-500 px-4 py-2 text-white"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="rounded-lg bg-red-500 px-4 py-2 text-white"
+                            >
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default StrukturOrganisasiMasjid;

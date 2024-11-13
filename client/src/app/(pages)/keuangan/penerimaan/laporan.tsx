@@ -17,6 +17,10 @@ import "@/css/satoshi.css";
 import { IconButton } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { AiOutlineExport } from 'react-icons/ai';
+import {ListItemIcon, ListItemText } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import GridOnIcon from '@mui/icons-material/GridOn';
 
 // Dummy data
 function createData(
@@ -129,17 +133,35 @@ const filteredRows = rows.filter((row) => {
         >
           Reset Filter
         </Button>
-        <IconButton onClick={handleClick}>
-        <AiOutlineExport />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={() => handleExport('CSV')}>Export to CSV</MenuItem>
-          <MenuItem onClick={() => handleExport('PDF')}>Export to PDF</MenuItem>
-        </Menu>
+        <Button
+        onClick={handleClick}
+        aria-controls="export-menu"
+        aria-haspopup="true"
+        variant="outlined"
+        startIcon={<AiOutlineExport />}
+        style={{ color: 'blue', borderColor: 'blue' }}
+      >
+        Export
+      </Button>
+      <Menu
+        id="export-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleExport('CSV')}>
+          <ListItemIcon>
+            <GridOnIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Export to CSV" />
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('PDF')}>
+          <ListItemIcon>
+            <PictureAsPdfIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Export to PDF" />
+        </MenuItem>
+      </Menu>
       </div>
       </div>
 
