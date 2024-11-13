@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import KegiatanCard from './KegiatanCard';
 import axios from 'axios';
 import AlertConfirm from '../Alerts/AlertConfirm';
+import { useRouter } from 'next/navigation';
 
 interface Image {
   id: number;
@@ -30,6 +31,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
 
   const fetchKegiatan = async () => {
     try {
@@ -48,8 +50,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh }) => {
   }, [refresh]);
 
   const handleEdit = (id: number) => {
-    console.log(`Edit kegiatan with ID: ${id}`);
-    // Logika edit bisa ditambahkan di sini (misalnya membuka modal untuk pengeditan)
+    router.push(`/kegiatan/${id}`);
   };
 
   const handleDelete = (id: number) => {

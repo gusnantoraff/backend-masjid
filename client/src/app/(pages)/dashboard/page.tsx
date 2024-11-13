@@ -47,11 +47,9 @@ export default function Home() {
                             </div>
                         </div>
                         <div className="w-full">
-                        <StatsArus/>
+                            <StatsArus />
                         </div>
-                        
                     </div>
-
 
                     {/* Right section: News */}
                     <div className="col-span-1 mr-1">
