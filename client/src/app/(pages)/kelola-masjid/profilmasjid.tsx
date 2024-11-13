@@ -1,43 +1,42 @@
-"use client";
-import ButtonDefault from "@/components/Buttons/ButtonDefault";
-import React, { useState } from "react";
+'use client'
+import ButtonDefault from '@/components/Buttons/ButtonDefault'
+import React, { useState } from 'react'
 
 const ProfilMasjid = () => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        namaMasjid: "Masjid An-Nasr",
-        alamatMasjid: "Jl. Jalan",
-        luasTanah: "1km2",
-        luasBangunan: "50m2",
-        tahunBerdiri: "1944",
-        deskripsiMasjid: "Deskripsi Masjid",
-        kontak: "098782371939",
-    });
-    const [fotoMasjid, setFotoMasjid] = useState("/images/masjid.jpg");
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    namaMasjid: 'Masjid An-Nasr',
+    alamatMasjid: 'Jl. Jalan',
+    luasTanah: '1km2',
+    luasBangunan: '50m2',
+    tahunBerdiri: '1944',
+    deskripsiMasjid: 'Deskripsi Masjid',
+    kontak: '098782371939',
+  });
+  const [fotoMasjid, setFotoMasjid] = useState('/images/masjid.jpg');
 
-    // Toggle mode edit
-    const handleEditClick = () => {
-        setIsEditing(!isEditing);
-    };
+  // Toggle mode edit
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+  };
 
-    // Handle change input
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
+  // Handle change input
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-    // Handle foto change
-    const handleFotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const fileURL = URL.createObjectURL(file);
-            setFotoMasjid(fileURL);
-        }
-    };
-
+  // Handle foto change
+  const handleFotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileURL = URL.createObjectURL(file);
+      setFotoMasjid(fileURL);
+    }
+  };
 
   return (
     <div className="border rounded-lg border-grey-500 mt-4 mb-4 p-4 shadow-1">
@@ -117,12 +116,10 @@ const ProfilMasjid = () => {
             disabled={!isEditing}
             className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
-
-    
         </div>
-        </div>
-        </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default ProfilMasjid;
