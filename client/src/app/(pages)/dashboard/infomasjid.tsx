@@ -45,12 +45,11 @@ const InfoMasjid = () => {
                     ></iframe>
                 </div>
                 <div>
-                        <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing
-                        elit. Commodi impedit quidem error magnam nulla deleniti
-                        eum porro, praesentium fugit ipsa exercitationem
-                        corrupti voluptatem minus rem! Molestiae culpa cumque
-                        quos labore?
+                    <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Commodi impedit quidem error magnam nulla deleniti eum
+                    porro, praesentium fugit ipsa exercitationem corrupti
+                    voluptatem minus rem! Molestiae culpa cumque quos labore?
                 </div>
             </div>
         </div>
