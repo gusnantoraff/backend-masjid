@@ -1,6 +1,5 @@
 "use client";
-import { useEffect } from 'react';
-import AOS from 'aos';
+import { useEffect, useState } from 'react';
 
 import Navbar from '@/components/LandingPage/Navbar';
 import Banner from '@/components/LandingPage/Banner';
@@ -14,30 +13,39 @@ import JadwalSholat2 from '@/components/LandingPage/JadwalSholat2';
 import Pengumuman from '@/components/LandingPage/Pengumuman';
 
 const Home = () => {
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      easing: 'ease-in-out',
-      once: true,
-    });
+  const [navbarBg, setNavbarBg] = useState(false);
 
-    AOS.refresh();
+  useEffect(() => {
+    const handleScroll = () => {
+      const infoMasjidSection = document.getElementById("infoMasjid");
+      if (infoMasjidSection) {
+        const sectionTop = infoMasjidSection.offsetTop;
+        const scrollTop = window.scrollY;
+
+        if (scrollTop >= sectionTop - 50) {
+          setNavbarBg(true);
+        } else {
+          setNavbarBg(false);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Navbar className={`fixed top-0 left-0 w-full z-50 h-[78px] ${navbarBg ? "bg-white" : "bg-white"}`} />
       <Banner />
-      <main className="flex-grow">
-        <div className="container mx-auto">
-          <InfoMasjid data-aos="fade-up" />
-          <Keuangan data-aos="fade-right" />
-          <KegiatanTerdekat data-aos="fade-left" />
-          <h2 className="text-3xl font-semibold text-gray-800 mb-6">Jadwal Sholat</h2>
-          <JadwalSholat2 data-aos="zoom-in" />
-          <Pengumuman data-aos="fade-up" />
-          <NewsSection data-aos="fade-right" />
-          <Galeri data-aos="fade-left" />
+      <main className="flex-grow pt-16">
+        <div className="container mx-auto px-20">
+          <InfoMasjid id="infoMasjid" />
+          <Keuangan id="keuangan" />
+          <KegiatanTerdekat id="kegiatan" />
+          <Pengumuman id="pengumuman" />
+          <NewsSection id="berita" />
+          <Galeri id="galeri" />
         </div>
       </main>
       <Footer />

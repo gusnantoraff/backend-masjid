@@ -66,8 +66,10 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
         return value;
     };
 
-    const truncateContent = (content: string, limit: number = 30) => {
-        const text = content.replace(/<[^>]*>/g, '');
+    const truncateContent = (content: string, limit: number = 20) => {
+        const text = content
+        .replace(/&nbsp;/g, ' ')
+        .replace(/<\/?[^>]+(>|$)/g, "");
         return text.length > limit ? text.substring(0, limit) + '...' : text;
       };
 
@@ -122,8 +124,15 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                                     {column.accessor === '' && (
                                         <Box>
                                             <Button
-                                                variant="contained"
-                                                color="error"
+                                                variant="contained"                                      
+                                                sx={{
+                                                    backgroundColor: 'red',
+                                                    color: 'white',
+                                                    marginLeft: '8px',
+                                                    padding: '4px 8px',
+                                                    minWidth: 'auto',
+                                                    fontSize: '0.7rem',
+                                                }}
                                                 startIcon={<BiTrash />}
                                                 onClick={() => promptDelete(row.id)}
                                             >
@@ -131,7 +140,14 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                                             </Button>
                                             <Button
                                                 variant="contained"
-                                                sx={{ backgroundColor: '#14B8A6', color: 'white', marginLeft: '8px' }}
+                                                sx={{
+                                                    backgroundColor: '#14B8A6',
+                                                    color: 'white',
+                                                    marginLeft: '8px',
+                                                    padding: '4px 8px',
+                                                    minWidth: 'auto',
+                                                    fontSize: '0.7rem',
+                                                }}
                                                 startIcon={<BiEdit />}
                                                 onClick={() => handleEdit(row.id)}
                                             >
@@ -144,6 +160,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                                                     backgroundColor: '#2379DC',
                                                     color: 'white',
                                                     marginLeft: '8px',
+                                                    padding: '4px 8px',
+                                                    minWidth: 'auto',
+                                                    fontSize: '0.7rem',
                                                 }}
                                                 startIcon={<AiOutlineEye />}
                                             >

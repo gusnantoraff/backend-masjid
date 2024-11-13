@@ -1,21 +1,22 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const provinsi = searchParams.get('provinsi') || 'd.i.+yogyakarta';
-
-    const response = await axios.get(
-      `https://jadwal-sholat-api-iota.vercel.app/api/kota?provinsi=${encodeURIComponent(provinsi)}`
-    );
+    const response = await axios.get('https://api.myquran.com/v2/sholat/kota/semua');
     const data = response.data;
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      status: true,
+      request: {
+        path: '/sholat/kota/semua'
+      },
+      data: data
+    });
   } catch (error) {
-    console.error("Error fetching cities:", error);
+    console.error('Error fetching kota:', error);
     return NextResponse.json(
-      { error: "Error fetching cities" },
+      { error: 'Error fetching kota' },
       { status: 500 }
     );
   }

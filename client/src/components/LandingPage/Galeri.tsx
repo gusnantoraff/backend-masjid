@@ -8,10 +8,14 @@ import 'swiper/css/pagination';
 
 SwiperCore.use([Navigation, Pagination]);
 
-const Galeri = () => {
+interface GaleriProps {
+  id?: string;
+}
+
+const Galeri: React.FC<GaleriProps> = ({ id }) => {
   return (
-    <section className="py-10">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-6">Galeri</h2>
+    <section id={id} className="py-10">
+      <h2 className="text-3xl text-gray-700 mb-6 font-poppins">Galeri</h2>
       <Swiper navigation pagination={{ clickable: true }} className="mySwiper">
         <SwiperSlide><img src="/images/masjid.jpg" alt="Gallery Image 1" className="rounded-lg"/></SwiperSlide>
         <SwiperSlide><img src="/images/masjid.jpg" alt="Gallery Image 2" className="rounded-lg"/></SwiperSlide>

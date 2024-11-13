@@ -15,6 +15,7 @@ const config: Config = {
   theme: {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
+      poppins: ['Poppins', 'sans-serif'],
     },
     screens: {
       "2xsm": "375px",
@@ -64,7 +65,7 @@ const config: Config = {
             4: "#ACEFC8",
             5: "#C2F3D6",
             6: "#DAF8E6",
-            7: "#E9FBF0",
+            7: "#10A998",
           },
         },
         red: {

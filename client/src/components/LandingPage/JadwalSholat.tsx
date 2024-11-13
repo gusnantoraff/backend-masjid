@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 interface JadwalSholatData {
-  key: string;
   tanggal: string;
   imsak: string;
   subuh: string;
@@ -17,33 +16,71 @@ interface JadwalSholatData {
 
 const JadwalSholat = () => {
   const [jadwal, setJadwal] = useState<JadwalSholatData | null>(null);
+  const [nextPrayer, setNextPrayer] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getTodayDate = (): string => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  const convertToDate = (time: string, isNextDay = false): Date => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const date = new Date();
+    if (isNextDay) date.setDate(date.getDate() + 1);
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+  };
+
+  const calculateTimeLeft = (nextPrayerTime: Date): string => {
+    const now = new Date();
+    const diff = Math.abs(nextPrayerTime.getTime() - now.getTime());
+    const hoursLeft = Math.floor(diff / 1000 / 60 / 60);
+    const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hoursLeft} jam ${minutesLeft} menit`;
   };
 
   useEffect(() => {
-    const today = getTodayDate();
-
     const fetchJadwal = async () => {
       try {
-        const response = await axios.get('/api/cari');
-        const data = response.data;
+        const response = await axios.get('/api/jadwal-harian');
+        const data = response.data?.data?.jadwal;
+        if (data) {
+          setJadwal(data);
 
-        const todayJadwal = data.data.find((hari: JadwalSholatData) => hari.key === today);
+          const prayerTimes = [
+            { name: "Subuh", time: data.subuh },
+            { name: "Dzuhur", time: data.dzuhur },
+            { name: "Ashar", time: data.ashar },
+            { name: "Maghrib", time: data.maghrib },
+            { name: "Isya", time: data.isya },
+          ];
 
-        if (todayJadwal) {
-          setJadwal(todayJadwal);
+          const now = new Date();
+          let nextPrayerTime: Date | null = null;
+          let nextPrayerName: string | null = null;
+
+          for (let i = 0; i < prayerTimes.length; i++) {
+            const prayerTime = convertToDate(prayerTimes[i].time);
+            if (prayerTime > now) {
+              nextPrayerTime = prayerTime;
+              nextPrayerName = prayerTimes[i].name;
+              break;
+            }
+          }
+
+          if (!nextPrayerTime || !nextPrayerName) {
+            nextPrayerTime = convertToDate(prayerTimes[0].time, true);
+            nextPrayerName = prayerTimes[0].name;
+          }
+
+          if (nextPrayerTime && nextPrayerName) {
+            setNextPrayer(nextPrayerName);
+            setTimeLeft(calculateTimeLeft(nextPrayerTime));
+          }
         } else {
           throw new Error("Jadwal untuk tanggal hari ini tidak ditemukan.");
         }
-
       } catch (error: any) {
         console.error("Error fetching jadwal sholat:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -51,30 +88,50 @@ const JadwalSholat = () => {
   }, []);
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-[1100px] mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Jadwal Sholat Hari Ini</h2>
-      <h3 className="text-xl mb-4">Bantul, Yogyakarta</h3>
-      {jadwal && (
-        <table className="table-auto w-full text-center">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Subuh</th>
-              <th className="px-4 py-2">Dzuhur</th>
-              <th className="px-4 py-2">Ashar</th>
-              <th className="px-4 py-2">Maghrib</th>
-              <th className="px-4 py-2">Isya</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="bg-gray-100">
-              <td className="border px-4 py-2">{jadwal.subuh}</td>
-              <td className="border px-4 py-2">{jadwal.dzuhur}</td>
-              <td className="border px-4 py-2">{jadwal.ashar}</td>
-              <td className="border px-4 py-2">{jadwal.maghrib}</td>
-              <td className="border px-4 py-2">{jadwal.isya}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div
+      className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1100px] mx-auto"
+      style={{
+        backgroundImage: "url('/images/BG.png')",
+        backgroundSize: "cover",
+      }}
+    >
+      <div className="mt-6 text-white font-semibold">
+        <p className="text-xl">
+          Jadwal shalat berikutnya <strong className="text-2xl">Shalat {nextPrayer}</strong>
+        </p>
+        <p className="text-xl">
+          Akan dimulai dalam <strong className="text-2xl">{timeLeft}</strong> lagi
+        </p>
+      </div>
+      <hr className="my-6 border-white w-[88%] mx-auto" />
+      
+      {isLoading ? (
+        <p className="text-center text-white font-semibold text-xl font-poppins">Loading...</p>
+      ) : (
+        jadwal && (
+          <>
+            <table className="table-auto w-full text-center text-white font-semibold">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">Subuh</th>
+                  <th className="px-4 py-2">Dzuhur</th>
+                  <th className="px-4 py-2">Ashar</th>
+                  <th className="px-4 py-2">Maghrib</th>
+                  <th className="px-4 py-2">Isya</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="font-light font-poppins">
+                  <td className="px-4 py-2">{jadwal.subuh} WIB</td>
+                  <td className="px-4 py-2">{jadwal.dzuhur} WIB</td>
+                  <td className="px-4 py-2">{jadwal.ashar} WIB</td>
+                  <td className="px-4 py-2">{jadwal.maghrib} WIB</td>
+                  <td className="px-4 py-2">{jadwal.isya} WIB</td>
+                </tr>
+              </tbody>
+            </table>
+          </>
+        )
       )}
     </div>
   );
