@@ -46,7 +46,6 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
   if (loading) {
     return <div>Loading...</div>;
   }
-
   return (
     <section id={id} className="py-40 px-4">
       <h2 className="text-3xl text-gray-700 mb-6 text-center font-poppins">Kegiatan Terdekat</h2>
@@ -55,7 +54,11 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
           <div key={item.id} className="group bg-white shadow-lg rounded-lg transition-transform transform hover:scale-105 hover:shadow-2xl relative overflow-hidden">
             <div className="relative w-full h-64 mb-4">
               <Image
-                src={`http://localhost:8000/storage/${item.images[0].image}`}
+                src={
+                  item.images && item.images.length > 0
+                    ? `http://localhost:8000/storage/${item.images[0].image}`
+                    : '/images/placeholder.png'
+                }
                 alt={item.nama_kegiatan}
                 layout="fill"
                 objectFit="cover"
@@ -73,7 +76,7 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
             </div>
             <div className="absolute bottom-8 right-6 w-15 h-10 rounded-lg bg-[rgba(20,184,166,0.3)] group-hover:bg-ijo flex justify-center items-center transition-all duration-300 cursor-pointer">
               <Link href="/detail" className="transform group-hover:scale-125">
-                  <FaArrowRight size={24} className="text-white" />
+                <FaArrowRight size={24} className="text-white" />
               </Link>
             </div>
           </div>
