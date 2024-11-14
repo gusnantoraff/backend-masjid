@@ -47,7 +47,7 @@ const InfoMasjid = () => {
     }
 
     return (
-        <div className="mb-6 mt-4 h-full text-left">
+        <div className="mb-6 mt-4 h-full">
             <div className="mb-4 flex justify-center gap-4">
                 <div className="flex flex-col justify-between">
                     <div>
@@ -57,7 +57,7 @@ const InfoMasjid = () => {
             </div>
             <div className="m-2 grid grid-cols-1 gap-4">
                 {/* Kontak - Nomor Telepon */}
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                     <div>
                         <p className="text-gray-600">
                             <FiPhone className="mr-1 inline" /> {infoMasjid?.kontak}
@@ -66,7 +66,7 @@ const InfoMasjid = () => {
                 </div>
 
                 {/* Kontak - Alamat */}
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                     <div>
                         <p className="text-gray-600">
                             <FiMapPin className="mr-1 inline" /> {infoMasjid?.alamat}
@@ -75,7 +75,7 @@ const InfoMasjid = () => {
                 </div>
 
                 {/* Deskripsi */}
-                <div>
+                <div className="text-center">
                     <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1>
                     <p>{infoMasjid?.deskripsi}</p>
                 </div>

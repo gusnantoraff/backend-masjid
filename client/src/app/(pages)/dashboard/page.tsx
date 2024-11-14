@@ -20,20 +20,11 @@ export default function Home() {
         <>
             <DefaultLayout>
                 <div className="mb-4 rounded-lg border border-gray-200 shadow-md">
-                    <div className="grid h-full grid-cols-2 gap-2">
-                        <div className="col-span-1 h-full p-4">
-                            <img
-                                src="/images/masjid.jpg"
-                                alt="Deskripsi Foto"
-                                className="w-full"
-                                style={{ height: "35rem" }}
-                            />
-                        </div>
+                    
+                        
 
-                        <div className="col-span-1 p-2">
                             <InfoMasjid />
-                        </div>
-                    </div>
+                       
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-[70%_30%]">
