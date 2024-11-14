@@ -80,6 +80,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         const file = e.target.files?.[0];
         const maxFileSize = 8 * 1024 * 1024; // 8MB in bytes
         const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -103,6 +104,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
 
         setFormData((prevData) => ({
             ...prevData,
+            [name]: value,
             image: file || null,
         }));
     };
