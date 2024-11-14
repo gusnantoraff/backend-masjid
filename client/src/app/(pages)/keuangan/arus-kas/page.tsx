@@ -1,7 +1,7 @@
 "use client";
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StatsArus from "./stats";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
@@ -10,38 +10,83 @@ import PendapatanChart from "./pendapatanchart";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
 
-const fetchUrl = "http://localhost:8000/api/arus-kas";
+const penerimaanUrl = "http://localhost:8000/api/penerimaan-kas";
+const pengeluaranUrl = "http://localhost:8000/api/pengeluaran-kas";
+const coaUrl = "http://localhost:8000/api/coa";
 
 // Modal Component
 const Modal = ({ isOpen, onClose, onSubmit }) => {
-    const [jenis, setJenis] = useState("");
+    const [jenis, setJenis] = useState("infaq");
     const [tanggal, setTanggal] = useState("");
     const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
     const [file, setFile] = useState(null);
     const [oleh, setOleh] = useState("");
+    const [status, setStatus] = useState("pemasukan");
+    const [coaOptions, setCoaOptions] = useState([]);
+    const [formError, setFormError] = useState(""); // Error state for validation
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const data = {
-            jenis,
-            tanggal,
-            amount: parseFloat(amount),
-            description,
-            file,
-            oleh,
-            status,
+    // Fetch COA options for "Oleh" dropdown
+    useEffect(() => {
+        const fetchCoaData = async () => {
+            try {
+                const response = await fetch(coaUrl);
+                const data = await response.json();
+                setCoaOptions(data); // Set options for "Oleh" dropdown
+            } catch (error) {
+                console.error("Error fetching COA data:", error);
+            }
         };
-        onSubmit(data);
-        // Reset form after submission
-        setJenis("");
-        setTanggal("");
-        setAmount("");
-        setDescription("");
-        setFile(null);
-        setOleh("");
-        setStatus("pemasukan");
-        onClose();
+        fetchCoaData();
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Validation: Check if any required field is empty
+        if (!jenis || !tanggal || !amount || !description || !oleh || !status) {
+            setFormError("Please complete all required fields.");
+            return;
+        }
+
+        // Clear any previous errors if form is complete
+        setFormError("");
+
+        const data = new FormData();
+        data.append("jenis", jenis);
+        data.append("tanggal", tanggal);
+        data.append("amount", parseFloat(amount));
+        data.append("description", description);
+        data.append("file", file);
+        data.append("oleh", oleh);
+        data.append("status", status);
+
+        const targetUrl =
+            status === "pemasukan" ? penerimaanUrl : pengeluaranUrl;
+
+        try {
+            const response = await fetch(targetUrl, {
+                method: "POST",
+                body: data,
+            });
+            if (response.ok) {
+                const result = await response.json();
+                onSubmit(result);
+                onClose();
+                // Reset form after submission
+                setJenis("infaq");
+                setTanggal("");
+                setAmount("");
+                setDescription("");
+                setFile(null);
+                setOleh("");
+                setStatus("pemasukan");
+            } else {
+                console.error("Submission failed:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error submitting data:", error);
+        }
     };
 
     return (
@@ -52,29 +97,31 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                     onClick={onClose}
                 ></div>
                 <div className="z-10 w-4/5 max-w-5xl rounded-lg bg-white p-4 shadow-lg">
-                    {" "}
-                    {/* Wider modal */}
                     <h2 className="mb-4 text-xl font-bold">Tambah Arus Kas</h2>
+                    {/* Display error message if form is incomplete */}
+                    {formError && (
+                        <div className="mb-4 rounded-lg bg-red-100 p-2 text-red-700">
+                            {formError}
+                        </div>
+                    )}
                     <form
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-4"
                     >
-                        {" "}
-                        {/* Flex column for rows */}
                         <div className="flex justify-between gap-4">
-                            {" "}
-                            {/* Row 1 */}
                             <div className="w-1/3">
-                                {" "}
-                                {/* Adjusted width for horizontal layout */}
                                 <label className="mb-1 block">Jenis:</label>
-                                <input
-                                    type="text"
+                                <select
                                     value={jenis}
                                     onChange={(e) => setJenis(e.target.value)}
-                                    className="h-12 w-full rounded-lg border p-2" // Same height for all fields
+                                    className="h-12 w-full rounded-lg border p-2"
                                     required
-                                />
+                                >
+                                    <option value="infaq">Infaq</option>
+                                    <option value="donasi">Donasi</option>
+                                    <option value="donasi">Operasional</option>
+                                    <option value="donasi">Listrik</option>
+                                </select>
                             </div>
                             <div className="w-1/3">
                                 <label className="mb-1 block">Tanggal:</label>
@@ -98,8 +145,6 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                             </div>
                         </div>
                         <div className="flex justify-between gap-4">
-                            {" "}
-                            {/* Row 2 */}
                             <div className="w-1/3">
                                 <label className="mb-1 block">Deskripsi:</label>
                                 <input
@@ -122,18 +167,22 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                             </div>
                             <div className="w-1/3">
                                 <label className="mb-1 block">Oleh:</label>
-                                <input
-                                    type="text"
+                                <select
                                     value={oleh}
                                     onChange={(e) => setOleh(e.target.value)}
                                     className="h-12 w-full rounded-lg border p-2"
                                     required
-                                />
+                                >
+                                    <option value="">Select an option</option>
+                                    {coaOptions.map((coa) => (
+                                        <option key={coa.id} value={coa.id}>
+                                            {coa.nama_akun}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <div className="flex justify-between gap-4">
-                            {" "}
-                            {/* Row 3 */}
                             <div className="w-1/3">
                                 <label className="mb-1 block">Status:</label>
                                 <select
@@ -160,7 +209,7 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                         <button
                             type="submit"
                             className="rounded-lg bg-blue-500 px-4 py-2 text-white"
-                            onClick={handleSubmit} // Ensure this is the correct submit function
+                            onClick={handleSubmit}
                         >
                             Simpan
                         </button>
@@ -172,11 +221,10 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 export default function Home() {
-    const [showModal, setShowModal] = useState(false); // State to control modal visibility
+    const [showModal, setShowModal] = useState(false);
 
     const handleSubmit = (data) => {
         console.log("Submitted Data:", data);
-        // Handle the submitted data (e.g., save it to state or send it to the server)
     };
 
     return (
@@ -192,7 +240,7 @@ export default function Home() {
                         <ButtonDefault
                             customClasses="mt-2 bg-blue-600 text-white px-4 py-2 rounded-xl flex items-center"
                             label="Tambah Arus Kas"
-                            onClick={() => setShowModal(true)} // Open modal for income
+                            onClick={() => setShowModal(true)}
                         >
                             <IoMdAdd className="text-white" />
                         </ButtonDefault>
@@ -228,7 +276,6 @@ export default function Home() {
                 <LaporanKeuangan />
             </div>
 
-            {/* Modal for Input */}
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
