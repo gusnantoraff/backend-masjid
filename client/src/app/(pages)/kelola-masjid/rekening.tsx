@@ -1,81 +1,267 @@
-'use client'
-import ButtonDefault from '@/components/Buttons/ButtonDefault'
-import React, { useState } from 'react'
+"use client";
+import React, { useState, useEffect } from 'react';
+import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 
 const RekeningMasjid = () => {
-  // State untuk mengecek apakah sedang dalam mode edit
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    namaRekening: 'A.n. Bapak',
-    nomorRekening: '0978797843729438',
-    namaBank: 'Bank Toyib'
-  });
+    const [rekeningData, setRekeningData] = useState([]);
+    const [newNamaBank, setNewNamaBank] = useState('');
+    const [newNomorRekening, setNewNomorRekening] = useState('');
+    const [newAtasNama, setNewAtasNama] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editIndex, setEditIndex] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+  
+    useEffect(() => {
+      fetchRekeningMasjid();
+    }, []);
+  
+    const fetchRekeningMasjid = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/rekening-bank');
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        setRekeningData(data);
+      } catch (error) {
+        console.error('Error fetching rekening masjid:', error);
+        setErrorMessage('Terjadi kesalahan dalam mengambil data.');
+        setShowAlert(true);
+      }
+    };
 
-  // Fungsi untuk toggle mode edit
-  const handleEditClick = () => {
-    setIsEditing(!isEditing);
+  const addRekening = async () => {
+    if (!newNamaBank || !newNomorRekening || !newAtasNama) {
+      setErrorMessage('Nama Bank, Nomor Rekening, dan Atas Nama wajib diisi.');
+      setShowAlert(true);
+      return;
+    }
+
+    const newRekening = {
+      namaBank: newNamaBank,
+      nomorRekening: newNomorRekening,
+      atasNama: newAtasNama,
+      info_masjid_id: 1, // Assuming Masjid ID is fixed as 1
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/api/rekening-bank', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newRekening),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add data');
+      }
+
+      const data = await response.json();
+      setRekeningData([...rekeningData, data.rekeningBank]);
+      setNewNamaBank('');
+      setNewNomorRekening('');
+      setNewAtasNama('');
+      setIsModalOpen(false);
+      setShowAlert(false);
+      setSuccessMessage('Data berhasil ditambahkan.');
+    } catch (error) {
+      console.error('Error adding rekening:', error);
+      setErrorMessage('Terjadi kesalahan saat menambahkan data.');
+      setShowAlert(true);
+    }
   };
 
-  // Fungsi untuk menangani perubahan input
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  const updateRekening = async () => {
+    const updatedRekening = { ...rekeningData[editIndex], namaBank: newNamaBank, nomorRekening: newNomorRekening, atasNama: newAtasNama };
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/rekening-bank/${updatedRekening.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedRekening),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update data');
+      }
+
+      const data = await response.json();
+      const updatedRekeningData = [...rekeningData];
+      updatedRekeningData[editIndex] = data.rekeningBank;
+      setRekeningData(updatedRekeningData);
+      setIsEditMode(false);
+      setEditIndex(null);
+      setShowAlert(false);
+      setSuccessMessage('Data berhasil diperbarui.');
+    } catch (error) {
+      console.error('Error updating rekening:', error);
+      setErrorMessage('Terjadi kesalahan saat memperbarui data.');
+      setShowAlert(true);
+    }
+  };
+
+  const deleteRekening = async (id) => {
+    setDeleteId(id);
+    setShowAlert(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/rekening-bank/${deleteId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete data');
+      }
+
+      setRekeningData(rekeningData.filter((item) => item.id !== deleteId));
+      setShowAlert(false);
+      setSuccessMessage('Data berhasil dihapus.');
+    } catch (error) {
+      console.error('Error deleting rekening:', error);
+      setErrorMessage('Terjadi kesalahan saat menghapus data.');
+      setShowAlert(true);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowAlert(false);
+  };
+
+  const closeAlert = () => {
+    setErrorMessage('');
+    setSuccessMessage('');
+    setShowAlert(false);
+  };
+
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setNewNamaBank(rekeningData[index].namaBank);
+    setNewNomorRekening(rekeningData[index].nomorRekening);
+    setNewAtasNama(rekeningData[index].atasNama);
+    setIsEditMode(true);
   };
 
   return (
-    <div className="border rounded-lg border-grey-500 mt-4 mb-4 p-4 shadow-1">
-      <div className="flex justify-between">
+    <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-1">
+      <div className="mb-4 flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Rekening Masjid</h1>
-        <ButtonDefault
-          customClasses="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center"
-          label={isEditing ? "Simpan" : "Edit"}
-          onClick={handleEditClick}
-        />
+        <button onClick={() => setIsModalOpen(true)} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="cols-span-1 mt-2">
-          <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-            Nama Rekening
-          </label>
-          <input
-            type="text"
-            name="namaRekening"
-            value={formData.namaRekening}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
-          <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-            Nomor Rekening
-          </label>
-          <input
-            type="text"
-            name="nomorRekening"
-            value={formData.nomorRekening}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
+
+      {showAlert && (
+        <div className="mb-4 bg-red-500 text-white p-4 rounded-lg flex justify-between items-center">
+          {errorMessage}
+          <button onClick={() => { setErrorMessage(''); setShowAlert(false); }} className="text-white hover:text-gray-300">
+            <FaTimes />
+          </button>
         </div>
-        <div className="cols-span-1 mt-2">
-          <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-            Nama Bank
-          </label>
-          <input
-            type="text"
-            name="namaBank"
-            value={formData.namaBank}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className="mb-4 w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
+      )}
+
+      {successMessage && (
+        <div className="mb-4 bg-green-500 text-white p-4 rounded-lg flex justify-between items-center">
+          {successMessage}
+          <button onClick={() => { setSuccessMessage(''); setShowAlert(false); }} className="text-white hover:text-gray-300">
+            <FaTimes />
+          </button>
         </div>
-      </div>
+      )}
+
+      <table className="border-grey-200 min-w-full border bg-white dark:bg-dark-2 dark:text-white">
+        <thead>
+          <tr>
+            <th className="border-b px-4 py-2">No</th>
+            <th className="border-b px-4 py-2">Nama Bank</th>
+            <th className="border-b px-4 py-2">Nomor Rekening</th>
+            <th className="border-b px-4 py-2">Atas Nama</th>
+            <th className="border-b px-4 py-2">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rekeningData.map((item, index) => (
+            <tr key={item.id}>
+              <td className="border-b px-4 py-2">{index + 1}</td>
+              <td className="border-b px-4 py-2">{item.nama_bank}</td>
+              <td className="border-b px-4 py-2">{item.nomor_rekening}</td>
+              <td className="border-b px-4 py-2">{item.atas_nama}</td>
+              <td className="border-b px-4 py-2">
+                <div className="flex space-x-2">
+                  {isEditMode && editIndex === index ? (
+                    <>
+                      <button onClick={updateRekening} className="text-green-500"><FaCheck /></button>
+                      <button onClick={() => { setIsEditMode(false); setEditIndex(null); }} className="text-gray-500"><FaTimes /></button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => handleEditClick(index)} className="text-yellow-500"><FaEdit /></button>
+                      <button onClick={() => deleteRekening(item.id)} className="text-red-500"><FaTrash /></button>
+                    </>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+            <h2 className="mb-4 text-xl font-bold">Tambah Rekening</h2>
+            <input
+              type="text"
+              placeholder="Nama Bank"
+              value={newNamaBank}
+              onChange={(e) => setNewNamaBank(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Nomor Rekening"
+              value={newNomorRekening}
+              onChange={(e) => setNewNomorRekening(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Atas Nama"
+              value={newAtasNama}
+              onChange={(e) => setNewAtasNama(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <div className="flex justify-end space-x-2">
+              <button onClick={() => setIsModalOpen(false)} className="rounded-lg bg-gray-500 px-4 py-2 text-white">Batal</button>
+              <button onClick={addRekening} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAlert && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+            <h2 className="mb-4 text-xl font-bold">Konfirmasi Penghapusan</h2>
+            <p>Apakah Anda yakin ingin menghapus data ini?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button onClick={cancelDelete} className="rounded-lg bg-gray-500 px-4 py-2 text-white">Batal</button>
+              <button onClick={confirmDelete} className="rounded-lg bg-red-500 px-4 py-2 text-white">Hapus</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default RekeningMasjid;
