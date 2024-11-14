@@ -28,6 +28,17 @@ class ArusKas extends Model
     {
         return $this->hasMany(PengeluaranKas::class);
     }
+
+    public function updateTotals()
+    {
+        // Calculate totals and fallback to 0 if no related records
+        $this->pemasukan_total = $this->penerimaanKas()->sum('jumlah') ?: 0; // Default to 0 if null
+        $this->pengeluaran_total = $this->pengeluaranKas()->sum('jumlah') ?: 0; // Default to 0 if null
+
+        // Save the changes
+        $this->save();
+    }
+
     // public function penerimaanKas()
     // {
     //     return $this->belongsTo(PenerimaanKas::class, 'penerimaan_kas_id');

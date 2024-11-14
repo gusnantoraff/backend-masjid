@@ -13,7 +13,13 @@ class ArusKasController extends Controller
      */
     public function index(): JsonResponse
     {
+        // Fetch all ArusKas and update totals
         $arusKas = ArusKas::with(['penerimaanKas', 'pengeluaranKas'])->get();
+
+        // Update totals for each ArusKas record
+        foreach ($arusKas as $item) {
+            $item->updateTotals(); // Recalculate the totals for each ArusKas
+        }
 
         return response()->json($arusKas);
     }
@@ -30,6 +36,9 @@ class ArusKasController extends Controller
 
         $arusKas = ArusKas::create($validatedData);
 
+        // Update totals after creation
+        $arusKas->updateTotals();
+
         return response()->json(['message' => 'Arus Kas created successfully', 'arusKas' => $arusKas], 201);
     }
 
@@ -38,11 +47,15 @@ class ArusKasController extends Controller
      */
     public function show(int $id): JsonResponse
     {
+        // Fetch the specific ArusKas record along with related penerimaanKas and pengeluaranKas
         $arusKas = ArusKas::with(['penerimaanKas', 'pengeluaranKas'])->find($id);
 
         if (! $arusKas) {
             return response()->json(['message' => 'Arus Kas not found'], 404);
         }
+
+        // Update totals for the fetched ArusKas
+        $arusKas->updateTotals();
 
         return response()->json($arusKas);
     }
@@ -64,6 +77,9 @@ class ArusKasController extends Controller
         ]);
 
         $arusKas->update($validatedData);
+
+        // Update totals after updating
+        $arusKas->updateTotals();
 
         return response()->json(['message' => 'Arus Kas updated successfully', 'arusKas' => $arusKas]);
     }
