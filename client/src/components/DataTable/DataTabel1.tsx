@@ -13,10 +13,10 @@ interface Column {
 interface DataTableProps {
     columns: Column[];
     fetchUrl: string;
-    reloadData: boolean;
+    refresh: boolean; 
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -35,7 +35,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
     };
 
     fetchData();
-}, [fetchUrl, reloadData]);
+}, [fetchUrl, refresh]);
 
 
     const handleDelete = async () => {
@@ -138,6 +138,8 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                                             >
                                                 Hapus
                                             </Button>
+                                            
+                                            <Link href={`/pengaturan-akun/${row.id}`}>
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -153,6 +155,8 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                                             >
                                                 Edit
                                             </Button>
+                                            </Link>
+
                                             <Link href={`/berita/${row.id}`}>
                                             <Button
                                                 variant="contained"

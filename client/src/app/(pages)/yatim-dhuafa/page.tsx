@@ -1,16 +1,65 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DefaultLaout from "@/components/Layouts/DefaultLayout";
 import DataTable from '@/components/DataTable/DataTabel3';
 import { Button, Box, Typography, Paper,InputBase, IconButton, Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalYatim';
 import SearchIcon from '@mui/icons-material/Search';
+import { jsPDF } from "jspdf";
+import axios from 'axios';
+
+interface YatimDhuafa {
+  nama: string;
+  kontak: string;
+  birth: string;
+  alamat: string;
+  keterangan: string;
+  status: string;
+}
 
 export default function YatimDhuafa() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState("");  
+  const [yatimData, setYatimData] = useState<YatimDhuafa[]>([]);
+  const [filteredData, setFilteredData] = useState<YatimDhuafa[]>([]);
+  
+  useEffect(() => {
+    // Fetch data from the API when component mounts
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/yatim-dhuafa');
+        setYatimData(response.data); // Store data in state
+        setFilteredData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Filter the data based on status and search term
+    let filtered = yatimData;
+
+    if (status && status !== "Semua") {
+      filtered = filtered.filter((yatim) => yatim.keterangan === status);
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter((yatim) => 
+        yatim.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        yatim.birth.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        yatim.alamat.toLowerCase().includes(searchTerm.toLowerCase())||
+        yatim.kontak.toLowerCase().includes(searchTerm.toLowerCase())||
+        yatim.status.toLowerCase().includes(searchTerm.toLowerCase())
+        
+      );
+    }
+
+    setFilteredData(filtered);
+  }, [status, searchTerm, yatimData]);
 
 
   const openModal = () => {
@@ -29,9 +78,59 @@ export default function YatimDhuafa() {
     setStatus(event.target.value as string);
   };
 
+  const handleExport = () => {
+    const doc = new jsPDF("p", "cm", "a4");
+
+    const headers = ["No", "Nama", "Kontak", "Tanggal Lahir", "Alamat", "Keterangan", "Status"];
+    const tableData = yatimData.map((row, index) => [
+      index + 1,
+      row.nama,
+      row.kontak,
+      row.birth,
+      row.alamat,
+      row.alamat,
+      row.keterangan,
+      row.status
+    ]);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Data Yatim & Dhuafa", 10.5, 1, { align: 'center' });
+    
+    let yPosition = 2;
+    const cellHeight = 0.8;
+    const columnWidths = [1, 3, 2.5, 2.5, 3, 4, 4, 3];
+    
+    // Set header styles (bold text, no background)
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0); // Black text color for header
+    
+    doc.setFontSize(10);
+    headers.forEach((header, index) => {
+      const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+      doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: 'center' });
+    });
+    
+    yPosition += cellHeight;
+    doc.setFont("helvetica", "normal"); // Reset to normal font for data rows
+    
+    // Data row styles (plain text, no background)
+    tableData.forEach((row) => {
+      row.forEach((cell, index) => {
+        const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+        doc.text(String(cell), xPosition + columnWidths[index] / 2, yPosition, { align: 'center' });
+      });
+      
+      yPosition += cellHeight;
+    });
+    
+    doc.save("data yatim & dhuafa.pdf");
+    
+    
+  };
 
   const yatimColumns = [
-    { header: 'No', accessor: 'id' },
+    { header: 'No', accessor: 'nomor' },
     { header: 'Nama', accessor: 'nama' },
     { header: 'Kontak', accessor: 'kontak' },
     { header: 'Tanggal Lahir', accessor: 'birth' },
@@ -41,9 +140,6 @@ export default function YatimDhuafa() {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/yatim-dhuafa';
-
-  const Yatim = () => {
     return (
       <DefaultLaout>
     <div>
@@ -65,7 +161,7 @@ export default function YatimDhuafa() {
               component="h2" 
               sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }} 
             >
-              Data Jamaah
+              Data Yatim & Dhuafa
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button 
@@ -80,6 +176,7 @@ export default function YatimDhuafa() {
                 variant="contained" 
                 color="warning" 
                 startIcon={<AiOutlineUpload />}
+                onClick={handleExport}
               >
                 Export Data
               </Button>
@@ -139,30 +236,29 @@ export default function YatimDhuafa() {
                 }}
                 renderValue={(selected) => {
                   if (!selected) {
-                    return <span style={{ color: '#888' }}>Status</span>; // Placeholder style
+                    return <span style={{ color: '#888' }}>Keterangan</span>; // Placeholder style
                   }
                   return selected;
                 }}
               >
                 <MenuItem value="">
-                  <span>Select status</span>
+                  <span>Pilih Keterangan</span>
                 </MenuItem>
                 <MenuItem value="Semua">Semua</MenuItem>
-                <MenuItem value="Aktif">Aktif</MenuItem>
-                <MenuItem value="Pindah">Pindah</MenuItem>
+                <MenuItem value="yatim">Yatim</MenuItem>
+                <MenuItem value="piatu">Piatu</MenuItem>
+                <MenuItem value="dhuafa">Dhuafa</MenuItem>
+                <MenuItem value="yatim piatu">Yatim Piatu</MenuItem>
               </Select>
             </FormControl>
           </Box>
 
           {/* DataTable Box with gap below search bar */}
           <Box sx={{ marginTop: '20px' }}>
-            <DataTable columns={yatimColumns} fetchUrl={fetchUrl} />
+            <DataTable columns={yatimColumns} data={filteredData} fetchUrl='http://localhost:8000/api/yatim-dhuafa' />
           </Box>
         </div>
         <ModalForm isOpen={isModalOpen} onClose={closeModal}/>
       </DefaultLaout>
     );
   };
-
-  return <Yatim />;
-};
