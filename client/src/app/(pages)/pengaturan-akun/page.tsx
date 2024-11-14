@@ -8,6 +8,7 @@ import ModalForm from '@/components/Modal/ModalAkun';
 
 export default function YatimDhuafa() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -67,7 +68,11 @@ export default function YatimDhuafa() {
           </Button>
         </Box>
       </Box>
-          <DataTable columns={akunColumns} fetchUrl={fetchUrl} />
+      <DataTable 
+            columns={akunColumns} 
+            fetchUrl={fetchUrl} 
+            refresh={refresh} // Pass the refresh prop here
+          />
         </div>
         <ModalForm isOpen={isModalOpen} onClose={closeModal}/>
       </DefaultLaout>

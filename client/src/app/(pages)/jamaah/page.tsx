@@ -1,16 +1,68 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DefaultLaout from "@/components/Layouts/DefaultLayout";
 import DataTable from '@/components/DataTable/DataTabel3';
 import { Button, Box, Typography, Paper, InputBase, IconButton, Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import SearchIcon from '@mui/icons-material/Search';
 import ModalForm from '@/components/Modal/ModalJamaah';
+import { jsPDF } from "jspdf";
+import axios from 'axios';
+
+
+interface Jamaah {
+  nama: string;
+  gender: string;
+  birth: string;
+  kontak: string;
+  email: string;
+  alamat: string;
+  keterangan: string;
+}
 
 export default function Jamaah() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState("");  // State for dropdown
+  const [jamaahData, setJamaahData] = useState<Jamaah[]>([]);
+  const [filteredData, setFilteredData] = useState<Jamaah[]>([]);
+
+  useEffect(() => {
+    // Fetch data from the API when component mounts
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/jamaah');
+        setJamaahData(response.data); // Store data in state
+        setFilteredData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Filter the data based on status and search term
+    let filtered = jamaahData;
+
+    if (status && status !== "Semua") {
+      filtered = filtered.filter((jamaah) => jamaah.keterangan === status);
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter((jamaah) => 
+        jamaah.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        jamaah.gender.toLowerCase().includes(searchTerm.toLowerCase())||
+        jamaah.birth.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        jamaah.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        jamaah.kontak.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        jamaah.alamat.toLowerCase().includes(searchTerm.toLowerCase()) 
+      );
+    }
+
+    setFilteredData(filtered);
+  }, [status, searchTerm, jamaahData]);
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -23,13 +75,64 @@ export default function Jamaah() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
-
+  
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
-    setStatus(event.target.value as string);
+    setStatus(event.target.value);
+  };
+
+  const handleExport = () => {
+    const doc = new jsPDF("p", "cm", "a4");
+
+    const headers = ["No", "Nama", "Jenis Kelamin", "Tanggal Lahir", "Kontak", "Email", "Alamat", "Status"];
+    const tableData = jamaahData.map((row, index) => [
+      index + 1,
+      row.nama,
+      row.gender,
+      row.birth,
+      row.kontak,
+      row.email,
+      row.alamat,
+      row.keterangan
+    ]);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Data Jamaah", 10.5, 1, { align: 'center' });
+    
+    let yPosition = 2;
+    const cellHeight = 0.8;
+    const columnWidths = [1, 3, 2.5, 2.5, 3, 4, 4, 3];
+    
+    // Set header styles (bold text, no background)
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0); // Black text color for header
+    
+    doc.setFontSize(10);
+    headers.forEach((header, index) => {
+      const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+      doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: 'center' });
+    });
+    
+    yPosition += cellHeight;
+    doc.setFont("helvetica", "normal"); // Reset to normal font for data rows
+    
+    // Data row styles (plain text, no background)
+    tableData.forEach((row) => {
+      row.forEach((cell, index) => {
+        const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+        doc.text(String(cell), xPosition + columnWidths[index] / 2, yPosition, { align: 'center' });
+      });
+      
+      yPosition += cellHeight;
+    });
+    
+    doc.save("data jamaah.pdf");
+    
+    
   };
 
   const JamaahColumns = [
-    { header: 'No', accessor: 'id' },
+    { header: 'No', accessor: 'nomor' },
     { header: 'Nama', accessor: 'nama' },
     { header: 'Jenis Kelamin', accessor: 'gender' },
     { header: 'Tanggal Lahir', accessor: 'birth' },
@@ -40,53 +143,50 @@ export default function Jamaah() {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/jamaah';
-
-  const Jamaah = () => {
-    return (
-      <DefaultLaout>
-        <div>
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '20px', 
-              padding: '15px',
-              backgroundColor: '#EDF1F8',
-              color: 'black',
-              borderRadius: '10px',
-              width: '100%'
-            }}
+  return (
+    <DefaultLaout>
+      <div>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '20px', 
+            padding: '15px',
+            backgroundColor: '#EDF1F8',
+            color: 'black',
+            borderRadius: '10px',
+            width: '100%'
+          }}
+        >
+          <Typography 
+            variant="h6" 
+            component="h2" 
+            sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }} 
           >
-            <Typography 
-              variant="h6" 
-              component="h2" 
-              sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }} 
+            Data Jamaah
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Button 
+              variant="contained" 
+              sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }} 
+              startIcon={<AiOutlinePlus />}
+              onClick={openModal}
             >
-              Data Jamaah
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button 
-                variant="contained" 
-                sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }} 
-                startIcon={<AiOutlinePlus />}
-                onClick={openModal}
-              >
-                Tambah Data
-              </Button>
-              <Button 
-                variant="contained" 
-                color="warning" 
-                startIcon={<AiOutlineUpload />}
-              >
-                Export Data
-              </Button>
-            </Box>
+              Tambah Data
+            </Button>
+            <Button 
+              variant="contained" 
+              color="warning" 
+              startIcon={<AiOutlineUpload />}
+              onClick={handleExport}  // Attach export function here
+            >
+              Export Data
+            </Button>
           </Box>
+        </Box>
 
-          {/* Box containing search bar and status */}
-          <Box sx={{
+        <Box sx={{
             display: 'flex',
             alignItems: 'center',
             marginBottom: '20px',
@@ -144,24 +244,20 @@ export default function Jamaah() {
                 }}
               >
                 <MenuItem value="">
-                  <span>Select status</span>
+                  <span>Pilih Status</span>
                 </MenuItem>
                 <MenuItem value="Semua">Semua</MenuItem>
-                <MenuItem value="Aktif">Aktif</MenuItem>
-                <MenuItem value="Pindah">Pindah</MenuItem>
+                <MenuItem value="aktif">Aktif</MenuItem>
+                <MenuItem value="pindah">Pindah</MenuItem>
               </Select>
             </FormControl>
           </Box>
 
-          {/* DataTable Box with gap below search bar */}
-          <Box sx={{ marginTop: '20px' }}>
-            <DataTable columns={JamaahColumns} fetchUrl={fetchUrl} />
-          </Box>
-        </div>
-        <ModalForm isOpen={isModalOpen} onClose={closeModal} />
-      </DefaultLaout>
-    );
-  };
-
-  return <Jamaah />;
-};
+        <Box sx={{ marginTop: '20px' }}>
+          <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='http://localhost:8000/api/jamaah' />
+        </Box>
+      </div>
+      <ModalForm isOpen={isModalOpen} onClose={closeModal} />
+    </DefaultLaout>
+  );
+}
