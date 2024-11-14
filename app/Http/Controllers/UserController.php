@@ -3,36 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password as PasswordRule;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
     /**
      * Get all users.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $users = User::all();
+
         return response()->json($users);
     }
 
     /**
      * Show a specific user by ID.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -42,17 +38,11 @@ class UserController extends Controller
     /**
      * Update a user's data, including avatar.
      *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
+     * @param  int  $id
      */
-
 
     /**
      * Create a new user.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
@@ -90,12 +80,11 @@ class UserController extends Controller
         ], 201);
     }
 
-
     public function update(Request $request, int $id): JsonResponse
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -103,7 +92,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'firstname' => ['sometimes', 'string', 'max:255'],
             'lastname' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
+            'email' => ['sometimes', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$id],
             'password' => ['sometimes', 'confirmed', PasswordRule::defaults()],
             'phone' => ['sometimes', 'digits_between:10,13'],
             'birth' => ['sometimes', 'date'],
@@ -128,7 +117,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -157,19 +146,14 @@ class UserController extends Controller
         ]);
     }
 
-
-
     /**
      * Delete a specific user by ID.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 

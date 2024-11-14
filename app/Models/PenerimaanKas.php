@@ -13,10 +13,11 @@ class PenerimaanKas extends Model
 
     protected $fillable = [
         'coa_id',
+        'arus_kas_id',
         'jenis',
         'tanggal',
         'jumlah',
-        'keterangan',
+        'deskripsi',
         'image',
     ];
 
@@ -26,5 +27,10 @@ class PenerimaanKas extends Model
     public function coa()
     {
         return $this->belongsTo(Coa::class);
+    }
+
+    public function arus_kas()
+    {
+        return $this->belongsTo(Coa::class, 'arus_kas_id');
     }
 }

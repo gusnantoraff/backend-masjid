@@ -12,26 +12,30 @@ class ArusKas extends Model
     protected $table = 'arus_kas';
 
     protected $fillable = [
-        'penerimaan_kas_id',
-        'pengeluaran_kas_id',
-        'tanggal',
-        'pemasukan',
-        'pengeluaran',
+        // 'penerimaan_kas_id',
+        // 'pengeluaran_kas_id',
+        // 'tanggal',
+        'pemasukan_total',
+        'pengeluaran_total',
     ];
 
-    /**
-     * Relasi ke model PenerimaanKas.
-     */
     public function penerimaanKas()
     {
-        return $this->belongsTo(PenerimaanKas::class, 'penerimaan_kas_id');
+        return $this->hasMany(PenerimaanKas::class);
     }
 
-    /**
-     * Relasi ke model PengeluaranKas.
-     */
     public function pengeluaranKas()
     {
-        return $this->belongsTo(PengeluaranKas::class, 'pengeluaran_kas_id');
+        return $this->hasMany(PengeluaranKas::class);
     }
+    // public function penerimaanKas()
+    // {
+    //     return $this->belongsTo(PenerimaanKas::class, 'penerimaan_kas_id');
+    // }
+
+    // public function pengeluaranKas()
+    // {
+    //     return $this->belongsTo(PengeluaranKas::class, 'pengeluaran_kas_id');
+    // }
+
 }

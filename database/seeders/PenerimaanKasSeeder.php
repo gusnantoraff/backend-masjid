@@ -12,18 +12,20 @@ class PenerimaanKasSeeder extends Seeder
         DB::table('penerimaan_kas')->insert([
             [
                 'coa_id' => 1,
+                'arus_kas_id' => 1,
                 'tanggal' => '2024-10-10',
                 'jumlah' => 1000000.00,
-                'keterangan' => 'Sumbangan dari Hamba Allah',
+                'deskripsi' => 'Sumbangan dari Hamba Allah',
                 'jenis' => 'Sumbangan Umum', // Added 'jenis' attribute
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'coa_id' => 1,
+                'arus_kas_id' => 1,
                 'tanggal' => '2024-10-11',
                 'jumlah' => 500000.00,
-                'keterangan' => 'Sumbangan Jumat',
+                'deskripsi' => 'Sumbangan Jumat',
                 'jenis' => 'Sumbangan Khusus', // Added 'jenis' attribute
                 'created_at' => now(),
                 'updated_at' => now(),

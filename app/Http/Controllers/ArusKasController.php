@@ -3,34 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\ArusKas;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ArusKasController extends Controller
 {
     /**
      * Display a listing of the arus_kas.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
         $arusKas = ArusKas::with(['penerimaanKas', 'pengeluaranKas'])->get();
+
         return response()->json($arusKas);
     }
 
     /**
      * Store a newly created arus_kas in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'penerimaan_kas_id' => 'nullable|exists:penerimaan_kas,id',
-            'pengeluaran_kas_id' => 'nullable|exists:pengeluaran_kas,id',
-            'tanggal' => 'required|date',
             'pemasukan' => 'nullable|numeric',
             'pengeluaran' => 'nullable|numeric',
         ]);
@@ -42,15 +35,12 @@ class ArusKasController extends Controller
 
     /**
      * Display the specified arus_kas.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         $arusKas = ArusKas::with(['penerimaanKas', 'pengeluaranKas'])->find($id);
 
-        if (!$arusKas) {
+        if (! $arusKas) {
             return response()->json(['message' => 'Arus Kas not found'], 404);
         }
 
@@ -59,23 +49,16 @@ class ArusKasController extends Controller
 
     /**
      * Update the specified arus_kas in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $arusKas = ArusKas::find($id);
 
-        if (!$arusKas) {
+        if (! $arusKas) {
             return response()->json(['message' => 'Arus Kas not found'], 404);
         }
 
         $validatedData = $request->validate([
-            'penerimaan_kas_id' => 'nullable|exists:penerimaan_kas,id',
-            'pengeluaran_kas_id' => 'nullable|exists:pengeluaran_kas,id',
-            'tanggal' => 'sometimes|date',
             'pemasukan' => 'nullable|numeric',
             'pengeluaran' => 'nullable|numeric',
         ]);
@@ -87,15 +70,12 @@ class ArusKasController extends Controller
 
     /**
      * Remove the specified arus_kas from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $arusKas = ArusKas::find($id);
 
-        if (!$arusKas) {
+        if (! $arusKas) {
             return response()->json(['message' => 'Arus Kas not found'], 404);
         }
 

@@ -52,6 +52,18 @@ class UsersTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'firstname' => 'Haidar',
+                'lastname' => 'Taqi',
+                'email' => 'afamerteam@gmail.com',
+                'password' => Hash::make('@Admin123'),
+                'phone' => '081234567890',
+                'birth' => '2001-9-11',
+                'gender' => 'male',
+                'role' => 'ADMIN',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

@@ -14,7 +14,7 @@ class PenerimaanKasController extends Controller
      */
     public function index(): JsonResponse
     {
-        $penerimaanKas = PenerimaanKas::with('coa')->get();
+        $penerimaanKas = PenerimaanKas::with(['coa', 'arus_kas'])->get();
 
         return response()->json($penerimaanKas);
     }
@@ -26,9 +26,10 @@ class PenerimaanKasController extends Controller
     {
         $validatedData = $request->validate([
             'coa_id' => 'required|exists:coa,id',
+            'arus_kas_id' => 'sometimes|exists:arus_kas,id',
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
-            'keterangan' => 'nullable|string',
+            'deskripsi' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
             'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
@@ -49,7 +50,7 @@ class PenerimaanKasController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $penerimaanKas = PenerimaanKas::with('coa')->find($id);
+        $penerimaanKas = PenerimaanKas::with(['coa', 'arus_kas'])->find($id);
 
         if (! $penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
@@ -71,9 +72,10 @@ class PenerimaanKasController extends Controller
 
         $validatedData = $request->validate([
             'coa_id' => 'sometimes|exists:coa,id',
+            'arus_kas_id' => 'sometimes|exists:arus_kas,id',
             'tanggal' => 'sometimes|date',
             'jumlah' => 'sometimes|numeric',
-            'keterangan' => 'nullable|string',
+            'deskripsi' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
             'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);

@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
-import { BiTrash, BiEdit } from 'react-icons/bi';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Button,
+    Box,
+    Link,
+} from "@mui/material";
+import { BiTrash, BiEdit } from "react-icons/bi";
 import AlertConfirm from "../Alerts/AlertConfirm";
 import { AiOutlineEye } from "react-icons/ai";
 
@@ -16,32 +25,35 @@ interface DataTableProps {
     reloadData: boolean;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  }) => {
+const DataTable: React.FC<DataTableProps> = ({
+    columns,
+    fetchUrl,
+    reloadData,
+}) => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<any>(null);
 
-   useEffect(() => {
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.get(fetchUrl);
-            setData(response.data);
-            setLoading(false);
-        } catch (err) {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(fetchUrl);
+                setData(response.data);
+                setLoading(false);
+            } catch (err) {
+                setLoading(false);
+            }
+        };
 
-    fetchData();
-}, [fetchUrl, reloadData]);
-
+        fetchData();
+    }, [fetchUrl, reloadData]);
 
     const handleDelete = async () => {
         if (selectedId !== null) {
             await fetch(`${fetchUrl}/${selectedId}`, {
-                method: 'DELETE',
+                method: "DELETE",
             });
             setData(data.filter((item) => item.id !== selectedId));
             setShowConfirm(false);
@@ -54,13 +66,13 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
     };
 
     const handleEdit = (id: any) => {
-        console.log('Edit data dengan ID:', id);
+        console.log("Edit data dengan ID:", id);
 
         // tambahin logika
     };
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
-        if (typeof value === 'string' && accessor !== 'email') {
+        if (typeof value === "string" && accessor !== "email") {
             return value.charAt(0).toUpperCase() + value.slice(1);
         }
         return value;
@@ -68,17 +80,24 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
 
     const truncateContent = (content: string, limit: number = 20) => {
         const text = content
-        .replace(/&nbsp;/g, ' ')
-        .replace(/<\/?[^>]+(>|$)/g, "");
-        return text.length > limit ? text.substring(0, limit) + '...' : text;
-      };
+            .replace(/&nbsp;/g, " ")
+            .replace(/<\/?[^>]+(>|$)/g, "");
+        return text.length > limit ? text.substring(0, limit) + "..." : text;
+    };
 
     if (loading) {
         return <p>Loading data...</p>;
     }
 
     return (
-        <Box sx={{ width: '100%', overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: '10px' }}>
+        <Box
+            sx={{
+                width: "100%",
+                overflowX: "auto",
+                border: "1px solid #E0E0E0",
+                borderRadius: "10px",
+            }}
+        >
             {showConfirm && (
                 <AlertConfirm
                     open={showConfirm}
@@ -87,19 +106,22 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                     message="Apakah Anda yakin ingin menghapus data ini?"
                 />
             )}
-            <Table sx={{ width: '100%' }}>
+            <Table sx={{ width: "100%" }}>
                 <TableHead>
                     <TableRow>
                         {columns.map((column, idx) => (
                             <TableCell
                                 key={idx}
                                 sx={{
-                                    fontWeight: 'bold',
-                                    textAlign: 'left',
-                                    padding: '16px',
+                                    fontWeight: "bold",
+                                    textAlign: "left",
+                                    padding: "16px",
                                 }}
                             >
-                                {capitalizeFirstLetter(column.header, column.accessor)}
+                                {capitalizeFirstLetter(
+                                    column.header,
+                                    column.accessor,
+                                )}
                             </TableCell>
                         ))}
                     </TableRow>
@@ -111,63 +133,73 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData  })
                                 <TableCell
                                     key={column.accessor}
                                     sx={{
-                                        padding: '16px',
-                                        borderBottom: '1px solid #E0E0E0',
+                                        padding: "16px",
+                                        borderBottom: "1px solid #E0E0E0",
                                     }}
                                 >
-                                    {column.accessor === 'nomor'
+                                    {column.accessor === "nomor"
                                         ? idxData + 1
-                                        : column.accessor === 'konten' || column.accessor === 'judul'
-                                        ? truncateContent(row[column.accessor])
-                                        : capitalizeFirstLetter(row[column.accessor], column.accessor)
-                                    }
-                                    {column.accessor === '' && (
+                                        : column.accessor === "konten" ||
+                                            column.accessor === "judul"
+                                          ? truncateContent(
+                                                row[column.accessor],
+                                            )
+                                          : capitalizeFirstLetter(
+                                                row[column.accessor],
+                                                column.accessor,
+                                            )}
+                                    {column.accessor === "" && (
                                         <Box>
                                             <Button
-                                                variant="contained"                                      
+                                                variant="contained"
                                                 sx={{
-                                                    backgroundColor: 'red',
-                                                    color: 'white',
-                                                    marginLeft: '8px',
-                                                    padding: '4px 8px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.7rem',
+                                                    backgroundColor: "red",
+                                                    color: "white",
+                                                    marginLeft: "8px",
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto",
+                                                    fontSize: "0.7rem",
                                                 }}
                                                 startIcon={<BiTrash />}
-                                                onClick={() => promptDelete(row.id)}
+                                                onClick={() =>
+                                                    promptDelete(row.id)
+                                                }
                                             >
                                                 Hapus
                                             </Button>
                                             <Button
                                                 variant="contained"
                                                 sx={{
-                                                    backgroundColor: '#14B8A6',
-                                                    color: 'white',
-                                                    marginLeft: '8px',
-                                                    padding: '4px 8px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.7rem',
+                                                    backgroundColor: "#14B8A6",
+                                                    color: "white",
+                                                    marginLeft: "8px",
+                                                    padding: "4px 8px",
+                                                    minWidth: "auto",
+                                                    fontSize: "0.7rem",
                                                 }}
                                                 startIcon={<BiEdit />}
-                                                onClick={() => handleEdit(row.id)}
+                                                onClick={() =>
+                                                    handleEdit(row.id)
+                                                }
                                             >
                                                 Edit
                                             </Button>
                                             <Link href={`/berita/${row.id}`}>
-                                            <Button
-                                                variant="contained"
-                                                sx={{
-                                                    backgroundColor: '#2379DC',
-                                                    color: 'white',
-                                                    marginLeft: '8px',
-                                                    padding: '4px 8px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.7rem',
-                                                }}
-                                                startIcon={<AiOutlineEye />}
-                                            >
-                                                Detail
-                                            </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{
+                                                        backgroundColor:
+                                                            "#2379DC",
+                                                        color: "white",
+                                                        marginLeft: "8px",
+                                                        padding: "4px 8px",
+                                                        minWidth: "auto",
+                                                        fontSize: "0.7rem",
+                                                    }}
+                                                    startIcon={<AiOutlineEye />}
+                                                >
+                                                    Detail
+                                                </Button>
                                             </Link>
                                         </Box>
                                     )}
