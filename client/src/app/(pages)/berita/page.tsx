@@ -35,80 +35,68 @@ export default function Artikel() {
 
     const fetchUrl = "http://localhost:8000/api/berita";
 
-    return (
-        <DefaultLayout>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "20px",
-                    padding: "15px",
-                    backgroundColor: "#EDF1F8",
-                    color: "black",
-                    borderRadius: "10px",
-                    width: "100%",
-                }}
+  return (
+    <DefaultLayout>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+          padding: '15px',
+          backgroundColor: '#EDF1F8',
+          color: 'black',
+          borderRadius: '10px',
+          width: '100%'
+        }}
+      >
+        <Typography
+          variant="h6"
+          component="h2"
+          sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }}
+        >
+          Berita / Artikel
+        </Typography>
+        <Box>
+          {isFormVisible ? (
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: '#d50000', color: 'white', marginRight: '10px' }}
+              startIcon={<AiOutlineClose />}
+              onClick={handleCancel}
             >
-                <Typography
-                    variant="h6"
-                    component="h2"
-                    sx={{ fontWeight: "600", fontFamily: "Nunito Sans" }}
-                >
-                    Berita / Artikel
-                </Typography>
-                <Box>
-                    {isFormVisible ? (
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#d50000",
-                                color: "white",
-                                marginRight: "10px",
-                            }}
-                            startIcon={<AiOutlineClose />}
-                            onClick={handleCancel}
-                        >
-                            Batal
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#4CAF50",
-                                color: "white",
-                                marginRight: "10px",
-                            }}
-                            startIcon={<AiOutlinePlus />}
-                            onClick={handleTambahBerita}
-                        >
-                            Tambah Berita
-                        </Button>
-                    )}
-                </Box>
-            </Box>
-            <div
-                style={{
-                    ...styles.formContainer,
-                    ...(isFormVisible ? styles.formShow : styles.formHidden),
-                }}
+              Batal
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+              startIcon={<AiOutlinePlus />}
+              onClick={handleTambahBerita}
             >
-                {isFormVisible && (
-                    <div>
-                        <ArticleForm onSubmit={handleFormSubmit} />
-                    </div>
-                )}
-            </div>
-
-            <div style={{ marginTop: "20px" }}>
-                <DataTable
-                    columns={beritaColumns}
-                    fetchUrl={fetchUrl}
-                    reloadData={reloadData}
-                />
-            </div>
-        </DefaultLayout>
-    );
+              Tambah Berita
+            </Button>
+          )}
+        </Box>
+      </Box>
+      <div
+         style={{
+          ...styles.formContainer,
+          ...(isFormVisible ? styles.formShow : styles.formHidden)
+        }}
+      >
+        {isFormVisible && (
+          <div>
+            <ArticleForm onSubmit={handleFormSubmit} />
+          </div>
+        )}
+        </div>
+        
+      <div style={{ marginTop: '20px' }}>
+        <DataTable columns={beritaColumns} fetchUrl={fetchUrl} refresh={reloadData} />
+      </div>
+    </DefaultLayout>
+  );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {

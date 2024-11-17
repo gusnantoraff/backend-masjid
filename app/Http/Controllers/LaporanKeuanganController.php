@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LaporanKeuangan;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class LaporanKeuanganController extends Controller
 {
@@ -28,7 +29,7 @@ class LaporanKeuanganController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'periode' => 'required|string|max:255',
+            'periode' => 'required|date',
             'total_pemasukan' => 'required|numeric',
             'total_pengeluaran' => 'required|numeric',
         ]);
@@ -44,6 +45,7 @@ class LaporanKeuanganController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function show(int $id): JsonResponse
     {
         $laporanKeuangan = LaporanKeuangan::find($id);
@@ -71,7 +73,7 @@ class LaporanKeuanganController extends Controller
         }
 
         $validatedData = $request->validate([
-            'periode' => 'sometimes|string|max:255',
+            'periode' => 'sometimes|date',
             'total_pemasukan' => 'sometimes|numeric',
             'total_pengeluaran' => 'sometimes|numeric',
         ]);
@@ -99,4 +101,134 @@ class LaporanKeuanganController extends Controller
 
         return response()->json(['message' => 'Laporan Keuangan deleted successfully']);
     }
+
+    /**
+     * Get laporan keuangan berdasarkan periode.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPeriode(Request $request): JsonResponse
+    {
+        $request->validate([
+            'periode' => 'required|string|in:harian,mingguan,bulanan,tahunan',
+        ]);
+
+        $periode = $request->periode;
+
+        switch ($periode) {
+            case 'harian':
+                $startDate = now()->subDays(4)->toDateString();
+                $endDate = now()->toDateString();
+
+                $laporanKeuangan = LaporanKeuangan::whereBetween('periode', [
+                    $startDate,
+                    $endDate
+                ])->orderBy('periode', 'asc')
+                    ->get();
+
+                $result = [];
+                foreach ($laporanKeuangan as $laporan) {
+                    $result[$laporan->periode] = [
+                        'total_pemasukan' => $laporan->total_pemasukan,
+                        'total_pengeluaran' => $laporan->total_pengeluaran,
+                        'sisa' => $laporan->total_pemasukan - $laporan->total_pengeluaran,
+                    ];
+                }
+
+                $laporanKeuangan = $result;
+                break;
+
+            case 'mingguan':
+                $startOfMonth = now()->startOfMonth();
+                $endOfMonth = now()->endOfMonth();
+
+                $currentWeek = $startOfMonth->copy();
+                $weekCount = 1;
+
+                while ($currentWeek->lte($endOfMonth)) {
+                    $startOfWeek = $currentWeek->copy()->startOfWeek();
+                    $endOfWeek = $currentWeek->copy()->endOfWeek();
+
+                    $laporanMingguan = LaporanKeuangan::whereBetween('periode', [
+                        $startOfWeek->toDateString(),
+                        $endOfWeek->toDateString(),
+                    ])->get();
+
+                    $totalPemasukan = $laporanMingguan->sum('total_pemasukan');
+                    $totalPengeluaran = $laporanMingguan->sum('total_pengeluaran');
+                    $sisa = $totalPemasukan - $totalPengeluaran;
+
+                    $laporanKeuangan["Minggu ke-$weekCount " . $startOfMonth->format('F Y')] = [
+                        'total_pemasukan' => $totalPemasukan,
+                        'total_pengeluaran' => $totalPengeluaran,
+                        'sisa' => $sisa,
+                    ];
+
+                    $currentWeek->addWeek();
+                    $weekCount++;
+                }
+                break;
+
+                case 'bulanan':
+                    $laporanKeuangan = LaporanKeuangan::all();
+                
+                    $laporanGrouped = $laporanKeuangan->groupBy(function ($item) {
+                        return \Carbon\Carbon::parse($item->periode)->format('F Y'); 
+                    });
+                
+                    $result = [];
+                    foreach ($laporanGrouped as $periode => $laporan) {
+                        $totalPemasukan = $laporan->sum('total_pemasukan');
+                        $totalPengeluaran = $laporan->sum('total_pengeluaran');
+                        $sisa = $totalPemasukan - $totalPengeluaran;
+                
+                        $result[$periode] = [
+                            'total_pemasukan' => $totalPemasukan,
+                            'total_pengeluaran' => $totalPengeluaran,
+                            'sisa' => $sisa
+                        ];
+                    }
+                
+                    uksort($result, function ($a, $b) {
+                        $dateA = \Carbon\Carbon::createFromFormat('F Y', $a);
+                        $dateB = \Carbon\Carbon::createFromFormat('F Y', $b);
+                
+                        return $dateA->lt($dateB) ? -1 : 1;
+                    });
+                
+                    $laporanKeuangan = $result;
+                    break;
+                
+
+            case 'tahunan':
+                $laporanKeuangan = LaporanKeuangan::all();
+
+                $laporanTahunan = $laporanKeuangan->groupBy(function ($item) {
+                    return Carbon::parse($item->periode)->year;
+                });
+
+                $result = $laporanTahunan->map(function ($laporan) {
+                    $totalPemasukan = $laporan->sum('total_pemasukan');
+                    $totalPengeluaran = $laporan->sum('total_pengeluaran');
+                    $sisa = $totalPemasukan - $totalPengeluaran;
+
+                    return [
+                        'total_pemasukan' => $totalPemasukan,
+                        'total_pengeluaran' => $totalPengeluaran,
+                        'sisa' => $sisa
+                    ];
+                });
+
+                $laporanKeuangan = $result->toArray();
+                break;
+
+            default:
+                $laporanKeuangan = [];
+                break;
+        }
+
+        return response()->json($laporanKeuangan);
+    }
+
 }

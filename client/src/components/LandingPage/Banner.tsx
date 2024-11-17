@@ -1,8 +1,13 @@
 import JadwalSholat from "./JadwalSholat";
 
-const Banner = () => {
+interface BannerProps {
+  id?: string;
+}
+
+const Banner: React.FC<BannerProps> = ({ id }) => {
   return (
-    <section 
+    <section
+      id={id}
       className="relative text-center"
       style={{ height: '950px' }}
     >

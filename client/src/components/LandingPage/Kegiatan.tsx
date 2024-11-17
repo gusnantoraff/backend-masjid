@@ -32,7 +32,39 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     const fetchKegiatan = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/kegiatan');
-        setKegiatan(response.data);
+        const kegiatanData: Kegiatan[] = response.data;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const sevenDaysAhead = new Date(today);
+        sevenDaysAhead.setDate(today.getDate() + 7);
+
+        const filteredKegiatan = kegiatanData.filter((item) => {
+          const eventDate = new Date(item.tanggal);
+          eventDate.setHours(0, 0, 0, 0);
+          return eventDate >= today && eventDate <= sevenDaysAhead;
+        });
+
+        const sortedKegiatan = filteredKegiatan.sort((a, b) => {
+          const dateA = new Date(a.tanggal);
+          const dateB = new Date(b.tanggal);
+          return dateA.getTime() - dateB.getTime();
+        });
+
+        const activitiesToDisplay = sortedKegiatan.slice(0, 3);
+
+        while (activitiesToDisplay.length < 3) {
+          activitiesToDisplay.push({
+            id: -1,
+            nama_kegiatan: "Tidak ada kegiatan terdekat",
+            tanggal: "",
+            lokasi: "",
+            images: [],
+          });
+        }
+
+        setKegiatan(activitiesToDisplay);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching kegiatan:", error);
@@ -43,42 +75,66 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     fetchKegiatan();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    };
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('id-ID', options).format(date);
+  };
+
   return (
-    <section id={id} className="py-40 px-4">
-      <h2 className="text-3xl text-gray-700 mb-6 text-center font-poppins">Kegiatan Terdekat</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section
+      id={id}
+      className="py-20 pb-25 lg:px-20 bg-cover bg-center font-poppins font-semibold"
+      style={{
+        backgroundImage: "url('/images/BG.png')",
+        marginBottom: "40px"
+      }}
+    >      <h2 className="text-4xl text-gray-700 mb-6 text-center text-white" data-aos="fade-down" data-aos-delay="200">Kegiatan Terdekat</h2>
+      <hr className="my-1 mb-15 border-white w-[17%] mx-auto border-2 rounded-lg"/>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-20" data-aos="zoom-in" data-aos-delay="200">
         {kegiatan.map((item) => (
-          <div key={item.id} className="group bg-white shadow-lg rounded-lg transition-transform transform hover:scale-105 hover:shadow-2xl relative overflow-hidden">
+          <div key={item.id} className="group bg-white shadow-lg rounded-lg transition-transform transform hover:scale-105 hover:shadow-2xl relative overflow-hidden flex-shrink-0 w-full">
             <div className="relative w-full h-64 mb-4">
               <Image
                 src={
-                  item.images && item.images.length > 0
-                    ? `http://localhost:8000/storage/${item.images[0].image}`
-                    : '/images/placeholder.png'
+                  item.id === -1
+                    ? '/images/placeholder.png'
+                    : item.images && item.images.length > 0
+                      ? `http://localhost:8000/storage/${item.images[0].image}`
+                      : '/images/placeholder.png'
                 }
-                alt={item.nama_kegiatan}
+                alt={item.nama_kegiatan || "Tidak ada kegiatan terdekat"}
                 layout="fill"
                 objectFit="cover"
                 className="rounded-t-lg"
               />
             </div>
             <div className="px-6 pb-3">
-              <h3 className="text-xl text-gray-700 font-semibold mb-2">{item.nama_kegiatan}</h3>
-              <div className="flex items-center text-gray-700 mb-2">
-                <BiCalendar size={20} style={{ marginRight: '5px', color: '#14B8A6' }} /> {item.tanggal}
-              </div>
-              <div className="flex items-center text-gray-700 mb-4">
-                <BiMap size={20} style={{ marginRight: '5px', color: '#F97F30' }} /> {item.lokasi}
-              </div>
+              <h3 className="text-xl text-gray-700 font-semibold mb-2">
+                {item.id === -1 ? "Tidak ada kegiatan terdekat" : item.nama_kegiatan}
+              </h3>
+              {item.id !== -1 && (
+                <>
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <BiCalendar size={20} style={{ marginRight: '5px', color: '#14B8A6' }} /> {formatDate(item.tanggal)}
+                  </div>
+                  <div className="flex items-center text-gray-700 mb-4">
+                    <BiMap size={20} style={{ marginRight: '5px', color: '#F97F30' }} /> {item.lokasi}
+                  </div>
+                </>
+              )}
             </div>
-            <div className="absolute bottom-8 right-6 w-15 h-10 rounded-lg bg-[rgba(20,184,166,0.3)] group-hover:bg-ijo flex justify-center items-center transition-all duration-300 cursor-pointer">
-              <Link href="/detail" className="transform group-hover:scale-125">
-                <FaArrowRight size={24} className="text-white" />
-              </Link>
-            </div>
+            {item.id !== -1 && (
+              <div className="absolute bottom-8 right-6 w-15 h-10 rounded-lg bg-[rgba(20,184,166,0.3)] group-hover:bg-ijo flex justify-center items-center transition-all duration-300 cursor-pointer">
+                <Link href="/detail" className="transform group-hover:scale-125">
+                  <FaArrowRight size={24} className="text-white" />
+                </Link>
+              </div>
+            )}
           </div>
         ))}
       </div>

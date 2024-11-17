@@ -13,7 +13,7 @@ class BeritaController extends Controller
      */
     public function index(): JsonResponse
     {
-        $berita = Berita::all();
+        $berita = Berita::orderBy('tanggal_publikasi', 'desc')->get();
 
         return response()->json($berita);
     }

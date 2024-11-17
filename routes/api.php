@@ -43,6 +43,8 @@ Route::apiResource('general-ledger', GeneralLedgerController::class);
 Route::apiResource('jurnal-umum', JurnalUmumController::class);
 Route::apiResource('posisi-keuangan', PosisiKeuanganController::class);
 Route::apiResource('laporan-keuangan', LaporanKeuanganController::class);
+Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode']);
+
 
 Route::apiResource('pesan-website', PesanWebsiteController::class);
 Route::apiResource('yatim-dhuafa', YatimDhuafaController::class);
@@ -56,8 +58,7 @@ Route::apiResource('rekening-bank', RekeningBankController::class);
 Route::apiResource('users', UserController::class);
 
 Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
-
-
+Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Mubaligh;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\InfoMasjid;
 
 class MubalighController extends Controller
 {
@@ -27,12 +28,18 @@ class MubalighController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $infoMasjid = InfoMasjid::first();
+
+        if (!$infoMasjid) {
+            return response()->json(['message' => 'Info Masjid not found'], 404);
+        }
         $validatedData = $request->validate([
-            'info_masjid_id' => 'required|exists:info_masjid,id',
             'nama' => 'required|string|max:255',
             'kontak' => 'nullable|string|max:255',
             'alamat' => 'nullable|string|max:500',
         ]);
+
+        $validatedData['info_masjid_id'] = $infoMasjid->id;
 
         $mubaligh = Mubaligh::create($validatedData);
 

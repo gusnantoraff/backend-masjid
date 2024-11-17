@@ -43,7 +43,7 @@ export default function Home() {
                     </div>
 
                     {/* Right section: News */}
-                    <div className="col-span-1 mr-1">
+                    <div className="col-span-1 mr-2">
                         <Kegiatan />
                         <ListKegiatan refresh={refreshList} />
                     </div>

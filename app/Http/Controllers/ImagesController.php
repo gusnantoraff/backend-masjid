@@ -13,9 +13,17 @@ class ImagesController extends Controller
     /**
      * Display a listing of all images.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $images = Images::all();
+        $kategori = $request->query('kategori');
+
+        $query = Images::query();
+
+        if ($kategori) {
+            $query->where('kategori', $kategori);
+        }
+
+        $images = $query->get();
 
         return response()->json($images);
     }
@@ -23,13 +31,12 @@ class ImagesController extends Controller
     /**
      * Store a newly created image in storage for a specific model.
      */
-    public function store(Request $request, string $modelType, int $modelId): JsonResponse
+    public function store(Request $request, string $modelType, int $modelId = null): JsonResponse
     {
-        // Determine the model class based on the type
         $modelClass = $this->getModelClass($modelType);
         $model = $modelClass::find($modelId);
 
-        if (! $model) {
+        if (!$model) {
             return response()->json(['message' => 'Model not found'], 404);
         }
 
@@ -38,11 +45,9 @@ class ImagesController extends Controller
             'keterangan' => 'required|string',
         ]);
 
-        // Handle the file upload
         $file = $request->file('foto');
         $filePath = $file->store('images', 'public');
 
-        // Create the image record
         $image = $model->images()->create([
             'image' => $filePath,
             'kategori' => $modelType,
@@ -53,13 +58,35 @@ class ImagesController extends Controller
     }
 
     /**
+     * Handle image upload specifically for 'galeri' category.
+     */
+    public function storeForGaleri(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'keterangan' => 'required|string',
+            'kategori' => 'required|string|in:galeri',
+        ]);
+
+        $file = $request->file('image');
+        $filePath = $file->store('images', 'public');
+
+        $image = Images::create([
+            'image' => $filePath,
+            'keterangan' => $validatedData['keterangan'],
+            'kategori' => $validatedData['kategori'],
+        ]);
+
+        return response()->json(['message' => 'Image Galeri uploaded successfully', 'image' => $image], 201);
+    }
+    /**
      * Display the specified image.
      */
     public function show(int $id): JsonResponse
     {
         $image = Images::with('imageable')->find($id);
 
-        if (! $image) {
+        if (!$image) {
             return response()->json(['message' => 'Image not found'], 404);
         }
 
@@ -73,7 +100,7 @@ class ImagesController extends Controller
     {
         $image = Images::find($id);
 
-        if (! $image) {
+        if (!$image) {
             return response()->json(['message' => 'Image not found'], 404);
         }
 
@@ -102,7 +129,7 @@ class ImagesController extends Controller
     {
         $image = Images::find($id);
 
-        if (! $image) {
+        if (!$image) {
             return response()->json(['message' => 'Image not found'], 404);
         }
 

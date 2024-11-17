@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 
 interface Berita {
@@ -37,36 +38,83 @@ const NewsSection: React.FC<NewsSectionProps> = ({ id }) => {
   }, []);
 
   const stripHtmlTags = (content: string) => {
-    return content
-      .replace(/&nbsp;/g, ' ')
-      .replace(/<\/?[^>]+(>|$)/g, "");
+    return content.replace(/&nbsp;/g, ' ').replace(/<\/?[^>]+(>|$)/g, '');
   };
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    };
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('id-ID', options).format(date);
+  };
+
   return (
     <section id={id} className="py-10">
-      <h2 className="text-3xl text-gray-700 mb-6 font-poppins">Berita</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {berita.map((item) => (
-          <div key={item.id} className="bg-white shadow-md rounded-lg">
-            <div className="relative w-full h-40 mb-4">
+      <h2 className="text-4xl text-gray-700 mb-6 font-poppins text-center font-semibold"  data-aos="fade-down" data-aos-delay="200">Berita Terbaru</h2>
+      <hr className="mb-10 border-ijo w-[17%] mx-auto border-2 rounded-lg" />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        {/* Main featured news */}
+        {berita[0] && (
+          <div className="col-span-2 lg:col-span-2 bg-white shadow-md rounded-lg overflow-hidden hover:cursor-pointer h-[500px]" data-aos="fade-right" data-aos-delay="200">
+            <div className="relative w-full h-full overflow-hidden group">
               <Image
-                src={`http://localhost:8000/storage/${item.foto}`}
-                alt={item.judul}
+                src={
+                  berita[0].foto
+                    ? `http://localhost:8000/storage/${berita[0].foto}`
+                    : '/images/600x400.png'
+                }
+                alt={berita[0].judul}
                 layout="fill"
                 objectFit="cover"
-                className="w-full h-full object-cover rounded-t-lg"
+                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300 ease-in-out"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end">
+                <h3 className="text-2xl font-semibold text-white mb-2 font-poppins">{berita[0].judul}</h3>
+                <p className="text-white text-xs font-poppins flex items-center">
+                  <FaRegCalendarAlt className="h-4 w-4 mr-2 text-white" />
+                  {formatDate(berita[0].tanggal_publikasi)}
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2 font-poppins">{item.judul}</h3>
-            <p className="text-gray-700 text-sm mb-2 font-poppins">{stripHtmlTags(item.konten).slice(0, 100)}...</p>
-            <p className="text-gray-500 text-xs font-poppins">{item.tanggal_publikasi}</p>
-            <button className="mt-4 bg-orange-500 text-white py-2 px-4 rounded-lg font-poppins">Read More</button>
           </div>
-        ))}
+        )}
+
+        {/* List of smaller news items */}
+        <div className="col-span-2 lg:col-span-2 grid grid-cols-1 lg:grid-cols-1 gap-4">
+          {berita.slice(1, 5).map((item) => (
+            <div key={item.id} className="flex flex-col lg:flex-row bg-white shadow-md rounded-lg p-0 h-full hover:scale-105 transform transition-all duration-300 ease-in-out" data-aos="fade-left" data-aos-delay="200">
+              <div className="flex-shrink-0 w-full lg:w-60 h-full relative overflow-hidden">
+                <Image
+                  src={
+                    item.foto
+                      ? `http://localhost:8000/storage/${item.foto}`
+                      : '/images/250x160.png'
+                  }
+                  alt={item.judul}
+                  layout="fill"
+                  objectFit="cover"
+                  className="w-full h-full object-cover rounded-l-lg"
+                />
+              </div>
+              <div className="flex flex-col justify-between w-full p-4">
+                <h3 className="text-lg text-gray-700 font-semibold font-poppins">{item.judul}</h3>
+                <p className="text-gray-700 text-xs mb-2 font-poppins flex items-center py-0 font-light">
+                  <FaRegCalendarAlt className="h-4 w-4 mr-2 text-oren" />
+                  {formatDate(item.tanggal_publikasi)}
+                </p>
+                <button className="mt-4 text-ijo text-xs font-poppins hover:underline">Baca Selengkapnya</button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

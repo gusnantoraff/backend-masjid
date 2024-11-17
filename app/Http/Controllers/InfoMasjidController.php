@@ -27,6 +27,11 @@ class InfoMasjidController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Check if InfoMasjid already exists
+        if (InfoMasjid::count() > 0) {
+            return response()->json(['message' => 'Only one Info Masjid can exist'], 400);
+        }
+
         $validatedData = $request->validate([
             'nama_masjid' => 'required|string|max:255',
             'alamat' => 'required|string|max:500',
@@ -39,6 +44,7 @@ class InfoMasjidController extends Controller
 
         return response()->json(['message' => 'Info Masjid created successfully', 'infoMasjid' => $infoMasjid], 201);
     }
+
 
     /**
      * Display the specified info_masjid.

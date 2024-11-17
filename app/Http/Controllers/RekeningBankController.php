@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RekeningBank;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\InfoMasjid;
 
 class RekeningBankController extends Controller
 {
@@ -27,13 +28,20 @@ class RekeningBankController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $infoMasjid = InfoMasjid::first();
+
+        if (!$infoMasjid) {
+            return response()->json(['message' => 'Info Masjid not found'], 404);
+        }
+
         $validatedData = $request->validate([
-            'info_masjid_id' => 'required|exists:info_masjid,id',
             'nama_bank' => 'required|string|max:255',
             'nomor_rekening' => 'required|string|max:255',
             'atas_nama' => 'required|string|max:255',
             'image_transfer' => 'nullable|string|max:255',
         ]);
+
+        $validatedData['info_masjid_id'] = $infoMasjid->id;
 
         $rekeningBank = RekeningBank::create($validatedData);
 

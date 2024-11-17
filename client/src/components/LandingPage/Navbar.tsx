@@ -18,9 +18,20 @@ const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
   const scrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+      const sectionPosition = section.getBoundingClientRect().top + window.scrollY;
+  
+      let offset = 30;
+      if (sectionId === "infoMasjid") {
+        offset = 5;
+      } else if (sectionId === "keuangan") {
+        offset = 130; 
+      }
+  
+      window.scrollTo({ top: sectionPosition - offset, behavior: 'smooth' });
     }
   };
+  
+  
 
   return (
     <header className={`${className}`}>
@@ -40,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
           />
         </Link>
         <nav className="flex space-x-8 items-center relative font-poppins text-lg font-semibold">
-          <Link href="/" className="text-gray-700 hover:text-gray-500">Beranda</Link>
+        <button onClick={() => scrollToSection("home")} className="text-gray-700 hover:text-gray-500">Beranda</button>
           <div className="relative">
             <button
               onClick={toggleDropdown}
@@ -59,16 +70,13 @@ const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
               >
                 <button onClick={() => scrollToSection("infoMasjid")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 text-left">Profil Masjid</button>
                 <button onClick={() => scrollToSection("keuangan")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 text-left">Keuangan</button>
-                <button onClick={() => scrollToSection("kegiatan")} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 text-left">Kegiatan Terdekat</button>
               </div>
             )}
           </div>
-          <button onClick={() => scrollToSection("pengumuman")} className="text-gray-700 hover:text-gray-500">Pengumuman</button>
+          <button onClick={() => scrollToSection("kegiatan")} className="text-gray-700 hover:text-gray-500">Kegiatan</button>
           <button onClick={() => scrollToSection("berita")} className="text-gray-700 hover:text-gray-500">Artikel</button>
           <button onClick={() => scrollToSection("galeri")} className="text-gray-700 hover:text-gray-500">Galeri</button>
-          <button className="bg-ijo text-white py-2 px-4 rounded-lg hover:bg-green-light-7">
-            <Link href="/contact">Kontak</Link>
-          </button>
+          <button onClick={() => scrollToSection("footer")} className="bg-ijo text-white py-2 px-4 rounded-lg hover:bg-green-light-7">Kontak</button>
         </nav>
       </div>
     </header>

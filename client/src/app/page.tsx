@@ -9,8 +9,7 @@ import InfoMasjid from '@/components/LandingPage/InfoMasjid';
 import Galeri from '@/components/LandingPage/Galeri';
 import NewsSection from '@/components/LandingPage/Berita';
 import Footer from '@/components/LandingPage/Footer';
-import JadwalSholat2 from '@/components/LandingPage/JadwalSholat2';
-import Pengumuman from '@/components/LandingPage/Pengumuman';
+
 
 const Home = () => {
   const [navbarBg, setNavbarBg] = useState(false);
@@ -37,18 +36,25 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar className={`fixed top-0 left-0 w-full z-50 h-[78px] ${navbarBg ? "bg-white" : "bg-white"}`} />
-      <Banner />
+      <Banner id="home"  />
       <main className="flex-grow pt-16">
-        <div className="container mx-auto px-20">
+
+        <div className="container mx-auto px-40 pb-10">
           <InfoMasjid id="infoMasjid" />
           <Keuangan id="keuangan" />
+        </div>
+
+        <div className="w-full px-0">
           <KegiatanTerdekat id="kegiatan" />
-          <Pengumuman id="pengumuman" />
+        </div>
+
+        <div className="container mx-auto px-40">
           <NewsSection id="berita" />
           <Galeri id="galeri" />
         </div>
+
       </main>
-      <Footer />
+      <Footer id="footer" />
     </div>
   );
 };

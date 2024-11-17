@@ -5,7 +5,7 @@ interface PengumumanProps {
 const Pengumuman: React.FC<PengumumanProps> = ({ id }) => {
     return (
       <section id={id} className="py-10">
-        <h2 className="text-3xl text-gray-700 mb-6 font-poppins">Pengumuman</h2>
+        <h2 className="text-4xl text-gray-700 mb-6 font-poppins text-center font-semibold">Pengumuman</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="bg-white shadow-md p-4 rounded-lg">
             <h3 className="text-xl">Menyambut Ramadhan 1444 H</h3>
