@@ -13,6 +13,7 @@ import DateFilter from "./DateFilter";
 const penerimaanUrl = "http://localhost:8000/api/penerimaan-kas";
 const pengeluaranUrl = "http://localhost:8000/api/pengeluaran-kas";
 const coaUrl = "http://localhost:8000/api/coa";
+const aruskasUrl = "http://localhost:8000/api/arus-kas";
 
 // Modal Component
 const Modal = ({ isOpen, onClose, onSubmit }) => {
