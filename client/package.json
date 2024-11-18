@@ -22,6 +22,7 @@
         "aos": "^2.3.4",
         "apexcharts": "^3.45.2",
         "axios": "^1.7.7",
+        "bcryptjs": "^2.4.3",
         "dotenv": "^16.4.5",
         "flatpickr": "^4.6.13",
         "fs": "^0.0.1-security",
@@ -47,6 +48,7 @@
     },
     "devDependencies": {
         "@types/aos": "^3.0.7",
+        "@types/bcryptjs": "^2.4.6",
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
