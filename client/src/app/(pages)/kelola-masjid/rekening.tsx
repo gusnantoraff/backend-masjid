@@ -154,7 +154,7 @@ const RekeningMasjid = () => {
     <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-1">
       <div className="mb-4 flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Rekening Masjid</h1>
-        <button onClick={() => setIsModalOpen(true)} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
+        <button onClick={() => setIsModalOpen(true)} className="rounded-lg bg-emerald-400 px-4 py-2 text-white">Tambah</button>
       </div>
 
       {showAlert && (

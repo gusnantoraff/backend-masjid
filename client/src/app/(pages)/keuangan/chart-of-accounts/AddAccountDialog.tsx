@@ -90,7 +90,7 @@ const TambahAkun = ({ onTambahAkun }) => {
                                                 className="block text-sm font-medium text-gray-700"
                                             >
                                                 Kode Akun
-                                            </label>
+                                            </label><span className="text-red-500">*</span>
                                             <input
                                                 id="code"
                                                 name="code"
@@ -108,7 +108,7 @@ const TambahAkun = ({ onTambahAkun }) => {
                                                 className="block text-sm font-medium text-gray-700"
                                             >
                                                 Nama Akun
-                                            </label>
+                                            </label><span className="text-red-500">*</span>
                                             <input
                                                 id="name"
                                                 name="name"
@@ -126,7 +126,7 @@ const TambahAkun = ({ onTambahAkun }) => {
                                                 className="block text-sm font-medium text-gray-700"
                                             >
                                                 Tipe Akun
-                                            </label>
+                                            </label><span className="text-red-500">*</span>
                                             <select
                                                 id="type"
                                                 name="type"
@@ -159,7 +159,7 @@ const TambahAkun = ({ onTambahAkun }) => {
                                                 className="block text-sm font-medium text-gray-700"
                                             >
                                                 Saldo Awal
-                                            </label>
+                                            </label><span className="text-red-500">*</span>
                                             <input
                                                 id="balance"
                                                 name="balance"

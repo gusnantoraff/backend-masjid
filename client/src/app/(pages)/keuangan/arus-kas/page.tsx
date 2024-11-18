@@ -111,7 +111,9 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                     >
                         <div className="flex justify-between gap-4">
                             <div className="w-1/3">
-                                <label className="mb-1 block">Jenis:</label>
+                                <label className="mb-1 block">
+                                    Jenis: <span className="text-red-500">*</span>
+                                </label>
                                 <select
                                     value={jenis}
                                     onChange={(e) => setJenis(e.target.value)}
@@ -120,12 +122,14 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                                 >
                                     <option value="infaq">Infaq</option>
                                     <option value="donasi">Donasi</option>
-                                    <option value="donasi">Operasional</option>
-                                    <option value="donasi">Listrik</option>
+                                    <option value="operasioal">Operasional</option>
+                                    <option value="listrik">Listrik</option>
                                 </select>
                             </div>
                             <div className="w-1/3">
-                                <label className="mb-1 block">Tanggal:</label>
+                                <label className="mb-1 block">
+                                    Tanggal: <span className="text-red-500">*</span>
+                                </label>
                                 <input
                                     type="date"
                                     value={tanggal}
@@ -135,7 +139,9 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             </div>
                             <div className="w-1/3">
-                                <label className="mb-1 block">Jumlah:</label>
+                                <label className="mb-1 block">
+                                    Jumlah: <span className="text-red-500">*</span>
+                                </label>
                                 <input
                                     type="number"
                                     value={amount}
@@ -147,7 +153,9 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
                         <div className="flex justify-between gap-4">
                             <div className="w-1/3">
-                                <label className="mb-1 block">Deskripsi:</label>
+                                <label className="mb-1 block">
+                                    Deskripsi: <span className="text-red-500">*</span>
+                                </label>
                                 <input
                                     type="text"
                                     value={description}
@@ -159,7 +167,9 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             </div>
                             <div className="w-1/3">
-                                <label className="mb-1 block">File:</label>
+                                <label className="mb-1 block">
+                                    File:
+                                </label>
                                 <input
                                     type="file"
                                     onChange={(e) => setFile(e.target.files[0])}
@@ -167,7 +177,9 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                                 />
                             </div>
                             <div className="w-1/3">
-                                <label className="mb-1 block">Oleh:</label>
+                                <label className="mb-1 block">
+                                    Oleh: <span className="text-red-500">*</span>
+                                </label>
                                 <select
                                     value={oleh}
                                     onChange={(e) => setOleh(e.target.value)}
@@ -185,16 +197,16 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                         </div>
                         <div className="flex justify-between gap-4">
                             <div className="w-1/3">
-                                <label className="mb-1 block">Status:</label>
+                                <label className="mb-1 block">
+                                    Status: <span className="text-red-500">*</span>
+                                </label>
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value)}
                                     className="h-12 w-full rounded-lg border p-2"
                                 >
                                     <option value="pemasukan">Pemasukan</option>
-                                    <option value="pengeluaran">
-                                        Pengeluaran
-                                    </option>
+                                    <option value="pengeluaran">Pengeluaran</option>
                                 </select>
                             </div>
                         </div>
@@ -217,8 +229,8 @@ const Modal = ({ isOpen, onClose, onSubmit }) => {
                     </div>
                 </div>
             </div>
-        )
-    );
+        )     
+        );        
 };
 
 export default function Home() {
