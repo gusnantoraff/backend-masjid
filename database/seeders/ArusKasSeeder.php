@@ -16,6 +16,7 @@ class ArusKasSeeder extends Seeder
                 // 'tanggal' => '2024-10-10',
                 'pemasukan_total' => null,
                 'pengeluaran_total' => null,
+                'sisa_kas_total' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

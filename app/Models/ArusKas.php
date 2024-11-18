@@ -17,6 +17,7 @@ class ArusKas extends Model
         // 'tanggal',
         'pemasukan_total',
         'pengeluaran_total',
+        'sisa_kas_total',
     ];
 
     public function penerimaanKas()
@@ -34,6 +35,9 @@ class ArusKas extends Model
         // Calculate totals and fallback to 0 if no related records
         $this->pemasukan_total = $this->penerimaanKas()->sum('jumlah') ?: 0; // Default to 0 if null
         $this->pengeluaran_total = $this->pengeluaranKas()->sum('jumlah') ?: 0; // Default to 0 if null
+
+        // Calculate sisa_kas_total
+        $this->sisa_kas_total = $this->pemasukan_total - $this->pengeluaran_total;
 
         // Save the changes
         $this->save();
