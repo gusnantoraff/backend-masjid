@@ -18,7 +18,6 @@ class ArusKas extends Model
         'pemasukan_total',
         'pengeluaran_total',
         'sisa_kas_total',
-        'account',
     ];
 
     public function penerimaanKas()
