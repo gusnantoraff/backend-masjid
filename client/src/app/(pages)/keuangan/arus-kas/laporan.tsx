@@ -16,6 +16,7 @@ import TablePagination from "@mui/material/TablePagination";
 
 export default function AccessibleTable() {
     const [rows, setRows] = useState([]);
+    const [coaMap, setCoaMap] = useState({});
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [status, setStatus] = useState("");
@@ -23,6 +24,20 @@ export default function AccessibleTable() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     useEffect(() => {
+        const fetchCoaData = async () => {
+            try {
+                const response = await fetch("http://localhost:8000/api/coa");
+                const result = await response.json();
+                const coaMapping = {};
+                result.forEach((coa) => {
+                    coaMapping[coa.id] = coa.nama_akun;
+                });
+                setCoaMap(coaMapping);
+            } catch (error) {
+                console.error("Error fetching COA data:", error);
+            }
+        };
+
         const fetchData = async () => {
             try {
                 const response = await fetch(
@@ -41,7 +56,7 @@ export default function AccessibleTable() {
                             amount: parseFloat(pemasukan.jumlah),
                             description: pemasukan.deskripsi,
                             file: pemasukan.image || "No File",
-                            oleh: pemasukan.coa_id, // Replace with COA lookup if needed
+                            oleh: pemasukan.coa_id, // Temporary, replace with COA name later
                             status: "Pemasukan",
                         });
                     });
@@ -54,7 +69,7 @@ export default function AccessibleTable() {
                             amount: -parseFloat(pengeluaran.jumlah),
                             description: pengeluaran.deskripsi,
                             file: pengeluaran.image || "No File",
-                            oleh: pengeluaran.coa_id, // Replace with COA lookup if needed
+                            oleh: pengeluaran.coa_id, // Temporary, replace with COA name later
                             status: "Pengeluaran",
                         });
                     });
@@ -66,11 +81,18 @@ export default function AccessibleTable() {
             }
         };
 
+        fetchCoaData();
         fetchData();
     }, []);
 
+    // Map coa_id to nama_akun
+    const mappedRows = rows.map((row) => ({
+        ...row,
+        oleh: coaMap[row.oleh] || row.oleh, // Replace coa_id with nama_akun if available
+    }));
+
     // Filter rows based on date and status
-    const filteredRows = rows.filter((row) => {
+    const filteredRows = mappedRows.filter((row) => {
         const rowDate = new Date(row.date);
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
