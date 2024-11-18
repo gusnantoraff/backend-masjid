@@ -131,7 +131,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
 
       {/* Modal or Detailed Report View */}
       {selectedReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
+        <div className="fixed inset-0 bg-white bg-opacity-30 flex justify-center items-center z-10">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 relative font-light">
             <h4 className="text-xl font-semibold text-gray-700 mb-4">Detail Laporan</h4>
             <p className="mb-2"><strong>Pemasukan:</strong> {formatCurrency(selectedReport.total_pemasukan)}</p>

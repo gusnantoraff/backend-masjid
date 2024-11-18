@@ -8,6 +8,7 @@ import { AiOutlineEye } from "react-icons/ai";
 interface Column {
     header: string;
     accessor: string;
+    type?: 'berita' | 'pengaturan-akun';
 }
 
 interface DataTableProps {
@@ -53,11 +54,22 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
         setShowConfirm(true);
     };
 
-    const handleEdit = (id: any) => {
-        console.log('Edit data dengan ID:', id);
-
-        // tambahin logika
+    const handleEdit = (id: any, type: 'berita' | 'pengaturan-akun') => {
+        if (type === 'berita') {
+            window.location.href = `/berita/edit/${id}`;
+        } else if (type === 'pengaturan-akun') {
+            window.location.href = `/pengaturan-akun/edit/${id}`;
+        }
     };
+    
+    const handleDetail = (id: any, type: 'berita' | 'pengaturan-akun') => {
+        if (type === 'berita') {
+            window.location.href = `/berita/${id}`;
+        } else if (type === 'pengaturan-akun') {
+            window.location.href = `/pengaturan-akun/${id}`;
+        }
+    };
+    
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
         if (typeof value === 'string' && accessor !== 'email') {
@@ -139,7 +151,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                 Hapus
                                             </Button>
                                             
-                                            <Link href={`/pengaturan-akun/${row.id}`}>
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -151,13 +162,10 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                     fontSize: '0.7rem',
                                                 }}
                                                 startIcon={<BiEdit />}
-                                                onClick={() => handleEdit(row.id)}
+                                                onClick={() => handleEdit(row.id, column.type as 'berita' | 'pengaturan-akun')}
                                             >
                                                 Edit
                                             </Button>
-                                            </Link>
-
-                                            <Link href={`/berita/${row.id}`}>
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -169,10 +177,10 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                     fontSize: '0.7rem',
                                                 }}
                                                 startIcon={<AiOutlineEye />}
+                                                onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
                                             >
                                                 Detail
                                             </Button>
-                                            </Link>
                                         </Box>
                                     )}
                                 </TableCell>
