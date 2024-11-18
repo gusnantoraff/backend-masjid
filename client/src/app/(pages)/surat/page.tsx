@@ -34,13 +34,6 @@ export default function Surat() {
           width: '100%',
         }}
       >
-        <Typography
-          variant="h6"
-          component="h2"
-          sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }}
-        >
-          Daftar Surat
-        </Typography>
         <Box>
           <Button
             variant="contained"

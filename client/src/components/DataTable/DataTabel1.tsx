@@ -137,7 +137,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                         <Box>
                                             <Button
                                                 variant="contained"
+                                                variant="contained"
                                                 sx={{
+                                                    backgroundColor: '#2379DC',
                                                     backgroundColor: '#2379DC',
                                                     color: 'white',
                                                     marginLeft: '8px',
@@ -146,10 +148,19 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                     fontSize: '0.7rem',
                                                 }}
                                                 startIcon={<AiOutlineEye />}
+                                                startIcon={<AiOutlineEye />}
                                                 onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
                                             >
                                                 Detail
+                                                Detail
                                             </Button>
+<<<<<<< Updated upstream
+                                            
+=======
+                                            </Link>
+
+                                            <Link href={`/pengaturan-akun/${row.id}`}>
+>>>>>>> Stashed changes
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -167,7 +178,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                             </Button>
                                             <Button
                                                 variant="contained"                                      
+                                                variant="contained"                                      
                                                 sx={{
+                                                    backgroundColor: 'red',
                                                     backgroundColor: 'red',
                                                     color: 'white',
                                                     marginLeft: '8px',
@@ -178,6 +191,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                 startIcon={<BiTrash />}
                                                 onClick={() => promptDelete(row.id)}
                                             >
+                                                Hapus
                                                 Hapus
                                             </Button>
                                         </Box>

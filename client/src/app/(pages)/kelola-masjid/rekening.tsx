@@ -151,7 +151,7 @@ const RekeningMasjid = () => {
   };
 
   return (
-    <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-1">
+    <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md">
       <div className="mb-4 flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Rekening Masjid</h1>
         <button onClick={() => setIsModalOpen(true)} className="rounded-lg bg-emerald-400 px-4 py-2 text-white">Tambah</button>
@@ -178,16 +178,18 @@ const RekeningMasjid = () => {
       <table className="border-grey-200 min-w-full border bg-white dark:bg-dark-2 dark:text-white">
         <thead>
           <tr>
-            <th className="border-b px-4 py-2">No</th>
-            <th className="border-b px-4 py-2">Nama Bank</th>
-            <th className="border-b px-4 py-2">Nomor Rekening</th>
-            <th className="border-b px-4 py-2">Atas Nama</th>
-            <th className="border-b px-4 py-2">Aksi</th>
+            <th className="border-b px-4 py-2 text-left">No</th>
+            <th className="border-b px-4 py-2 text-left">Nama Bank</th>
+            <th className="border-b px-4 py-2 text-left">Nomor Rekening</th>
+            <th className="border-b px-4 py-2 text-left">Atas Nama</th>
+            <th className="border-b px-4 py-2 text-left">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {rekeningData.map((item, index) => (
-            <tr key={item.id}>
+            <tr key={item.id}className={`${
+              index % 2 === 0 ? "bg-gray-100" : "bg-white"
+            } dark:bg-dark-3 dark:odd:bg-dark-2`}>
               <td className="border-b px-4 py-2">{index + 1}</td>
               <td className="border-b px-4 py-2">{item.nama_bank}</td>
               <td className="border-b px-4 py-2">{item.nomor_rekening}</td>
@@ -196,13 +198,13 @@ const RekeningMasjid = () => {
                 <div className="flex space-x-2">
                   {isEditMode && editIndex === index ? (
                     <>
-                      <button onClick={updateRekening} className="text-green-500"><FaCheck /></button>
-                      <button onClick={() => { setIsEditMode(false); setEditIndex(null); }} className="text-gray-500"><FaTimes /></button>
+                      <button onClick={updateRekening} className="text-green-500"><FaCheck size={20}/></button>
+                      <button onClick={() => { setIsEditMode(false); setEditIndex(null); }} className="text-gray-500"><FaTimes size={20}/></button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEditClick(index)} className="text-yellow-500"><FaEdit /></button>
-                      <button onClick={() => deleteRekening(item.id)} className="text-red-500"><FaTrash /></button>
+                      <button onClick={() => handleEditClick(index)} className="text-yellow-500"><FaEdit  size={20}/></button>
+                      <button onClick={() => deleteRekening(item.id)} className="text-red-500"><FaTrash size={20}/></button>
                     </>
                   )}
                 </div>
