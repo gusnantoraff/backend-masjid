@@ -23,17 +23,17 @@ export default function Home() {
                            <MonthlyFilter/>
                 
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="cols-span-1 rounded-xl px-2 py-2 shadow-md w-full border border-gray-300">
-                    <h2 className="w-auto text-3xl font-medium text-black p-2 flex justify-center">
+                    <div className="cols-span-1 rounded-xl px-4 py-6 shadow-md w-full bg-red-600 border border-gray-300 flex flex-col items-center justify-center">
+                    <h2 className="w-auto text-3xl font-medium text-black p-2 text-center">
                     Total Pengeluaran
                     </h2>
-                    <h2 className="w-auto text-3xl font-bold text-black p-2 flex justify-center">
+                    <h2 className="w-auto text-3xl font-bold text-black p-2 text-center">
                     Rp 500.000,-
                     </h2>
-                    <h2 className="w-auto text-xl font-medium text-black p-2 flex justify-center">
+                    <h2 className="w-auto text-xl font-medium text-black p-2 text-center">
                     dalam periode 
                     </h2>
-                    <h2 className="w-auto text-xl font-medium text-blue p-2 flex justify-center">
+                    <h2 className="w-auto text-xl font-medium text-blue p-2 text-center">
                     October 2024 
                     </h2> 
                     </div>

@@ -14,11 +14,10 @@ interface InfoMasjidData {
 }
 
 const InfoMasjid = () => {
-    const [infoMasjid, setInfoMasjid] = useState<InfoMasjidData | null>(null); // Menggunakan interface
-    const [loading, setLoading] = useState(true); // Status loading
-    const [error, setError] = useState<string | null>(null); // Menangani error
+    const [infoMasjid, setInfoMasjid] = useState<InfoMasjidData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Mengambil data masjid dari API
     useEffect(() => {
         const fetchInfoMasjid = async () => {
             try {
@@ -26,64 +25,55 @@ const InfoMasjid = () => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch data");
                 }
-                const data: InfoMasjidData[] = await response.json(); // Data berupa array
-                setInfoMasjid(data[0]); // Menyimpan data masjid pertama ke state
-                setLoading(false); // Set loading menjadi false setelah data diambil
+                const data: InfoMasjidData[] = await response.json();
+                setInfoMasjid(data[0]);
+                setLoading(false);
             } catch (error) {
-                // setError(error.message); // Menangani error jika terjadi
-                setLoading(false); // Set loading menjadi false
+                setError("Failed to fetch data");
+                setLoading(false);
             }
         };
 
         fetchInfoMasjid();
-    }, []); // Hanya berjalan sekali saat komponen dimuat
+    }, []);
 
     if (loading) {
-        return <div>Loading...</div>; // Menampilkan loading saat data sedang dimuat
+        return <div>Loading...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>; // Menampilkan error jika ada kesalahan
+        return <div>Error: {error}</div>;
     }
 
     return (
-        <div className="mb-6 mt-4 h-full">
-            <div className="mb-4 flex justify-center gap-4">
-                <div className="flex flex-col justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold">{infoMasjid?.nama_masjid}</h1> {/* Menggunakan optional chaining */}
-                    </div>
+        <div className="mb-4 mt-4 h-full px-4">
+            {/* Bagian atas dengan judul di kiri dan kontak di kanan */}
+            <div className="flex justify-between items-start mb-4">
+                {/* Judul di kiri atas */}
+                <div>
+                <h1 className="text-2xl font-bold">{infoMasjid?.nama_masjid}</h1>
+                <p className="mt-2">{infoMasjid?.deskripsi}</p>
+                </div>
+                
+                
+                {/* Kontak di kanan atas */}
+                <div className="text-left">
+                    <p className="text-gray-600">
+                        <FiPhone className="mr-1 inline" /> {infoMasjid?.kontak}
+                    </p>
+                    <p className="text-gray-600">
+                        <FiMapPin className="mr-1 inline" /> {infoMasjid?.alamat}
+                    </p>
                 </div>
             </div>
-            <div className="m-2 grid grid-cols-1 gap-4">
-                {/* Kontak - Nomor Telepon */}
-                <div className="flex justify-center items-center">
-                    <div>
-                        <p className="text-gray-600">
-                            <FiPhone className="mr-1 inline" /> {infoMasjid?.kontak}
-                        </p>
-                    </div>
-                </div>
 
-                {/* Kontak - Alamat */}
-                <div className="flex justify-center items-center">
-                    <div>
-                        <p className="text-gray-600">
-                            <FiMapPin className="mr-1 inline" /> {infoMasjid?.alamat}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Deskripsi */}
-                <div className="text-center">
-                    <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1>
-                    <p>{infoMasjid?.deskripsi}</p>
-                </div>
-
+            {/* Deskripsi di bawah */}
+            <div className="text-center">
+                {/* <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1> */}
+                
             </div>
         </div>
     );
 };
 
 export default InfoMasjid;
-    
