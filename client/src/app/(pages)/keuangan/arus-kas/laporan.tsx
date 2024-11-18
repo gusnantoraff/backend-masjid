@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -13,130 +13,63 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Button from "@mui/material/Button";
 import TablePagination from "@mui/material/TablePagination";
-import "@/css/satoshi.css";
-
-// Dummy data
-function createData(
-    name: string,
-    date: string,
-    amount: number,
-    description: string,
-    file: string,
-    oleh: string,
-) {
-    return { name, date, amount, description, file, oleh };
-}
-
-const rows = [
-    createData(
-        "Gaji",
-        "2023-10-12",
-        5000000,
-        "Pemasukan bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Bayar Listrik",
-        "2023-10-12",
-        -200000,
-        "Pengeluaran bulanan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    createData(
-        "Donasi Masjid",
-        "2023-10-12",
-        1000000,
-        "Pemasukan",
-        "img.jpg",
-        "Hamba Allah",
-    ),
-    // Tambahkan lebih banyak data jika perlu
-];
 
 export default function AccessibleTable() {
-    const [startDate, setStartDate] = React.useState("");
-    const [endDate, setEndDate] = React.useState("");
-    const [status, setStatus] = React.useState("");
+    const [rows, setRows] = useState([]);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [status, setStatus] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    // Pagination states
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:8000/api/arus-kas",
+                );
+                const result = await response.json();
 
-    // Filtered rows based on date and status
+                // Format the rows based on the fetched data
+                const formattedRows = [];
+                result.forEach((item) => {
+                    // Handle "penerimaan_kas" as "Pemasukan"
+                    item.penerimaan_kas.forEach((pemasukan) => {
+                        formattedRows.push({
+                            name: pemasukan.jenis,
+                            date: pemasukan.tanggal,
+                            amount: parseFloat(pemasukan.jumlah),
+                            description: pemasukan.deskripsi,
+                            file: pemasukan.image || "No File",
+                            oleh: pemasukan.coa_id, // Replace with COA lookup if needed
+                            status: "Pemasukan",
+                        });
+                    });
+
+                    // Handle "pengeluaran_kas" as "Pengeluaran"
+                    item.pengeluaran_kas.forEach((pengeluaran) => {
+                        formattedRows.push({
+                            name: pengeluaran.jenis,
+                            date: pengeluaran.tanggal,
+                            amount: -parseFloat(pengeluaran.jumlah),
+                            description: pengeluaran.deskripsi,
+                            file: pengeluaran.image || "No File",
+                            oleh: pengeluaran.coa_id, // Replace with COA lookup if needed
+                            status: "Pengeluaran",
+                        });
+                    });
+                });
+
+                setRows(formattedRows);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Filter rows based on date and status
     const filteredRows = rows.filter((row) => {
         const rowDate = new Date(row.date);
         const start = startDate ? new Date(startDate) : null;
@@ -146,57 +79,43 @@ export default function AccessibleTable() {
             (!start || rowDate >= start) && (!end || rowDate <= end);
 
         const isStatusMatch =
-            (status === "pemasukan" && row.amount > 0) ||
-            (status === "pengeluaran" && row.amount < 0) ||
+            (status === "pemasukan" && row.status === "Pemasukan") ||
+            (status === "pengeluaran" && row.status === "Pengeluaran") ||
             !status;
 
         return isDateInRange && isStatusMatch;
     });
 
-    // Handle page change
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    // Handle rows per page change
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0); // Reset ke halaman pertama saat jumlah baris per halaman diubah
-    };
-
-    // Calculate displayed rows for the current page
+    // Handle pagination
     const displayedRows = filteredRows.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
     );
 
+    const handleChangePage = (event, newPage) => setPage(newPage);
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     return (
         <div
             style={{ display: "flex", flexDirection: "column", width: "100%" }}
         >
-            <p className="mb-4 px-2 text-3xl font-bold text-black text-center">Jurnal</p>
+            <p className="mb-4 px-2 text-center text-3xl font-bold text-black">
+                Jurnal
+            </p>
 
             {/* Filter Form */}
-            <div
-                style={{
-                    display: "flex",
-                    gap: "16px",
-                    marginBottom: "16px",
-                    paddingTop: "10px",
-                    justifyContent: "flex-start",
-                }}
-            >
+            <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
                 <TextField
                     label="Tanggal Mulai"
                     type="date"
                     size="small"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
+                    InputLabelProps={{ shrink: true }}
                 />
                 <TextField
                     label="Tanggal Akhir"
@@ -204,9 +123,7 @@ export default function AccessibleTable() {
                     size="small"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
+                    InputLabelProps={{ shrink: true }}
                 />
                 <TextField
                     select
@@ -214,22 +131,20 @@ export default function AccessibleTable() {
                     size="small"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    style={{ minWidth: 120 }}
+                    style={{ minWidth: "150px" }} // Ensures consistent width
                 >
-                    <MenuItem value="">
-                        <span>Semua</span>
-                    </MenuItem>
+                    <MenuItem value="">Semua</MenuItem>
                     <MenuItem value="pemasukan">
                         <ArrowDownwardIcon
                             style={{ marginRight: "8px", color: "green" }}
                         />
-                        <span>Pemasukan</span>
+                        Pemasukan
                     </MenuItem>
                     <MenuItem value="pengeluaran">
                         <ArrowUpwardIcon
                             style={{ marginRight: "8px", color: "red" }}
                         />
-                        <span>Pengeluaran</span>
+                        Pengeluaran
                     </MenuItem>
                 </TextField>
                 <Button
@@ -245,90 +160,29 @@ export default function AccessibleTable() {
             </div>
 
             {/* Table */}
-            <TableContainer component={Paper} style={{ width: "100%" }}>
-                <Table
-                    sx={{ width: "100%", tableLayout: "auto" }}
-                    aria-label="caption table"
-                >
+            <TableContainer component={Paper}>
+                <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                Jenis
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                Tanggal
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                Jumlah
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                Deskripsi
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                File
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                Oleh
-                            </TableCell>
-                            <TableCell
-                                sx={{
-                                    fontFamily: "Satoshi",
-                                    fontWeight: "bold",
-                                    fontSize: "16px",
-                                }}
-                            >
-                                Status
-                            </TableCell>
+                            <TableCell>Jenis</TableCell>
+                            <TableCell>Tanggal</TableCell>
+                            <TableCell>Jumlah</TableCell>
+                            <TableCell>Deskripsi</TableCell>
+                            <TableCell>File</TableCell>
+                            <TableCell>Oleh</TableCell>
+                            <TableCell>Status</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {displayedRows.map((row, index) => (
                             <TableRow
-                                key={row.name}
-                                sx={{
+                                key={index}
+                                style={{
                                     backgroundColor:
                                         index % 2 === 0 ? "#f5f5f5" : "#ffffff",
                                 }}
                             >
-                                <TableCell component="th" scope="row">
-                                    {row.name}
-                                </TableCell>
+                                <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.date}</TableCell>
                                 <TableCell
                                     style={{
@@ -344,29 +198,16 @@ export default function AccessibleTable() {
                                 <TableCell>{row.file}</TableCell>
                                 <TableCell>{row.oleh}</TableCell>
                                 <TableCell>
-                                    {row.amount < 0 ? (
-                                        <div
-                                            style={{
-                                                color: "red",
-                                                display: "flex",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <ArrowUpwardIcon />
-                                            <span>Pengeluaran</span>
-                                        </div>
+                                    {row.status === "Pengeluaran" ? (
+                                        <ArrowUpwardIcon
+                                            style={{ color: "red" }}
+                                        />
                                     ) : (
-                                        <div
-                                            style={{
-                                                color: "green",
-                                                display: "flex",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <ArrowDownwardIcon />
-                                            <span>Pemasukan</span>
-                                        </div>
+                                        <ArrowDownwardIcon
+                                            style={{ color: "green" }}
+                                        />
                                     )}
+                                    {row.status}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -376,7 +217,7 @@ export default function AccessibleTable() {
 
             {/* Pagination */}
             <TablePagination
-                rowsPerPageOptions={[10]}
+                rowsPerPageOptions={[5, 10, 20]}
                 component="div"
                 count={filteredRows.length}
                 rowsPerPage={rowsPerPage}
