@@ -136,21 +136,20 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                     {column.accessor === '' && (
                                         <Box>
                                             <Button
-                                                variant="contained"                                      
+                                                variant="contained"
                                                 sx={{
-                                                    backgroundColor: 'red',
+                                                    backgroundColor: '#2379DC',
                                                     color: 'white',
                                                     marginLeft: '8px',
                                                     padding: '4px 8px',
                                                     minWidth: 'auto',
                                                     fontSize: '0.7rem',
                                                 }}
-                                                startIcon={<BiTrash />}
-                                                onClick={() => promptDelete(row.id)}
+                                                startIcon={<AiOutlineEye />}
+                                                onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
                                             >
-                                                Hapus
+                                                Detail
                                             </Button>
-                                            
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -167,19 +166,19 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                 Edit
                                             </Button>
                                             <Button
-                                                variant="contained"
+                                                variant="contained"                                      
                                                 sx={{
-                                                    backgroundColor: '#2379DC',
+                                                    backgroundColor: 'red',
                                                     color: 'white',
                                                     marginLeft: '8px',
                                                     padding: '4px 8px',
                                                     minWidth: 'auto',
                                                     fontSize: '0.7rem',
                                                 }}
-                                                startIcon={<AiOutlineEye />}
-                                                onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
+                                                startIcon={<BiTrash />}
+                                                onClick={() => promptDelete(row.id)}
                                             >
-                                                Detail
+                                                Hapus
                                             </Button>
                                         </Box>
                                     )}

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, ChangeEvent, FormEvent, useRef } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 

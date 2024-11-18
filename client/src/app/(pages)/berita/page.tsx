@@ -13,7 +13,7 @@ interface Column {
 }
 
 export default function Artikel() {
-    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isFormVisible, setIsFormVisible] = useState(true);
     const [reloadData, setReloadData] = useState(false);
 
     const handleCancel = () => {
