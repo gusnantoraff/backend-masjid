@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { BiX } from 'react-icons/bi';
+import bcrypt from 'bcryptjs';
 
 interface ModalFormProps {
     isOpen: boolean;
@@ -63,14 +64,17 @@ const EditAkun: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) =
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    const hashedPassword = formData.password
+        ? await bcrypt.hash(formData.password, 10)
+        : ''; 
     const data = {
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
         phone: formData.phone,
         birth: formData.birth,
-        password: formData.password,
-        password_confirmation: formData.password_confirmation,
+        password: hashedPassword,
+        password_confirmation: hashedPassword,
         gender: formData.gender,
         role: formData.role,
     };
