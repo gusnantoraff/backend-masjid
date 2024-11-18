@@ -154,7 +154,7 @@ const FasilitasMasjid = () => {
         </h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-blue-500 px-4 py-2 text-white"
+          className="rounded-lg bg-emerald-400 px-4 py-2 text-white"
         >
 
           Tambah

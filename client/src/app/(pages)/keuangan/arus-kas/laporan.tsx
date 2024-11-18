@@ -376,7 +376,7 @@ export default function AccessibleTable() {
 
             {/* Pagination */}
             <TablePagination
-                rowsPerPageOptions={[10, 25]}
+                rowsPerPageOptions={[10]}
                 component="div"
                 count={filteredRows.length}
                 rowsPerPage={rowsPerPage}

@@ -95,7 +95,7 @@ const GeneralLedger = () => {
                             <div>
                                 <label htmlFor="date" className="mb-1 block text-sm font-medium text-gray-700">
                                     Tanggal
-                                </label>
+                                </label><span className="text-red-500">*</span>
                                 <input
                                     type="date"
                                     id="date"
@@ -110,7 +110,7 @@ const GeneralLedger = () => {
                             <div>
                                 <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700">
                                     Keterangan
-                                </label>
+                                </label><span className="text-red-500">*</span>
                                 <input
                                     type="text"
                                     id="description"
@@ -124,7 +124,7 @@ const GeneralLedger = () => {
                             <div>
                                 <label htmlFor="debit" className="mb-1 block text-sm font-medium text-gray-700">
                                     Debit
-                                </label>
+                                </label><span className="text-red-500">*</span>
                                 <input
                                     type="number"
                                     id="debit"
@@ -138,7 +138,7 @@ const GeneralLedger = () => {
                             <div>
                                 <label htmlFor="credit" className="mb-1 block text-sm font-medium text-gray-700">
                                     Kredit
-                                </label>
+                                </label><span className="text-red-500">*</span>
                                 <input
                                     type="number"
                                     id="credit"

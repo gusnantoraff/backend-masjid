@@ -172,7 +172,7 @@ const MubalighMasjid = () => {
       <div className="mb-4 flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Mubaligh Masjid</h1>
         <ButtonDefault
-          customClasses="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center ml-2"
+          customClasses="bg-emerald-400 text-white px-4 py-2 rounded-lg flex items-center ml-2"
           label="Tambah"
           onClick={toggleModal}
         />
