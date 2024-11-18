@@ -6,6 +6,12 @@ import { Box, Typography, Button } from "@mui/material";
 import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
 import DataTable from "@/components/DataTable/DataTabel1";
 
+interface Column {
+  header: string;
+  accessor: string;
+  type?: 'berita' | 'pengaturan-akun';
+}
+
 export default function Artikel() {
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [reloadData, setReloadData] = useState(false);
@@ -23,14 +29,14 @@ export default function Artikel() {
         setIsFormVisible(false);
     };
 
-    const beritaColumns = [
+    const beritaColumns: Column[] = [
         { header: "No", accessor: "nomor" },
         { header: "Judul", accessor: "judul" },
         { header: "Tanggal Publikasi", accessor: "tanggal_publikasi" },
         { header: "Kategori", accessor: "kategori" },
         { header: "Konten", accessor: "konten" },
         { header: "Status", accessor: "status" },
-        { header: "Tindakan", accessor: "" },
+        { header: "Tindakan", accessor: "", type: "berita"},
     ];
 
     const fetchUrl = "http://localhost:8000/api/berita";

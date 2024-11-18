@@ -6,6 +6,12 @@ import { Button, Box, Typography } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalAkun';
 
+interface Column {
+  header: string;
+  accessor: string;
+  type?: 'berita' | 'pengaturan-akun';
+}
+
 export default function YatimDhuafa() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -19,7 +25,7 @@ export default function YatimDhuafa() {
   };
 
 
-  const akunColumns = [
+  const akunColumns: Column[] = [
     { header: 'No', accessor: 'id' },
     { header: 'First Name', accessor: 'firstname' },
     { header: 'Last Name', accessor: 'lastname' },
@@ -28,7 +34,7 @@ export default function YatimDhuafa() {
     { header: 'Tanggal Lahir', accessor: 'birth' },
     { header: 'Gender', accessor: 'gender' },
     { header: 'Role', accessor: 'role' },
-    { header: 'Tindakan', accessor: '' },
+    { header: 'Tindakan', accessor: '', type: 'pengaturan-akun' },
   ];
 
   const fetchUrl = 'http://localhost:8000/api/users';

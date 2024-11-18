@@ -55,14 +55,14 @@ const InfoMasjid: React.FC<InfoMasjidProps> = ({ id }) => {
       <hr className="my-6 mb-6 border-ijo w-[30%] mx-auto border-2 rounded-lg" />
 
       {/* Deskripsi */}
-      <div className="max-w-4xl w-full bg-teal-50 p-8 shadow-md rounded-lg mt-8 text-gray-700">
+      <div className="w-full bg-teal-50 p-8 shadow-md rounded-lg mt-8 text-gray-700">
         <h3 className="text-2xl font-semibold mb-4 text-teal-700">Tentang {nama_masjid}</h3>
         <p className="leading-relaxed text-justify">{deskripsi}</p>
       </div>
 
       {/* Total Fasilitas */}
       <div className="mt-10 flex justify-center items-center">
-        <div className="bg-gradient-to-br from-teal-500 to-green-400 shadow-md rounded-lg p-6 text-center w-80 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-teal-500 to-ijo shadow-md rounded-lg p-6 text-center w-80 relative overflow-hidden">
           <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-300 opacity-20 rounded-full"></div>
           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-green-300 opacity-20 rounded-full"></div>
           <div className="mb-4">
