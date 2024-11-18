@@ -21,7 +21,7 @@ export default function AccessibleTable() {
     const [endDate, setEndDate] = useState("");
     const [status, setStatus] = useState("");
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10); // Default rows per page
 
     useEffect(() => {
         const fetchCoaData = async () => {
@@ -48,7 +48,6 @@ export default function AccessibleTable() {
                 // Format the rows based on the fetched data
                 const formattedRows = [];
                 result.forEach((item) => {
-                    // Handle "penerimaan_kas" as "Pemasukan"
                     item.penerimaan_kas.forEach((pemasukan) => {
                         formattedRows.push({
                             name: pemasukan.jenis,
@@ -56,12 +55,11 @@ export default function AccessibleTable() {
                             amount: parseFloat(pemasukan.jumlah),
                             description: pemasukan.deskripsi,
                             file: pemasukan.image || "No File",
-                            oleh: pemasukan.coa_id, // Temporary, replace with COA name later
+                            oleh: pemasukan.coa_id,
                             status: "Pemasukan",
                         });
                     });
 
-                    // Handle "pengeluaran_kas" as "Pengeluaran"
                     item.pengeluaran_kas.forEach((pengeluaran) => {
                         formattedRows.push({
                             name: pengeluaran.jenis,
@@ -69,7 +67,7 @@ export default function AccessibleTable() {
                             amount: -parseFloat(pengeluaran.jumlah),
                             description: pengeluaran.deskripsi,
                             file: pengeluaran.image || "No File",
-                            oleh: pengeluaran.coa_id, // Temporary, replace with COA name later
+                            oleh: pengeluaran.coa_id,
                             status: "Pengeluaran",
                         });
                     });
@@ -88,7 +86,7 @@ export default function AccessibleTable() {
     // Map coa_id to nama_akun
     const mappedRows = rows.map((row) => ({
         ...row,
-        oleh: coaMap[row.oleh] || row.oleh, // Replace coa_id with nama_akun if available
+        oleh: coaMap[row.oleh] || row.oleh,
     }));
 
     // Filter rows based on date and status
@@ -122,9 +120,7 @@ export default function AccessibleTable() {
     };
 
     return (
-        <div
-            style={{ display: "flex", flexDirection: "column", width: "100%" }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <p className="mb-4 px-2 text-center text-3xl font-bold text-black">
                 Jurnal
             </p>
@@ -153,7 +149,7 @@ export default function AccessibleTable() {
                     size="small"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    style={{ minWidth: "150px" }} // Ensures consistent width
+                    style={{ minWidth: "150px" }}
                 >
                     <MenuItem value="">Semua</MenuItem>
                     <MenuItem value="pemasukan">
@@ -239,7 +235,7 @@ export default function AccessibleTable() {
 
             {/* Pagination */}
             <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
+                rowsPerPageOptions={[]}
                 component="div"
                 count={filteredRows.length}
                 rowsPerPage={rowsPerPage}
