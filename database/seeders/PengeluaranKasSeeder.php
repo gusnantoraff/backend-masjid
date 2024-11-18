@@ -26,7 +26,7 @@ class PengeluaranKasSeeder extends Seeder
                 'tanggal' => '2024-10-13',
                 'jumlah' => 300000.00,
                 'deskripsi' => 'Pembelian Al-Qur\'an',
-                'jenis' => 'Donasi', // Added 'jenis' attribute
+                'jenis' => 'Listrik', // Added 'jenis' attribute
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
