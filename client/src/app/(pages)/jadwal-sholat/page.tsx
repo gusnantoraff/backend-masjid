@@ -59,6 +59,7 @@ export default function JadwalSholat() {
                 </Box>
                 <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleSubmit} />
                 <ListHariBesar refresh={refreshList} />
+                
 
                 <Box
                     sx={{
@@ -70,6 +71,7 @@ export default function JadwalSholat() {
                         backgroundColor: '#EDF1F8',
                         color: 'black',
                         borderRadius: '10px',
+                        marginTop: "20px"
                     }}
                 >
                     <Typography

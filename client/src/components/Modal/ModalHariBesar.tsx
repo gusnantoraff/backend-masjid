@@ -14,7 +14,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
     nama_kegiatan: '',
     tanggal: '',
     lokasi: '',
-    kategori:'hari-besar',
+    kategori: 'hari-besar',
     keterangan: '',
     foto: null as File | null,
   });
@@ -56,10 +56,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log('Form Data:', formData);
+
     const data = new FormData();
 
     data.append('nama_kegiatan', formData.nama_kegiatan);
-    data.append('tanggal', formData.tanggal);
+    data.append('tanggal', formData.tanggal.replace('T', ' '));
     data.append('lokasi', formData.lokasi);
     data.append('kategori', formData.kategori);
     data.append('keterangan', formData.keterangan);
@@ -121,7 +124,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
             <div>
               <label htmlFor="tanggal">Tanggal:</label>
               <input
-                type="date"
+                type="datetime-local"
                 id="tanggal"
                 name="tanggal"
                 value={formData.tanggal}
@@ -137,17 +140,6 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.lokasi}
                 onChange={handleChange}
               />
-            </div>
-            <div>
-              <label htmlFor="kategori">Kategori:</label>
-              <select
-                id="kategori"
-                name="kategori"
-                value={formData.kategori}
-                onChange={handleChange}
-              >
-                <option value="hari-besar">Hari Besar</option>
-              </select>
             </div>
             <div>
               <label htmlFor="keterangan">Keterangan:</label>
