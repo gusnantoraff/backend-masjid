@@ -22,15 +22,54 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { AiOutlineExport } from "react-icons/ai";
 import { jsPDF } from "jspdf";
 
-export default function AccessibleTable({ isLaporanPage }) {
+export default function AccessibleTable({
+    isLaporanPage,
+    isPenerimaanPage,
+    isPengeluaranPage,
+    isArusKasPage,
+}) {
     const [rows, setRows] = useState([]);
     const [coaMap, setCoaMap] = useState({});
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState(""); // Filter bulan
     const [status, setStatus] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [anchorEl, setAnchorEl] = useState(null);
+
+    const pageTitle = isLaporanPage
+        ? "Laporan Keuangan"
+        : isPenerimaanPage
+        ? "Penerimaan"
+        : isPengeluaranPage
+        ? "Pengeluaran"
+        : isArusKasPage
+        ? "Jurnal Arus Kas"
+        : "";
+
+    const exportFileName = isLaporanPage
+        ? "laporan_keuangan"
+        : isPenerimaanPage
+        ? "laporan_penerimaan"
+        : isPengeluaranPage
+        ? "laporan_pengeluaran"
+        : "";
+
+        const months = [
+            { value: "01", label: "Januari" },
+            { value: "02", label: "Februari" },
+            { value: "03", label: "Maret" },
+            { value: "04", label: "April" },
+            { value: "05", label: "Mei" },
+            { value: "06", label: "Juni" },
+            { value: "07", label: "Juli" },
+            { value: "08", label: "Agustus" },
+            { value: "09", label: "September" },
+            { value: "10", label: "Oktober" },
+            { value: "11", label: "November" },
+            { value: "12", label: "Desember" },
+        ];
 
     useEffect(() => {
         const fetchCoaData = async () => {
@@ -104,10 +143,17 @@ export default function AccessibleTable({ isLaporanPage }) {
         const isDateInRange =
             (!start || rowDate >= start) && (!end || rowDate <= end);
 
+            const isMonthMatch =
+            !selectedMonth || row.date.split("-")[1] === selectedMonth;
+
         const isStatusMatch =
-            (status === "pemasukan" && row.status === "Pemasukan") ||
-            (status === "pengeluaran" && row.status === "Pengeluaran") ||
-            !status;
+            (isLaporanPage ||
+                isArusKasPage ||
+                (isPenerimaanPage && row.status === "Pemasukan") ||
+                (isPengeluaranPage && row.status === "Pengeluaran")) &&
+            (!status ||
+                (status === "pemasukan" && row.status === "Pemasukan") ||
+                (status === "pengeluaran" && row.status === "Pengeluaran"));
 
         return isDateInRange && isStatusMatch;
     });
@@ -126,192 +172,184 @@ export default function AccessibleTable({ isLaporanPage }) {
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-      };
+    };
 
-      const handleClose = () => {
+    const handleClose = () => {
         setAnchorEl(null);
-      };
+    };
 
     const handleExport = (format) => {
-        if (format === "CSV") {
-            const csvContent =
-                "data:text/csv;charset=utf-8," +
-                ["Jenis,Tanggal,Jumlah,Deskripsi,File,Oleh,Status"]
-                    .concat(
-                        filteredRows.map((row) =>
-                            [
-                                row.name,
-                                row.date,
-                                row.amount,
-                                row.description,
-                                row.file,
-                                row.oleh,
-                                row.status,
-                            ].join(","),
-                        ),
-                    )
-                    .join("\n");
+        if (!isArusKasPage) {
+            if (format === "CSV") {
+                const csvContent =
+                    "data:text/csv;charset=utf-8," +
+                    ["Jenis,Tanggal,Jumlah,Deskripsi,File,Oleh,Status"]
+                        .concat(
+                            filteredRows.map((row) =>
+                                [
+                                    row.name,
+                                    row.date,
+                                    row.amount,
+                                    row.description,
+                                    row.file,
+                                    row.oleh,
+                                    row.status,
+                                ].join(","),
+                            ),
+                        )
+                        .join("\n");
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "laporan_keuangan.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else if (format === "PDF") {
-            const doc = new jsPDF("p", "cm", "a4");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `${exportFileName}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (format === "PDF") {
+                const doc = new jsPDF("p", "cm", "a4");
+                const headers = [
+                    "No",
+                    "Jenis",
+                    "Tanggal",
+                    "Jumlah",
+                    "Deskripsi",
+                    "File",
+                    "Oleh",
+                    "Status",
+                ];
+                const tableData = filteredRows.map((row, index) => [
+                    index + 1,
+                    row.name,
+                    row.date,
+                    row.amount.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                    }),
+                    row.description,
+                    row.file,
+                    row.oleh,
+                    row.status,
+                ]);
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text(pageTitle, 10.5, 1, { align: "center" });
 
-        // Header tabel
-        const headers = [
-            "No", "Jenis", "Tanggal", "Jumlah", "Deskripsi", "File", "Oleh", "Status"
-        ];
-
-        // Data tabel
-        const tableData = filteredRows.map((row, index) => [
-            index + 1,
-            row.name,
-            row.date,
-            row.amount.toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
-            row.description,
-            row.file,
-            row.oleh,
-            row.status
-        ]);
-
-        // Pengaturan header dokumen
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("Laporan Keuangan", 10.5, 1, { align: "center" });
-
-        // Posisi awal Y untuk tabel
-        let yPosition = 2;
-        const cellHeight = 0.8;
-
-        // Lebar kolom
-        const columnWidths = [1, 3, 3, 3, 5, 3, 3, 3];
-
-        // Gaya untuk header tabel
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(0, 0, 0); // Warna teks hitam
-
-        headers.forEach((header, index) => {
-            const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
-            doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
-        });
-
-        yPosition += cellHeight;
-
-        // Gaya untuk baris data
-        doc.setFont("helvetica", "normal");
-
-        tableData.forEach((row) => {
-            row.forEach((cell, index) => {
-                const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
-                doc.text(String(cell), xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
-            });
-
-            yPosition += cellHeight;
-
-            // Jika Y melewati batas halaman, tambahkan halaman baru
-            if (yPosition > 28) {
-                doc.addPage();
-                yPosition = 2;
-
-                headers.forEach((header, index) => {
-                    const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
-                    doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+                doc.autoTable({
+                    head: [headers],
+                    body: tableData,
+                    startY: 2,
+                    theme: "grid",
                 });
 
-                yPosition += cellHeight;
+                doc.save(`${exportFileName}.pdf`);
             }
-        });
+        }
 
-        // Simpan file PDF
-        doc.save("laporan_keuangan.pdf"); 
-          };
         setAnchorEl(null);
     };
 
     return (
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            
-                <p className="text-3xl font-bold text-black mb-4 px-2 mt-2 text-center">
-                    {isLaporanPage ? "Laporan Keuangan" : "Jurnal"}
-                </p>
-            
+            <p className="text-3xl font-bold text-black mb-4 px-2 mt-2 text-center">
+                {pageTitle}
+            </p>
 
-            {/* Filter Form */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', gap: '16px', paddingTop: '10px' }}>
-                <TextField
-                    label="Tanggal Mulai"
-                    type="date"
-                    size="small"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                    label="Tanggal Akhir"
-                    type="date"
-                    size="small"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                    select
-                    label="Status"
-                    size="small"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    style={{ minWidth: "150px" }}
-                >
-                    <MenuItem value="">Semua</MenuItem>
-                    <MenuItem value="pemasukan">
-                        <ArrowDownwardIcon
-                            style={{ marginRight: "8px", color: "green" }}
-                        />
-                        Pemasukan
-                    </MenuItem>
-                    <MenuItem value="pengeluaran">
-                        <ArrowUpwardIcon
-                            style={{ marginRight: "8px", color: "red" }}
-                        />
-                        Pengeluaran
-                    </MenuItem>
-                </TextField>
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        setStartDate("");
-                        setEndDate("");
-                        setStatus("");
-                    }}
-                >
-                    Reset Filter
-                </Button>
-                {isLaporanPage && (
-                   <>
+            {/* Filters */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "16px",
+                }}
+            >
+                <div style={{ display: "flex", gap: "16px", paddingTop: "10px" }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', gap: '16px', paddingTop: '10px' }}>
+        <TextField
+          label="Tanggal Mulai"
+          type="date"
+          size="small"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <TextField
+          label="Tanggal Akhir"
+          type="date"
+          size="small"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        {isArusKasPage && (
+            <TextField
+            select
+            label="Status"
+            size="small"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            style={{ minWidth: 120 }}
+          >
+            <MenuItem value="">
+              <span>Semua</span>
+            </MenuItem>
+            <MenuItem value="pemasukan">
+              <ArrowDownwardIcon style={{ marginRight: '8px', color: 'green' }} />
+              <span>Pemasukan</span>
+            </MenuItem>
+            <MenuItem value="pengeluaran">
+              <ArrowUpwardIcon style={{ marginRight: '8px', color: 'red' }} />
+              <span>Pengeluaran</span>
+            </MenuItem>
+          </TextField>
+        )}
+        {(isPenerimaanPage || isPengeluaranPage) && (
+                        <TextField
+                            select
+                            label="Pilih Bulan"
+                            size="small"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            style={{ minWidth: "150px" }}
+                        >
+                            <MenuItem value="">Semua Bulan</MenuItem>
+                            {months.map((month) => (
+                                <MenuItem key={month.value} value={month.value}>
+                                    {month.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    )}
+        <Button
+          variant="contained"
+          onClick={() => {
+            setStartDate('');
+            setEndDate('');
+            setStatus('');
+          }}
+        >
+          Reset Filter
+        </Button>
+                {!isArusKasPage && (
+                    <>
                         <Button
                             onClick={handleClick}
-                            aria-controls="export-menu"
-                            aria-haspopup="true"
                             variant="outlined"
                             startIcon={<AiOutlineExport />}
-                            style={{ color: "#40E0D0", // Hijau toska untuk teks
-                                borderColor: "#40E0D0", // Hijau toska untuk border 
-                                }}
                         >
                             Export
                         </Button>
                         <Menu
-                             id="export-menu"
-                             anchorEl={anchorEl}
-                             open={Boolean(anchorEl)}
-                             onClose={handleClose}
+                            id="export-menu"
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
                         >
                             <MenuItemMUI onClick={() => handleExport("CSV")}>
                                 <ListItemIcon>
@@ -326,8 +364,10 @@ export default function AccessibleTable({ isLaporanPage }) {
                                 <ListItemText primary="Export to PDF" />
                             </MenuItemMUI>
                         </Menu>
-                        </>
+                    </>
                 )}
+            </div>
+            </div>
             </div>
             </div>
 
@@ -347,13 +387,7 @@ export default function AccessibleTable({ isLaporanPage }) {
                     </TableHead>
                     <TableBody>
                         {displayedRows.map((row, index) => (
-                            <TableRow
-                                key={index}
-                                style={{
-                                    backgroundColor:
-                                        index % 2 === 0 ? "#f5f5f5" : "#ffffff",
-                                }}
-                            >
+                            <TableRow key={index}>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.date}</TableCell>
                                 <TableCell
@@ -370,17 +404,18 @@ export default function AccessibleTable({ isLaporanPage }) {
                                 <TableCell>{row.file}</TableCell>
                                 <TableCell>{row.oleh}</TableCell>
                                 <TableCell>
-                                    {row.status === "Pengeluaran" ? (
-                                        <ArrowUpwardIcon
-                                            style={{ color: "red" }}
-                                        />
-                                    ) : (
-                                        <ArrowDownwardIcon
-                                            style={{ color: "green" }}
-                                        />
-                                    )}
-                                    {row.status}
-                                </TableCell>
+                  {row.amount < 0 ? (
+                    <div style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
+                      <ArrowUpwardIcon />
+                      <span>Pengeluaran</span>
+                    </div>
+                  ) : (
+                    <div style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
+                      <ArrowDownwardIcon />
+                      <span>Pemasukan</span>
+                    </div>
+                  )}
+                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -389,7 +424,6 @@ export default function AccessibleTable({ isLaporanPage }) {
 
             {/* Pagination */}
             <TablePagination
-                rowsPerPageOptions={[]}
                 component="div"
                 count={filteredRows.length}
                 rowsPerPage={rowsPerPage}

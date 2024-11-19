@@ -3,7 +3,7 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React from "react";
 import MonthlyFilter from "../arus-kas/DateFilter";
 import PengeluaranChart from "../arus-kas/pengeluaranchart";
-import LaporanKeuangan from "./laporan"
+import LaporanKeuangan from "../arus-kas/laporan"
 
 
 export const metadata: Metadata = {
@@ -43,7 +43,7 @@ export default function Home() {
                     </div>
                 </div>
                 <div className="rounded-xl mt-4 px-2 py-2 shadow-md w-full border border-gray-300">
-                <LaporanKeuangan/>
+                <LaporanKeuangan isArusKasPage={false} isLaporanPage={false} isPenerimaanPage={false} isPengeluaranPage={true}/>
                 </div>
                 
                 
