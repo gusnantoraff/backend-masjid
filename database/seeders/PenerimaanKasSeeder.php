@@ -21,7 +21,7 @@ class PenerimaanKasSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'coa_id' => 1,
+                'coa_id' => 2,
                 'arus_kas_id' => 1,
                 'tanggal' => '2024-10-11',
                 'jumlah' => 500000.00,

@@ -12,6 +12,7 @@ class CreateCoaTable extends Migration
             $table->id();
             $table->string('kode_akun');
             $table->string('nama_akun');
+            $table->string('tipe')->nullable();
             $table->timestamps();
 
             // Set the character set and collation
