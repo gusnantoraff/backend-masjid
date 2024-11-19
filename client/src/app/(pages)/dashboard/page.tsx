@@ -1,12 +1,11 @@
 "use client";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { useState } from "react";
-import DataStatsOne from "@/components/DataStats/DataStatsOne";
 import ChartPendapatan from "@/components/Charts/ChartPendapatan";
 import ChartPengeluaran from "@/components/Charts/ChartPengeluaran";
 import Kegiatan from "@/components/Kegiatan";
 import InfoMasjid from "./infomasjid";
-import ListKegiatan from "@/components/KegiatanComponents/ListKegiatan";
+import ListKegiatan from "@/components/KegiatanComponents/ListKegiatanDashboard";
 import StatsArus from "./stats";
 
 export default function Home() {
@@ -39,9 +38,9 @@ export default function Home() {
                     </div>
 
                     {/* Right section: News */}
-                    <div className="col-span-1 mr-2">
+                    <div className="col-span-1">
                         <Kegiatan />
-                        <ListKegiatan refresh={refreshList} />
+                        <ListKegiatan refresh={refreshList} size="small"/>
                     </div>
                 </div>
             </DefaultLayout>

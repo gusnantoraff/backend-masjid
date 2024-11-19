@@ -1,5 +1,6 @@
 import React from 'react';
 import { BiEdit, BiTrash, BiMap, BiCalendar } from 'react-icons/bi';
+import Image from 'next/image';
 
 interface KegiatanCardProps {
   nama_kegiatan: string;
@@ -8,26 +9,61 @@ interface KegiatanCardProps {
   foto: string;
   onEdit: () => void;
   onDelete: () => void;
+  size?: 'small' | 'normal';
 }
 
-const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lokasi, foto, onEdit, onDelete }) => {
+const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lokasi, foto, onEdit, onDelete, size = 'normal' }) => {
+  const dimensions = {
+    small: { 
+      cardWidth: '380px', 
+      cardHeight: '175px', 
+      imgWidth: 0, 
+      imgHeight: 0, 
+      fontSize: '14px', 
+      buttonSize: '12px', 
+      iconSize: 16,
+      margin: '6px'
+    },
+    normal: { 
+      cardWidth: '550px', 
+      cardHeight: '175px', 
+      imgWidth: 200, 
+      imgHeight: 155, 
+      fontSize: '16px', 
+      buttonSize: '14px', 
+      iconSize: 20,
+      margin: '15px 15px 0 15px'
+    },
+  };
+
+  const currentDimensions = dimensions[size];
+
   return (
-    <div className="card">
-      <img src={foto} alt={nama_kegiatan} className="card-image" />
+    <div className="card" style={{ width: currentDimensions.cardWidth, height: currentDimensions.cardHeight, margin: currentDimensions.margin }}>
+      {size === 'normal' && (
+        <Image
+          src={foto}
+          alt={nama_kegiatan}
+          width={currentDimensions.imgWidth}
+          height={currentDimensions.imgHeight}
+          objectFit="cover"
+          className="rounded-tl-md rounded-bl-md"
+        />
+      )}
       <div className="card-content">
-        <h3>{nama_kegiatan}</h3>
-        <p>
-          <BiMap size={20} style={{ marginRight: '5px', color:'#F97F30' }} /> {lokasi}
+        <h3 style={{ fontSize: currentDimensions.fontSize }}>{nama_kegiatan}</h3>
+        <p style={{ fontSize: currentDimensions.fontSize }}>
+          <BiMap size={currentDimensions.iconSize} style={{ marginRight: '5px', color: '#F97F30' }} /> {lokasi}
         </p>
-        <p>
-          <BiCalendar size={20} style={{ marginRight: '5px', color: '#14B8A6' }} /> {tanggal}
+        <p style={{ fontSize: currentDimensions.fontSize }}>
+          <BiCalendar size={currentDimensions.iconSize} style={{ marginRight: '5px', color: '#14B8A6' }} /> {tanggal}
         </p>
         <div className="card-actions">
-          <button className="delete-button" onClick={onDelete}>
-            <BiTrash size={20} /> Hapus
+          <button className="delete-button" style={{ fontSize: currentDimensions.buttonSize }} onClick={onDelete}>
+            <BiTrash size={currentDimensions.iconSize} /> Hapus
           </button>
-          <button className="edit-button" onClick={onEdit}>
-            <BiEdit size={20} /> Edit
+          <button className="edit-button" style={{ fontSize: currentDimensions.buttonSize }} onClick={onEdit}>
+            <BiEdit size={currentDimensions.iconSize} /> Edit
           </button>
         </div>
       </div>
@@ -38,17 +74,8 @@ const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lok
           border: 1px solid #ddd;
           border-radius: 8px;
           overflow: hidden;
-          width: 425px;
-          height: 175px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          margin: 10px;
           background-color: white;
-        }
-        .card-image {
-          width: 175px;
-          height: 175px;
-          object-fit: cover;
-          flex-shrink: 0;
         }
         .card-content {
           flex-grow: 1;
@@ -59,13 +86,11 @@ const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lok
         }
         h3 {
           margin: 0 0 8px 0;
-          font-size: 20px;
           color: #333;
           font-weight: 600;
         }
-       p {
+        p {
           margin: 4px 0;
-          font-size: 14px;
           display: flex;
           align-items: center;
         }
@@ -83,7 +108,6 @@ const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lok
           border-radius: 4px;
           padding: 8px 12px;
           cursor: pointer;
-          font-size: 14px;
           color: #333;
         }
         .edit-button {

@@ -11,9 +11,9 @@ class CreateKegiatanTable extends Migration
         Schema::create('kegiatan', function (Blueprint $table) {
             $table->id();
             $table->string('nama_kegiatan');
-            $table->date('tanggal');
+            $table->dateTime('tanggal');
             $table->string('lokasi');
-            $table->enum('kategori', ['khatib', 'muazin', 'umum']);
+            $table->enum('kategori', ['khatib', 'muazin', 'umum','hari-besar']);
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

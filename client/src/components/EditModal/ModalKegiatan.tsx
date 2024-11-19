@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { BiX } from 'react-icons/bi';
+import Image from 'next/image';
 
 interface ModalFormProps {
     isOpen: boolean;
@@ -14,9 +15,9 @@ interface Image {
     keterangan: string;
     kategori: string;
     image: string;
-  }
-  
-  interface Kegiatan {
+}
+
+interface Kegiatan {
     id: number;
     nama_kegiatan: string;
     tanggal: string;
@@ -24,7 +25,7 @@ interface Image {
     kategori: string;
     keterangan: string;
     image: Image[];
-  }
+}
 
 
 const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) => {
@@ -37,9 +38,11 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
         keterangan: '',
         image: null as File | null,
     });
-    
-    const [fotoUrl, setFotoUrl] = useState<string | null>(null); // State for the photo URL
-    const [fileError, setFileError] = useState(''); // State for file error message
+
+    const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+    const [fileError, setFileError] = useState('');
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
 
     useEffect(() => {
         if (isOpen) {
@@ -48,7 +51,6 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                     const response = await axios.get(`http://localhost:8000/api/kegiatan/${id}`);
                     const data = response.data;
 
-                    // Setel data kegiatan ke formData dan set foto URL untuk pratinjau
                     setFormData({
                         nama_kegiatan: data.nama_kegiatan,
                         tanggal: data.tanggal,
@@ -58,10 +60,11 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                         image: null,
                     });
 
-                    // Kombinasikan base URL dengan path foto dari backend
-                    if (data.image) {
-                        setFotoUrl(`http://localhost:8000/storage/${data.image}`);
-                    }
+                    const getFotoUrl = data.images.length > 0
+                        ? `http://localhost:8000/storage/${data.images[0].image}`
+                        : 'https://via.placeholder.com/300';
+
+                    setFotoUrl(getFotoUrl);
                 } catch (error) {
                     console.error('Error fetching data:', error);
                 }
@@ -79,27 +82,27 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
         }));
     };
 
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const file = e.target.files?.[0];
-        const maxFileSize = 8 * 1024 * 1024; // 8MB in bytes
+        const maxFileSize = 8 * 1024 * 1024;
         const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
 
         if (file) {
             if (file.size > maxFileSize) {
                 setFileError('Foto maks 8MB.');
-                e.target.value = ''; // Reset input
+                e.target.value = '';
                 return;
             } else if (!allowedFormats.includes(file.type)) {
                 setFileError('Format foto hanya diperbolehkan JPG, JPEG, dan PNG.');
-                e.target.value = ''; // Reset input
+                e.target.value = '';
                 return;
             } else {
-                setFileError(''); // Clear error if file is valid
+                setFileError('');
             }
 
-            // Update foto dan tampilkan pratinjau
-            setFotoUrl(URL.createObjectURL(file)); // Menampilkan pratinjau dari file baru
+            setFotoUrl(URL.createObjectURL(file));
         }
 
         setFormData((prevData) => ({
@@ -111,31 +114,54 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        const data = new FormData();
 
-        data.append('nama_kegiatan', formData.nama_kegiatan);
-        data.append('tanggal', formData.tanggal);
-        data.append('lokasi', formData.lokasi);
-        data.append('kategori', formData.kategori);
-        data.append('keterangan', formData.keterangan);
-
-        if (formData.image) {
-            data.append('foto', formData.image);
-        } else if (fotoUrl) {
-            // Jika tidak ada gambar baru, kirim gambar lama
-            data.append('image', fotoUrl); // Pastikan URL gambar lama dikirim jika diperlukan
-        }
         try {
+            if (formData.image) {
+                await handleFotoUpload(formData.image);
+            }
+
+            const data = {
+                nama_kegiatan: formData.nama_kegiatan,
+                tanggal: formData.tanggal.replace('T', ' '),
+                lokasi: formData.lokasi,
+                kategori: formData.kategori,
+                keterangan: formData.keterangan,
+            };
+
             await axios.put(`http://localhost:8000/api/kegiatan/${id}`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    "Content-Type": "application/json",
                 },
             });
+
             onClose();
             onSubmit();
         } catch (error) {
             console.error('Error updating data:', error);
         }
+    };
+
+    const handleFotoUpload = async (file: File) => {
+        const formData = new FormData();
+        formData.append("foto", file);
+
+        try {
+            await axios.post(`http://localhost:8000/api/kegiatan/${id}/upload-foto`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+        } catch (error) {
+            console.error("Error uploading foto:", error);
+        }
+    };
+
+    const handleImageClick = (src: string) => {
+        setSelectedImage(src);
+    };
+
+    const handleClosePreview = () => {
+        setSelectedImage(null);
     };
 
     if (!isOpen) {
@@ -177,7 +203,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                         <div>
                             <label htmlFor="tanggal">Tanggal:</label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 id="tanggal"
                                 name="tanggal"
                                 value={formData.tanggal}
@@ -219,13 +245,24 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                         </div>
                         <div>
                             <label htmlFor="foto">Foto:</label>
-                            {/* Pratinjau foto */}
                             {fotoUrl && (
-                                <img
-                                    src={fotoUrl}
-                                    alt="Pratinjau Foto"
-                                    style={{ width: '100%', height: 'auto', marginBottom: '10px' }}
-                                />
+                                <div className="relative w-full h-48 mb-4">
+                                    <Image
+                                        src={fotoUrl}
+                                        alt="Pratinjau Foto"
+                                        layout="intrinsic"
+                                        width={600}
+                                        height={500}
+                                        style={{
+                                            marginBottom: '5px',
+                                            cursor: 'pointer',
+                                            objectFit: 'contain',
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                        }}
+                                        onClick={() => handleImageClick(fotoUrl)}
+                                    />
+                                </div>
                             )}
                             <input
                                 type="file"
@@ -240,6 +277,38 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                     </form>
                 </div>
             </div>
+
+            {/* Image Preview Modal */}
+            {selectedImage && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                    onClick={handleClosePreview}
+                >
+                    <div className="relative">
+                        <div className="relative w-full h-[60vh]">
+                            <Image
+                                src={selectedImage}
+                                alt="Selected Image"
+                                layout="intrinsic"
+                                width={600}
+                                height={400}
+                                className="object-contain rounded-lg"
+                                style={{
+                                    objectFit: 'contain',
+                                    maxWidth: '100%', 
+                                    maxHeight: '100%',
+                                }}
+                            />
+                        </div>
+                        <button
+                            onClick={handleClosePreview}
+                            className="absolute top-2 right-2 text-white text-2xl bg-red-600 w-9 h-9 flex items-center justify-center rounded-full"
+                        >
+                            &times;
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <style jsx>{`
                 .modal-backdrop {
@@ -258,7 +327,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                     background: white;
                     padding: 20px;
                     border-radius: 8px;
-                    max-width: 500px;
+                    max-width: 700px;
                     width: 100%;
                     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
                 }
@@ -282,6 +351,11 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                     display: flex;
                     flex-direction: column;
                 }
+                form {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr; 
+                    gap: 15px;
+                }
                 form div {
                     margin-bottom: 10px;
                 }
@@ -299,8 +373,9 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                     font-size: 0.875rem;
                     margin-top: 4px;
                 }
-                .submit-button {
-                    padding: 8px 16px;
+               .submit-button {
+                    grid-column: span 2;
+                    padding: 6px 16px;
                     background-color: #d50000;
                     color: white;
                     border: none;

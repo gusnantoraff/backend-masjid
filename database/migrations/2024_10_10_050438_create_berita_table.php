@@ -12,7 +12,7 @@ class CreateBeritaTable extends Migration
             $table->id();
             $table->string('judul');
             $table->text('konten');
-            $table->date('tanggal_publikasi');
+            $table->dateTime('tanggal_publikasi');
             $table->enum('kategori',['berita','sport','teknologi','pendidikan','lainnya']);
             $table->enum('status', ['draft', 'published', 'archived']);
             $table->string('foto')->nullable();

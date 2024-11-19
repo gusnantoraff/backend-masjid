@@ -59,6 +59,7 @@ Route::apiResource('users', UserController::class);
 
 Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
 Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
+Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

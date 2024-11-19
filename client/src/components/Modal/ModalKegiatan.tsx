@@ -19,15 +19,15 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
     foto: null as File | null,
   });
 
-  const [fileError, setFileError] = useState(''); // State for the file error message
+  const [fileError, setFileError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
+        ...prevData,
+        [name]: value,
     }));
-  };
+};
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,7 +59,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
     const data = new FormData();
 
     data.append('nama_kegiatan', formData.nama_kegiatan);
-    data.append('tanggal', formData.tanggal);
+    data.append('tanggal', formData.tanggal.replace('T', ' '));
     data.append('lokasi', formData.lokasi);
     data.append('kategori', formData.kategori);
     data.append('keterangan', formData.keterangan);
@@ -121,7 +121,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
             <div>
               <label htmlFor="tanggal">Tanggal:</label>
               <input
-                type="date"
+                type="datetime-local"
                 id="tanggal"
                 name="tanggal"
                 value={formData.tanggal}
