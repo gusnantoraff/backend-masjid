@@ -151,7 +151,7 @@ const ProfilMasjid = () => {
             Nomor Telepon Kontak
           </label>
           <input
-            type="text"
+            type="number"
             name="kontak"
             value={kontak}
             onChange={handleKontakChange}
