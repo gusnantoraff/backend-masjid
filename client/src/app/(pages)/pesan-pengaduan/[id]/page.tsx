@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Typography, Button, Box, Grid, Divider } from "@mui/material";
 import { SlActionUndo } from "react-icons/sl";
 import { FiVolume2 } from 'react-icons/fi';
+import { AiOutlineMail } from "react-icons/ai";
 
 interface Pesan {
     nama_pengirim: string;
@@ -43,6 +44,24 @@ const PesanDetail = ({ params }: { params: { id: string } }) => {
     if (error) {
         return <Typography variant="h6" sx={{ padding: "20px" }}>{error}</Typography>;
     }
+
+    const handleEmail = () => {
+        if (!pesan || !pesan.email) {
+            console.error("Pesan or email not found");
+            return;
+        }
+
+        // Create subject and body for the email
+        const subject = encodeURIComponent(`Halo, ${pesan.nama_pengirim}`);
+        const body = encodeURIComponent(`Hai ${pesan.nama_pengirim},\n\nIni adalah pesan untuk Anda.`);
+
+        // Create mailto link
+        const mailtoLink = `mailto:${pesan.email}?subject=${subject}&body=${body}`;
+
+        // Open mail client with mailto link
+        window.location.href = mailtoLink;
+    };
+
 
     return (
         <DefaultLayout>
@@ -111,7 +130,9 @@ const PesanDetail = ({ params }: { params: { id: string } }) => {
                         color: "#333",
                         margin: "0 0 12px 0",
                         letterSpacing: "0.5px",
-                    }}>Pesan & Pengaduan</h2>
+                    }}
+                    >
+                        Pesan & Pengaduan</h2>
 
                     <div
                         dangerouslySetInnerHTML={{ __html: pesan?.pesan || "" }}
@@ -130,6 +151,22 @@ const PesanDetail = ({ params }: { params: { id: string } }) => {
                         height: "1px",
                     }}></div>
                 </div>
+                <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: "#25D366",
+                        color: "white",
+                        marginLeft: "18px", 
+                        height: "40px", 
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                    onClick={handleEmail}
+                >
+                    <AiOutlineMail style={{ fontSize: "20px", marginRight: "8px" }} />
+                    Balas Pesan Sekarang
+                </Button>
             </div>
 
             {/* Horizontal Divider */}

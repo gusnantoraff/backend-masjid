@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { BiX } from 'react-icons/bi';
-import bcrypt from 'bcryptjs';
 
 interface ModalFormProps {
     isOpen: boolean;
@@ -17,8 +16,6 @@ const EditAkun: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) =
         email: '',
         phone: '',
         birth: '',
-        password: '',
-        password_confirmation: '',
         gender: 'Male',
         role: 'ADMIN',
     
@@ -39,8 +36,6 @@ const EditAkun: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) =
                     email: data.email,
                     phone: data.phone,
                     birth: data.birth,
-                    password: '',
-                    password_confirmation: data.password_confirmation,
                     gender: data.gender || 'Male',
                     role: data.role || 'ADMIN',
                 });
@@ -64,17 +59,12 @@ const EditAkun: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) =
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const hashedPassword = formData.password
-        ? await bcrypt.hash(formData.password, 10)
-        : ''; 
     const data = {
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
         phone: formData.phone,
         birth: formData.birth,
-        password: hashedPassword,
-        password_confirmation: hashedPassword,
         gender: formData.gender,
         role: formData.role,
     };
@@ -161,26 +151,6 @@ if (!isOpen) {
                 id="birth"
                 name="birth"
                 value={formData.birth}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="password">Password:</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="password_confirmation">Konfirmasi Password:</label>
-              <input
-                type="password"
-                id="password_confirmation"
-                name="password_confirmation"
-                value={formData.password_confirmation}
                 onChange={handleChange}
               />
             </div>

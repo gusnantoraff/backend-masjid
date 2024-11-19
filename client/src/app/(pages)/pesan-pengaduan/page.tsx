@@ -18,7 +18,6 @@ const Pengaduan = () => {
   ];
 
   const fetchUrl = 'http://localhost:8000/api/pesan-website';
-   
 
   return (
     <DefaultLayout>

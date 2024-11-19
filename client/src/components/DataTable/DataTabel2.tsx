@@ -3,8 +3,7 @@ import axios from "axios";
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
 import { BiTrash } from 'react-icons/bi';
 import AlertConfirm from "../Alerts/AlertConfirm";
-import { AiOutlineEye } from 'react-icons/ai';
-
+import { AiOutlineEye, AiOutlineMail } from 'react-icons/ai';
 
 interface Column {
     header: string;
@@ -38,7 +37,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
     
         fetchData();
     }, [fetchUrl, reloadData]);
-    
 
     const handleDelete = async () => {
         if (selectedId !== null) {
@@ -74,14 +72,17 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
         // Membuka aplikasi email dengan link mailto
         window.location.href = mailtoLink;
     };
-    
-      
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
         if (typeof value === 'string' && accessor !== 'email') {
             return value.charAt(0).toUpperCase() + value.slice(1);
         }
         return value;
+    };
+
+    // Function to truncate text content with a given character limit
+    const truncateContent = (text: string, limit: number = 50) => {
+        return text.length > limit ? text.substring(0, limit) + '...' : text;
     };
 
     if (loading) {
@@ -130,7 +131,14 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
                                         borderBottom: '1px solid #E0E0E0',
                                     }}
                                 >
-                                    {column.accessor ? capitalizeFirstLetter(row[column.accessor], column.accessor) : (
+                                    {column.accessor ? (
+                                        // Apply truncation for content that may be too long
+                                        column.accessor === 'pesan' ? (
+                                            truncateContent(row[column.accessor])
+                                        ) : (
+                                            capitalizeFirstLetter(row[column.accessor], column.accessor)
+                                        )
+                                    ) : (
                                         <Box>
                                             <Button
                                                 variant="contained"
@@ -140,35 +148,25 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
                                             >
                                                 Hapus
                                             </Button>
+
                                             <Link href={`/pesan-pengaduan/${row.id}`}>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ backgroundColor: '#2379DC', color: 'white', marginLeft: '8px' }}
-                                                startIcon={<AiOutlineEye />}  
-                                            >
-                                                Detail
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                sx={{
-                                                    backgroundColor: "#25D366",
-                                                    color: "white",
-                                                    marginLeft: "8px",
-                                                    padding: "4px 8px",
-                                                    minWidth: "auto",
-                                                    fontSize: "0.7rem",
-                                                }}
-                                                // startIcon={
-                                                //     <AiOutlineWhatsApp />
-                                                // }
-                                                onClick={() =>
-                                                    handleEmail(row.id)
-                                                }
-                                            >
-                                                Email
-                                            </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{ backgroundColor: '#2379DC', color: 'white', marginLeft: '8px' }}
+                                                    startIcon={<AiOutlineEye />}
+                                                >
+                                                    Detail
+                                                </Button>
                                             </Link>
 
+                                            <Button
+                                                variant="contained"
+                                                sx={{ backgroundColor: "#25D366", color: "white", marginLeft: "8px" }}
+                                                onClick={() => handleEmail(row.id) }
+                                            >
+                                                <AiOutlineMail style={{fontSize: "20px", marginRight: "8px" }} />
+                                                Email
+                                            </Button>
                                         </Box>
                                     )}
                                 </TableCell>
