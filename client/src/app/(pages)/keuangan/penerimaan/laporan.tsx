@@ -21,6 +21,7 @@ import {ListItemIcon, ListItemText } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import GridOnIcon from '@mui/icons-material/GridOn';
+import { jsPDF } from "jspdf";
 
 // Dummy data
 function createData(
@@ -89,11 +90,106 @@ const filteredRows = rows.filter((row) => {
     const handleClose = () => {
       setAnchorEl(null);
     };
-  
-    const handleExport = (format: string) => {
-      handleClose();
-      console.log(`Exporting to ${format}`); // Implement the export functionality here
-    };
+
+    const handleExport = (format) => {
+      if (format === "CSV") {
+          const csvContent =
+              "data:text/csv;charset=utf-8," +
+              ["Jenis,Tanggal,Jumlah,Deskripsi,File,Oleh,Status"]
+                  .concat(
+                      filteredRows.map((row) =>
+                          [
+                              row.name,
+                              row.date,
+                              row.amount,
+                              row.description,
+                              row.file,
+                              row.oleh,
+                          ].join(","),
+                      ),
+                  )
+                  .join("\n");
+
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "laporan_penerimaan.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      } else if (format === "PDF") {
+          const doc = new jsPDF("p", "cm", "a4");
+
+      // Header tabel
+      const headers = [
+          "No", "Jenis", "Tanggal", "Jumlah", "Deskripsi", "File", "Oleh",
+      ];
+
+      // Data tabel
+      const tableData = filteredRows.map((row, index) => [
+          index + 1,
+          row.name,
+          row.date,
+          row.amount.toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+          row.description,
+          row.file,
+          row.oleh,
+      ]);
+
+      // Pengaturan header dokumen
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Laporan Keuangan", 10.5, 1, { align: "center" });
+
+      // Posisi awal Y untuk tabel
+      let yPosition = 2;
+      const cellHeight = 0.8;
+
+      // Lebar kolom
+      const columnWidths = [1, 3, 3, 3, 5, 3, 3, 3];
+
+      // Gaya untuk header tabel
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0); // Warna teks hitam
+
+      headers.forEach((header, index) => {
+          const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+          doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+      });
+
+      yPosition += cellHeight;
+
+      // Gaya untuk baris data
+      doc.setFont("helvetica", "normal");
+
+      tableData.forEach((row) => {
+          row.forEach((cell, index) => {
+              const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+              doc.text(String(cell), xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+          });
+
+          yPosition += cellHeight;
+
+          // Jika Y melewati batas halaman, tambahkan halaman baru
+          if (yPosition > 28) {
+              doc.addPage();
+              yPosition = 2;
+
+              headers.forEach((header, index) => {
+                  const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+                  doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+              });
+
+              yPosition += cellHeight;
+          }
+      });
+
+      // Simpan file PDF
+      doc.save("laporan_keuangan.pdf"); 
+        };
+      setAnchorEl(null);
+    }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>

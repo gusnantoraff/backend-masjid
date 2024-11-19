@@ -5,7 +5,7 @@ import Stats from "../arus-kas/stats";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
 import StatsLine from "@/components/DataStats/stats1";
-import LaporanKeuangan from "./laporan";
+import LaporanKeuangan from "../arus-kas/laporan";
 
 export const metadata: Metadata = {
     title: "SIstem Manajemen Masjid",
@@ -28,7 +28,7 @@ export default function Home() {
                     <StatsLine />
                 </div>
                 <div className="mt-5 flex w-full rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                    <LaporanKeuangan />
+                    <LaporanKeuangan isLaporanPage={true}/>
                 </div>
             </DefaultLayout>
         </>

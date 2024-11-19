@@ -13,15 +13,24 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import Button from "@mui/material/Button";
 import TablePagination from "@mui/material/TablePagination";
+import Menu from "@mui/material/Menu";
+import MenuItemMUI from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import GridOnIcon from "@mui/icons-material/GridOn";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { AiOutlineExport } from "react-icons/ai";
+import { jsPDF } from "jspdf";
 
-export default function AccessibleTable() {
+export default function AccessibleTable({ isLaporanPage }) {
     const [rows, setRows] = useState([]);
     const [coaMap, setCoaMap] = useState({});
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [status, setStatus] = useState("");
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10); // Default rows per page
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     useEffect(() => {
         const fetchCoaData = async () => {
@@ -45,7 +54,6 @@ export default function AccessibleTable() {
                 );
                 const result = await response.json();
 
-                // Format the rows based on the fetched data
                 const formattedRows = [];
                 result.forEach((item) => {
                     item.penerimaan_kas.forEach((pemasukan) => {
@@ -83,13 +91,11 @@ export default function AccessibleTable() {
         fetchData();
     }, []);
 
-    // Map coa_id to nama_akun
     const mappedRows = rows.map((row) => ({
         ...row,
         oleh: coaMap[row.oleh] || row.oleh,
     }));
 
-    // Filter rows based on date and status
     const filteredRows = mappedRows.filter((row) => {
         const rowDate = new Date(row.date);
         const start = startDate ? new Date(startDate) : null;
@@ -106,7 +112,6 @@ export default function AccessibleTable() {
         return isDateInRange && isStatusMatch;
     });
 
-    // Handle pagination
     const displayedRows = filteredRows.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
@@ -119,14 +124,127 @@ export default function AccessibleTable() {
         setPage(0);
     };
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
+
+    const handleExport = (format) => {
+        if (format === "CSV") {
+            const csvContent =
+                "data:text/csv;charset=utf-8," +
+                ["Jenis,Tanggal,Jumlah,Deskripsi,File,Oleh,Status"]
+                    .concat(
+                        filteredRows.map((row) =>
+                            [
+                                row.name,
+                                row.date,
+                                row.amount,
+                                row.description,
+                                row.file,
+                                row.oleh,
+                                row.status,
+                            ].join(","),
+                        ),
+                    )
+                    .join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "laporan_keuangan.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else if (format === "PDF") {
+            const doc = new jsPDF("p", "cm", "a4");
+
+        // Header tabel
+        const headers = [
+            "No", "Jenis", "Tanggal", "Jumlah", "Deskripsi", "File", "Oleh", "Status"
+        ];
+
+        // Data tabel
+        const tableData = filteredRows.map((row, index) => [
+            index + 1,
+            row.name,
+            row.date,
+            row.amount.toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+            row.description,
+            row.file,
+            row.oleh,
+            row.status
+        ]);
+
+        // Pengaturan header dokumen
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Laporan Keuangan", 10.5, 1, { align: "center" });
+
+        // Posisi awal Y untuk tabel
+        let yPosition = 2;
+        const cellHeight = 0.8;
+
+        // Lebar kolom
+        const columnWidths = [1, 3, 3, 3, 5, 3, 3, 3];
+
+        // Gaya untuk header tabel
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0); // Warna teks hitam
+
+        headers.forEach((header, index) => {
+            const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+            doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+        });
+
+        yPosition += cellHeight;
+
+        // Gaya untuk baris data
+        doc.setFont("helvetica", "normal");
+
+        tableData.forEach((row) => {
+            row.forEach((cell, index) => {
+                const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+                doc.text(String(cell), xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+            });
+
+            yPosition += cellHeight;
+
+            // Jika Y melewati batas halaman, tambahkan halaman baru
+            if (yPosition > 28) {
+                doc.addPage();
+                yPosition = 2;
+
+                headers.forEach((header, index) => {
+                    const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
+                    doc.text(header, xPosition + columnWidths[index] / 2, yPosition, { align: "center" });
+                });
+
+                yPosition += cellHeight;
+            }
+        });
+
+        // Simpan file PDF
+        doc.save("laporan_keuangan.pdf"); 
+          };
+        setAnchorEl(null);
+    };
+
     return (
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <p className="mb-4 px-2 text-center text-3xl font-bold text-black">
-                Jurnal
-            </p>
+            
+                <p className="text-3xl font-bold text-black mb-4 px-2 mt-2 text-center">
+                    {isLaporanPage ? "Laporan Keuangan" : "Jurnal"}
+                </p>
+            
 
             {/* Filter Form */}
-            <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '16px', paddingTop: '10px' }}>
                 <TextField
                     label="Tanggal Mulai"
                     type="date"
@@ -175,6 +293,42 @@ export default function AccessibleTable() {
                 >
                     Reset Filter
                 </Button>
+                {isLaporanPage && (
+                   <>
+                        <Button
+                            onClick={handleClick}
+                            aria-controls="export-menu"
+                            aria-haspopup="true"
+                            variant="outlined"
+                            startIcon={<AiOutlineExport />}
+                            style={{ color: "#40E0D0", // Hijau toska untuk teks
+                                borderColor: "#40E0D0", // Hijau toska untuk border 
+                                }}
+                        >
+                            Export
+                        </Button>
+                        <Menu
+                             id="export-menu"
+                             anchorEl={anchorEl}
+                             open={Boolean(anchorEl)}
+                             onClose={handleClose}
+                        >
+                            <MenuItemMUI onClick={() => handleExport("CSV")}>
+                                <ListItemIcon>
+                                    <GridOnIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText primary="Export to CSV" />
+                            </MenuItemMUI>
+                            <MenuItemMUI onClick={() => handleExport("PDF")}>
+                                <ListItemIcon>
+                                    <PictureAsPdfIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText primary="Export to PDF" />
+                            </MenuItemMUI>
+                        </Menu>
+                        </>
+                )}
+            </div>
             </div>
 
             {/* Table */}
@@ -182,13 +336,13 @@ export default function AccessibleTable() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Jenis</TableCell>
-                            <TableCell>Tanggal</TableCell>
-                            <TableCell>Jumlah</TableCell>
-                            <TableCell>Deskripsi</TableCell>
-                            <TableCell>File</TableCell>
-                            <TableCell>Oleh</TableCell>
-                            <TableCell>Status</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Jenis</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Tanggal</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Jumlah</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Deskripsi</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>File</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Oleh</TableCell>
+                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Status</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
