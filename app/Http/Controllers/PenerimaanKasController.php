@@ -34,6 +34,8 @@ class PenerimaanKasController extends Controller
             'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
 
+        $validatedData['arus_kas_id'] = 1; // Set default value
+
         if ($request->hasFile('image')) {
             // Store the image in the 'public/storage/penerimaan_kas' folder
             $imagePath = $request->file('image')->store('penerimaan_kas', 'public');
@@ -79,6 +81,8 @@ class PenerimaanKasController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
             'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
+
+        $validatedData['arus_kas_id'] = 1; // Set default value
 
         if ($request->hasFile('image')) {
             // Delete the old image if it exists

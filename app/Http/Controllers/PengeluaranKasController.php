@@ -34,6 +34,8 @@ class PengeluaranKasController extends Controller
             'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
 
+        $validatedData['arus_kas_id'] = 1; // Set default value
+
         if ($request->hasFile('image')) {
             // Ensure the 'pengeluaran_kas' directory exists
             if (! Storage::disk('public')->exists('pengeluaran_kas')) {
@@ -84,6 +86,8 @@ class PengeluaranKasController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
             'jenis' => 'nullable|string', // Added 'jenis' attribute
         ]);
+
+        $validatedData['arus_kas_id'] = 1; // Set default value
 
         if ($request->hasFile('image')) {
             // Delete the old image if it exists
