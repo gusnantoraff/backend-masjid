@@ -4,9 +4,42 @@ import Chart from "react-apexcharts";
 
 export default function PendapatanChart() {
   const [data, setData] = React.useState({
-    series: [100000, 300000],
-    labels: ["Infaq", "Donasi"],
+    series: [],
+    labels: [],
   });
+
+  React.useEffect(() => {
+    // Fetch data from API
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/penerimaan-kas");
+        const result = await response.json();
+
+        // Process data for the chart
+        const groupedData = result.reduce((acc, item) => {
+          const label = item.jenis;
+          const amount = parseFloat(item.jumlah);
+
+          if (acc[label]) {
+            acc[label] += amount; // Sum amounts with the same label
+          } else {
+            acc[label] = amount;
+          }
+          return acc;
+        }, {});
+
+        // Set data for the chart
+        setData({
+          labels: Object.keys(groupedData),
+          series: Object.values(groupedData),
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Chart
@@ -22,14 +55,14 @@ export default function PendapatanChart() {
             useSeriesColors: false,
           },
           formatter: function (seriesName, opts) {
-            const value = opts.w.globals.series[opts.seriesIndex]; // Get the value for the corresponding series
-            return `${seriesName}: Rp${value.toLocaleString("id-ID")}`; // Add value next to the label
+            const value = opts.w.globals.series[opts.seriesIndex];
+            return `${seriesName}: Rp${value.toLocaleString("id-ID")}`;
           },
         },
         dataLabels: {
           enabled: true,
           formatter: function (val) {
-            return `${val.toFixed(1)}%`; // Display percentage with one decimal
+            return `${val.toFixed(1)}%`;
           },
           dropShadow: {
             enabled: false,
@@ -38,13 +71,13 @@ export default function PendapatanChart() {
             fontSize: "16px",
             fontFamily: "Arial",
             fontWeight: "bold",
-            colors: ["#ffffff"], // Set label color to white
+            colors: ["#ffffff"],
           },
         },
         plotOptions: {
           pie: {
             dataLabels: {
-              offset: 0, // Keep data labels close to the chart
+              offset: 0,
             },
           },
         },
@@ -53,7 +86,7 @@ export default function PendapatanChart() {
           palette: "palette1",
           monochrome: {
             enabled: true,
-            color: "#4caf50", // Use green color (#4caf50)
+            color: "#4caf50",
             shadeTo: "light",
             shadeIntensity: 0.65,
           },

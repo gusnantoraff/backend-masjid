@@ -342,6 +342,10 @@ export default function AccessibleTable({
                             onClick={handleClick}
                             variant="outlined"
                             startIcon={<AiOutlineExport />}
+                            style={{
+                                color: "#008080", // Warna teks dan ikon hijau toska
+                                borderColor: "#008080", // Warna border hijau toska
+                            }}
                         >
                             Export
                         </Button>

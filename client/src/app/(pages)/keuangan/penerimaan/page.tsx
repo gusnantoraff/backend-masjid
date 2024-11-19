@@ -31,12 +31,6 @@ export default function Home() {
   <h2 className="w-auto text-3xl font-bold text-black p-2 text-center">
     Rp 1.500.000,-
   </h2>
-  <h2 className="w-auto text-xl font-medium text-black p-2 text-center">
-    dalam periode
-  </h2>
-  <h2 className="w-auto text-xl font-medium text-blue-500 p-2 text-center">
-    October 2024
-  </h2>
 </div>
 
 
