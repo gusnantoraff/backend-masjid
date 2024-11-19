@@ -18,20 +18,18 @@ const coaUrl = "http://localhost:8000/api/coa";
 const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
     const [jenis, setJenis] = useState("");
     const [tanggal, setTanggal] = useState("");
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState(""); // This will store the unformatted number
     const [description, setDescription] = useState("");
     const [file, setFile] = useState(null);
     const [oleh, setOleh] = useState("");
     const [coaOptions, setCoaOptions] = useState([]);
     const [formError, setFormError] = useState("");
 
-    // Define options for jenis based on the modal type (pemasukan or pengeluaran)
     const jenisOptions =
         title === "Tambah Pemasukan"
             ? ["Infaq", "Donasi", "Zakat"]
             : ["Operasional", "Listrik", "Zakat", "Pembangunan"];
 
-    // Fetch COA options for "Oleh" dropdown
     useEffect(() => {
         const fetchCoaData = async () => {
             try {
@@ -45,6 +43,19 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
         };
         fetchCoaData();
     }, []);
+
+    // Function to format number with dots as thousand separators
+    const formatNumberWithDots = (number) => {
+        if (!number) return "";
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
+    const handleAmountChange = (e) => {
+        const input = e.target.value.replace(/\./g, ""); // Remove existing dots
+        if (!isNaN(input)) {
+            setAmount(input); // Update state with unformatted number
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -73,7 +84,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
             if (response.ok) {
                 const result = await response.json();
                 console.log("Submission successful:", result);
-                onSubmit(); // Notify parent to reload page
+                onSubmit();
                 onClose();
                 setJenis("");
                 setTanggal("");
@@ -136,11 +147,11 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                         <div className="w-1/3">
                             <label>Jumlah:</label>
                             <input
-                                type="number"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
+                                type="text"
+                                value={formatNumberWithDots(amount)}
+                                onChange={handleAmountChange}
                                 className="h-12 w-full rounded-lg border p-2"
-                                placeholder="Jumlah"
+                                placeholder="Jumlah Rupiah"
                             />
                         </div>
                     </div>
