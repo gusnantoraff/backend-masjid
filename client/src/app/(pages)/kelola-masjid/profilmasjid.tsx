@@ -98,16 +98,16 @@ const ProfilMasjid = () => {
   };
 
   return (
-    <div className="border rounded-lg border-grey-500 mt-4 mb-4 p-4 shadow-1">
+    <div className="border rounded-lg border-grey-500 mt-4 mb-4 p-4 shadow-md">
       <div className="flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Profil Masjid</h1>
         {isEditing ? (
           <div className="flex space-x-2">
-            <button onClick={handleSaveClick} className="text-green-500"><FaCheck /></button>
-            <button onClick={handleCancelClick} className="text-gray-500"><FaTimes /></button>
+            <button onClick={handleSaveClick} className="text-green-500"><FaCheck size={20}/></button>
+            <button onClick={handleCancelClick} className="text-gray-500"><FaTimes size={20}/></button>
           </div>
         ) : (
-          <button onClick={handleEditClick} className="text-yellow-500"><FaEdit /></button>
+          <button onClick={handleEditClick} className="text-yellow-500"><FaEdit size={20}/></button>
         )}
       </div>
 
@@ -116,7 +116,7 @@ const ProfilMasjid = () => {
         <div className="mb-4 bg-green-500 text-white p-4 rounded-lg flex justify-between items-center">
           {successMessage || errorMessage}
           <button onClick={closeAlert} className="text-white hover:text-gray-300">
-            <FaTimes />
+            <FaTimes size={20}/>
           </button>
         </div>
       )}

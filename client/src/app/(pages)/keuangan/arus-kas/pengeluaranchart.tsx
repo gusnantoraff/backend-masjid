@@ -20,12 +20,16 @@ export default function PengeluaranChart() {
           labels: {
             colors: ['#000000'],
             useSeriesColors: false,
-          }
+          },
+          formatter: function (seriesName, opts) {
+            const value = opts.w.globals.series[opts.seriesIndex]; // Get the value for the corresponding series
+            return `${seriesName}: Rp${value.toLocaleString("id-ID")}`; // Add value next to the label
+          },
         },
         dataLabels: {
           enabled: true,
           formatter: function (val) {
-            return val.toFixed(2) + "%"; // Format nilai menjadi 2 angka di belakang koma
+            return `${val.toFixed(1)}%`; // Format nilai menjadi 2 angka di belakang koma
           },
           dropShadow: {
             enabled: false,

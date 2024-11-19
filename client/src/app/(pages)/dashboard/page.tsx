@@ -20,11 +20,7 @@ export default function Home() {
         <>
             <DefaultLayout>
                 <div className="mb-4 rounded-lg border border-gray-200 shadow-md">
-                    
-                        
-
-                            <InfoMasjid />
-                       
+                            <InfoMasjid />  
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-[70%_30%]">

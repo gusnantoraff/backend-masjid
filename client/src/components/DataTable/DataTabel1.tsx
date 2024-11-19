@@ -135,8 +135,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                     }
                                     {column.accessor === '' && (
                                         <Box>
-                                           
-                                           <Link href={`/berita/${row.id}`}>
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -148,16 +146,11 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                     fontSize: '0.7rem',
                                                 }}
                                                 startIcon={<AiOutlineEye />}
+                                                onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
                                             >
                                                 Detail
                                             </Button>
-<<<<<<< Updated upstream
                                             
-=======
-                                            </Link>
-
-                                            <Link href={`/pengaturan-akun/${row.id}`}>
->>>>>>> Stashed changes
                                             <Button
                                                 variant="contained"
                                                 sx={{
@@ -173,11 +166,6 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                             >
                                                 Edit
                                             </Button>
-<<<<<<< Updated upstream
-=======
-                                            </Link>
-
->>>>>>> Stashed changes
                                             <Button
                                                 variant="contained"                                      
                                                 sx={{
@@ -188,20 +176,11 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                                     minWidth: 'auto',
                                                     fontSize: '0.7rem',
                                                 }}
-<<<<<<< Updated upstream
-                                                startIcon={<AiOutlineEye />}
-                                                onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
-=======
                                                 startIcon={<BiTrash />}
                                                 onClick={() => promptDelete(row.id)}
->>>>>>> Stashed changes
                                             >
                                                 Hapus
                                             </Button>
-<<<<<<< Updated upstream
-=======
-                                            
->>>>>>> Stashed changes
                                         </Box>
                                     )}
                                 </TableCell>

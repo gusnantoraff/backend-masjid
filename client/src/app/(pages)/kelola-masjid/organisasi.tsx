@@ -163,7 +163,7 @@ const StrukturOrganisasiMasjid = () => {
     };
 
     return (
-        <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-1">
+        <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md">
             <div className="mb-4 flex justify-between">
                 <h1 className="text-heading-6 font-bold text-dark dark:text-white">
                     Struktur Organisasi Masjid
@@ -202,16 +202,18 @@ const StrukturOrganisasiMasjid = () => {
             <table className="border-grey-200 min-w-full border bg-white dark:bg-dark-2 dark:text-white">
                 <thead>
                     <tr>
-                        <th className="border-b px-4 py-2">No</th>
-                        <th className="border-b px-4 py-2">Jabatan</th>
-                        <th className="border-b px-4 py-2">Nama</th>
-                        <th className="border-b px-4 py-2">Kontak</th>
-                        <th className="border-b px-4 py-2">Aksi</th>
+                        <th className="border-b px-4 py-2 text-left">No</th>
+                        <th className="border-b px-4 py-2 text-left">Jabatan</th>
+                        <th className="border-b px-4 py-2 text-left">Nama</th>
+                        <th className="border-b px-4 py-2 text-left">Kontak</th>
+                        <th className="border-b px-4 py-2 text-left">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {newStruktur.map((item, index) => (
-                        <tr key={item.id}>
+                        <tr key={item.id}className={`${
+                            index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                          } dark:bg-dark-3 dark:odd:bg-dark-2`}>
                             <td className="border-b px-4 py-2">{index + 1}</td>
                             <td className="border-b px-4 py-2">
                                 {isEditing === item.id ? (
@@ -277,7 +279,7 @@ const StrukturOrganisasiMasjid = () => {
                                                 }
                                                 className="text-green-500"
                                             >
-                                                <FaCheck />
+                                                <FaCheck size={20}/>
                                             </button>
                                             <button
                                                 onClick={() => {
@@ -285,7 +287,7 @@ const StrukturOrganisasiMasjid = () => {
                                                 }}
                                                 className="text-gray-500"
                                             >
-                                                <FaTimes />
+                                                <FaTimes size={20}/>
                                             </button>
                                         </>
                                     ) : (
@@ -296,7 +298,7 @@ const StrukturOrganisasiMasjid = () => {
                                                 }
                                                 className="text-yellow-500"
                                             >
-                                                <FaEdit />
+                                                <FaEdit size={20}/>
                                             </button>
                                             <button
                                                 onClick={() =>
@@ -304,7 +306,7 @@ const StrukturOrganisasiMasjid = () => {
                                                 }
                                                 className="text-red-500"
                                             >
-                                                <FaTrash />
+                                                <FaTrash size={20}/>
                                             </button>
                                         </>
                                     )}
