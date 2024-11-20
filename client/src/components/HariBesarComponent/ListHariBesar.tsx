@@ -74,6 +74,21 @@ const ListHariBesar: React.FC<ListHariBesarProps> = ({ refresh }) => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false, 
+    };
+    const date = new Date(dateString);
+    const wibDate = new Date(date.getTime());
+
+    return new Intl.DateTimeFormat('id-ID', options).format(wibDate) + ' WIB';
+};
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -102,7 +117,7 @@ const ListHariBesar: React.FC<ListHariBesarProps> = ({ refresh }) => {
             <HariBesarCard
               key={haribesar.id}
               nama_kegiatan={haribesar.nama_kegiatan}
-              tanggal={haribesar.tanggal}
+              tanggal={formatDate(haribesar.tanggal)}
               lokasi={haribesar.lokasi}
               foto={getFotoUrl}
               onEdit={() => handleEdit(haribesar.id)}

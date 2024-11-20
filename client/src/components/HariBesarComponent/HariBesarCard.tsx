@@ -38,14 +38,14 @@ const HariBesarCard: React.FC<HariBesarCardProps> = ({ nama_kegiatan, tanggal, l
           border: 1px solid #ddd;
           border-radius: 8px;
           overflow: hidden;
-          width: 425px;
+          width: 575px;
           height: 175px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           margin: 10px;
           background-color: white;
         }
         .card-image {
-          width: 175px;
+          width: 220px;
           height: 175px;
           object-fit: cover;
           flex-shrink: 0;
