@@ -43,7 +43,6 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
     const [fileError, setFileError] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-
     useEffect(() => {
         if (isOpen) {
             const fetchData = async () => {
@@ -120,9 +119,11 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                 await handleFotoUpload(formData.image);
             }
 
+            const formattedTanggal = formatTanggal(formData.tanggal);
+
             const data = {
                 nama_kegiatan: formData.nama_kegiatan,
-                tanggal: formData.tanggal.replace('T', ' '),
+                tanggal: formattedTanggal,
                 lokasi: formData.lokasi,
                 kategori: formData.kategori,
                 keterangan: formData.keterangan,
@@ -141,6 +142,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
         }
     };
 
+
     const handleFotoUpload = async (file: File) => {
         const formData = new FormData();
         formData.append("foto", file);
@@ -155,6 +157,12 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
             console.error("Error uploading foto:", error);
         }
     };
+
+    const formatTanggal = (tanggal: string): string => {
+        const formatted = tanggal.includes('T') ? tanggal.replace('T', ' ') : tanggal;
+        return formatted.split(':').slice(0, 2).join(':');
+    };
+    
 
     const handleImageClick = (src: string) => {
         setSelectedImage(src);
