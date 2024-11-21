@@ -91,6 +91,9 @@ export default function PengeluaranChart() {
             shadeIntensity: 0.65,
           },
         },
+        chart: {
+          background: "transparent", // Set background to transparent
+        },
       }}
       series={data.series}
       type="pie"

@@ -46,31 +46,25 @@ const InfoMasjid = () => {
     }
 
     return (
-        <div className="mb-4 mt-4 h-full px-4">
+        <div className="mb-4 mt-4 h-full px-4 py-4">
             {/* Bagian atas dengan judul di kiri dan kontak di kanan */}
             <div className="flex justify-between items-start mb-4">
                 {/* Judul di kiri atas */}
                 <div>
-                <h1 className="text-2xl font-bold">{infoMasjid?.nama_masjid}</h1>
-                <p className="mt-2">{infoMasjid?.deskripsi}</p>
+                <h1 className="mt-2 text-2xl font-bold text-black dark:text-slate-200">{infoMasjid?.nama_masjid}</h1>
+                <p className="mt-2 text-black dark:text-slate-400">{infoMasjid?.deskripsi}</p>
                 </div>
                 
                 
                 {/* Kontak di kanan atas */}
-                <div className="text-left">
-                    <p className="text-gray-600">
+                <div className="text-left mt-2">
+                    <p className="text-black dark:text-slate-400">
                         <FiPhone className="mr-1 inline" /> {infoMasjid?.kontak}
                     </p>
-                    <p className="text-gray-600">
+                    <p className="text-black dark:text-slate-400">
                         <FiMapPin className="mr-1 inline" /> {infoMasjid?.alamat}
                     </p>
                 </div>
-            </div>
-
-            {/* Deskripsi di bawah */}
-            <div className="text-center">
-                {/* <h1 className="mb-2 text-2xl font-bold">Deskripsi</h1> */}
-                
             </div>
         </div>
     );
