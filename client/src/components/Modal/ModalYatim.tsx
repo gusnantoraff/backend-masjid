@@ -1,16 +1,19 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { BiX } from 'react-icons/bi'; 
+import { BiX } from 'react-icons/bi';
 
 interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: () => void;
+  onSuccess: (message: string) => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSuccess }) => {
   const [formData, setFormData] = useState({
     nama: '',
     birth: '',
+    gender: 'pria',
     alamat: '',
     keterangan: 'yatim',
     kontak: '',
@@ -30,10 +33,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
     try {
         const response = await axios.post('http://localhost:8000/api/yatim-dhuafa', formData);
         console.log('Response from API:', response.data);
-  
+        onSubmit();
         onClose();
+        onSuccess("Data Yatim berhasil ditambahkan!");
       } catch (error) {
         console.error('Error posting data:', error);
+        onSuccess("Data Yatim gagal ditambahkan!");
+
       }
     };
 
@@ -84,6 +90,18 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
               />
             </div>
             <div>
+              <label htmlFor="gender">Jenis Kelamin:</label>
+              <select
+                id="gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+              >
+                <option value="pria">Pria</option>
+                <option value="wanita">Wanita</option>
+              </select>
+            </div>
+            <div>
               <label htmlFor="alamat">Alamat:</label>
               <textarea
                 id="alamat"
@@ -118,7 +136,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc',borderRadius:'4px',marginRight:'2px' }}>+62</span>
               <input
-                type="text"
+                type="number"
                 id="kontak"
                 name="kontak"
                 value={formData.kontak}

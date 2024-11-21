@@ -16,22 +16,23 @@ import { AiOutlineEye, AiOutlineWhatsApp } from "react-icons/ai";
 interface Column {
   header: string;
   accessor: string;
+  type?: 'jamaah' | 'yatim-dhuafa';
 }
 
 interface DataTableProps {
   columns: Column[];
   data?: any[];
   fetchUrl?: string;
+  reloadData?: () => void;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadData }) => {
   const [fetchedData, setFetchedData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState<any>(null);
 
-  // Fetch data if 'data' is not passed from parent and 'fetchUrl' is provided
   useEffect(() => {
     if (!data && fetchUrl) {
       axios
@@ -55,6 +56,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl }) => {
       await fetch(`${fetchUrl}/${selectedId}`, {
         method: "DELETE",
       });
+      if (reloadData) {
+        reloadData(); 
+      }
       setFetchedData(fetchedData.filter((item) => item.id !== selectedId));
       setShowConfirm(false);
     }
@@ -65,13 +69,21 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl }) => {
     setShowConfirm(true);
   };
 
-  const handleEdit = (id: any) => {
-    console.log("Edit data dengan ID:", id);
-  };
+  const handleEdit = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
+    if (type === 'jamaah') {
+        window.location.href = `/jamaah/${id}?edit=true`;
+    } else if (type === 'yatim-dhuafa') {
+        window.location.href = `/yatim-dhuafa/${id}?edit=true`;
+    }
+};
 
-  const handleRead = (id: number) => {
-    console.log(`Reading entry with ID: ${id}`);
-  };
+const handleDetail = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
+    if (type === 'jamaah') {
+        window.location.href = `/jamaah/${id}`;
+    } else if (type === 'yatim-dhuafa') {
+        window.location.href = `/yatim-dhuafa/${id}`;
+    }
+};
 
   const handleWhatsApp = (id: number) => {
     const jamaah = fetchedData.find((j) => j.id === id);
@@ -88,7 +100,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl }) => {
       return kontak;
     };
 
-    const waLink = `https://wa.me/${formatKontak(jamaah.kontak)}?text=Halo jamaah Al-Huda, ${jamaah.nama} Apa kabar`;
+    const waLink = `https://wa.me/${formatKontak(jamaah.kontak)}?text=Halo jamaah [nama-masjid], ${jamaah.nama} Apa kabar?`;
 
     window.open(waLink, "_blank");
   };
@@ -100,11 +112,8 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl }) => {
     return value;
   };
 
-  const truncateContent = (content: string, limit: number = 20) => {
-    const text = content
-    .replace(/&nbsp;/g, ' ')
-    .replace(/<\/?[^>]+(>|$)/g, "");
-    return text.length > limit ? text.substring(0, limit) + '...' : text;
+  const truncateText = (text: string, maxLength: number): string => {
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
 
 if (loading) {
@@ -168,8 +177,8 @@ if (loading) {
                 >
                   {column.accessor === 'nomor'
                                         ? idxData + 1
-                                        : column.accessor === 'konten' || column.accessor === 'judul'
-                                        ? truncateContent(row[column.accessor])
+                                        : column.accessor === 'alamat' || column.accessor === 'email'
+                                        ? truncateText(row[column.accessor], 6)
                                         : capitalizeFirstLetter(row[column.accessor], column.accessor)
                                     }
                                     {column.accessor === '' && (
@@ -194,7 +203,7 @@ if (loading) {
                           fontSize: "0.7rem",
                         }}
                         startIcon={<BiEdit />}
-                        onClick={() => handleEdit(row.id)}
+                        onClick={() => handleEdit(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}
                       >
                         Edit
                       </Button>
@@ -209,7 +218,7 @@ if (loading) {
                           fontSize: "0.7rem",
                         }}
                         startIcon={<AiOutlineEye />}
-                        onClick={() => handleRead(row.id)}
+                        onClick={() => handleDetail(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}
                       >
                         Detail
                       </Button>

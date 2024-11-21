@@ -239,6 +239,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                                 <option value="khatib">Khatib</option>
                                 <option value="muazin">Muazin</option>
                                 <option value="umum">Umum</option>
+                                <option value="hari-besar">Hari Besar</option>
                             </select>
                         </div>
                         <div>

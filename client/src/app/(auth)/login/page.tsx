@@ -20,26 +20,29 @@ const LoginPage: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+        const response = await fetch('http://localhost:8000/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+            credentials: 'include',
+        });
 
-      if (!response.ok) {
-        throw new Error('Login failed. Please check your credentials.');
-      }
+        if (!response.ok) {
+            throw new Error('Login failed. Please check your credentials.');
+        }
 
-      router.push('/dashboard');
+        const data = await response.json();
+        localStorage.setItem('api_token', data.token);
+        router.push('/dashboard');
     } catch (error: any) {
-      setErrorMessage(error.message || 'An error occurred during login.');
+        setErrorMessage(error.message || 'An error occurred during login.');
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   return (
     <main className={styles.loginContainer}>

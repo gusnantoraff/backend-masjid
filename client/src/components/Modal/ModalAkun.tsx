@@ -5,9 +5,10 @@ import { BiX } from 'react-icons/bi';
 interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: (message: string) => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -36,8 +37,10 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
       console.log('Response from API:', response.data);
 
       onClose();
+      onSuccess("Akun berhasil ditambahkan!");
     } catch (error) {
       console.error('Error posting data:', error);
+      onSuccess("Akun gagal ditambahkan!");
     }
   };
 
@@ -165,7 +168,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           </form>
         </div>
       </div>
-
+  
       <style jsx>{`
         .modal-backdrop {
           position: fixed;

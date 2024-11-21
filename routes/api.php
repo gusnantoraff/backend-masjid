@@ -24,8 +24,11 @@ use App\Http\Controllers\TemplateSuratController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YatimDhuafaController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ChangePasswordController;
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth:sanctum')->post('/change-password', [ChangePasswordController::class, 'store']);
 
 Route::middleware('auth.cookie')->get('/me', [AuthenticatedSessionController::class, 'me']);
 
@@ -60,6 +63,8 @@ Route::apiResource('users', UserController::class);
 Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
 Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
 Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
+Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

@@ -3,8 +3,9 @@
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Typography, Button, Box, Grid, Divider, Avatar } from "@mui/material";
-import { SlActionUndo } from "react-icons/sl";
+import { Typography, Button, Box, Grid, Divider, Avatar, TextField, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from "@mui/material";
+import { SlActionUndo, SlPencil } from "react-icons/sl";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface Akun {
   firstname: string;
@@ -21,9 +22,16 @@ interface Akun {
 
 const Akun = ({ params }: { params: { id: string } }) => {
   const { id } = params;
-  const [akun, setPesan] = useState<Akun | null>(null);
+  const searchParams = useSearchParams();
+  const isEditMode = searchParams.get('edit') === 'true';
+
+  const router = useRouter();
+
+  const [akun, setAkun] = useState<Akun | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(isEditMode);
   const [error, setError] = useState<string>("");
+  const [formData, setFormData] = useState<Akun | null>(null);
 
   useEffect(() => {
     fetch(`http://localhost:8000/api/users/${id}`)
@@ -32,7 +40,8 @@ const Akun = ({ params }: { params: { id: string } }) => {
         if (!data) {
           notFound();
         }
-        setPesan(data);
+        setAkun(data);
+        setFormData(data);
         setLoading(false);
       })
       .catch((err) => {
@@ -49,10 +58,57 @@ const Akun = ({ params }: { params: { id: string } }) => {
     return <Typography variant="h6" sx={{ padding: "20px" }}>{error}</Typography>;
   }
 
-  // Construct the avatar image URL or fallback to a default one
   const avatarUrl = akun?.avatar
     ? `http://localhost:8000/storage/${akun.avatar}`
-    : "/images/user/user.png"; // Fallback image if no avatar
+    : "/images/user/user.png";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (formData) {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target;
+    if (formData) {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSubmit = () => {
+    fetch(`http://localhost:8000/api/users/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((updatedData) => {
+        setAkun(updatedData);
+        setIsEditing(false);
+        router.push(`/pengaturan-akun/${id}`);
+      })
+      .catch((error) => {
+        setError("Failed to update profile.");
+      });
+  };
+
+  const handleKembali = () => {
+    router.push(`/pengaturan-akun`);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    router.push(`/pengaturan-akun/${id}?edit=true`);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    router.push(`/pengaturan-akun/${id}`);
+    setFormData(akun);
+  };
 
   return (
     <DefaultLayout>
@@ -74,16 +130,42 @@ const Akun = ({ params }: { params: { id: string } }) => {
           component="h2"
           sx={{ fontWeight: '600', fontFamily: 'Nunito Sans' }}
         >
-          Detail
+          {isEditing ? 'Edit User' : 'Detail User'}
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => window.history.back()}
-          startIcon={<SlActionUndo />}
-        >
-          Kembali
-        </Button>
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleKembali}
+            startIcon={<SlActionUndo />}
+            sx={{ marginRight: '10px' }}
+          >
+            Kembali
+          </Button>
+          {isEditing ? (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCancel}
+              startIcon={<SlActionUndo />}
+              sx={{ marginRight: '10px' }}
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: '#14B8A6',
+                color: 'white',
+              }}
+              onClick={handleEdit}
+              startIcon={<SlPencil />}
+            >
+              Edit
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {/* Horizontal Divider */}
@@ -113,59 +195,132 @@ const Akun = ({ params }: { params: { id: string } }) => {
         </Box>
 
         <Grid container spacing={2}>
-          {/* Nama Pengirim */}
+          {/* Firstname */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Firstname</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
-            <Typography variant="body1" color="#4a4a4a">: {akun?.firstname}</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="firstname"
+                value={formData?.firstname || ""}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.firstname}</Typography>
+            )}
           </Grid>
 
           <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
 
+          {/* Lastname */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Lastname</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
-            <Typography variant="body1" color="#4a4a4a">: {akun?.lastname}</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="lastname"
+                value={formData?.lastname || ""}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.lastname}</Typography>
+            )}
           </Grid>
 
           <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
 
+          {/* Email */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Email</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
-            <Typography variant="body1" color="#4a4a4a">: {akun?.email}</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="email"
+                value={formData?.email || ""}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.email}</Typography>
+            )}
           </Grid>
 
           <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
 
+          {/* Phone */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Kontak</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
-            <Typography variant="body1" color="#4a4a4a">: {akun?.phone}</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="phone"
+                value={formData?.phone || ""}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.phone}</Typography>
+            )}
           </Grid>
 
           <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
 
+          {/* Gender */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Gender</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
-            <Typography variant="body1" color="#4a4a4a">: {akun?.gender}</Typography>
+            {isEditing ? (
+              <FormControl fullWidth>
+                <InputLabel>Gender</InputLabel>
+                <Select
+                  name="gender"
+                  value={formData?.gender || ""}
+                  onChange={handleSelectChange}
+                >
+                  <MenuItem value="Male">Male</MenuItem>
+                  <MenuItem value="Female">Female</MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.gender}</Typography>
+            )}
           </Grid>
 
           <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
 
+          {/* Role */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Role</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
-            <Typography variant="body1" color="#4a4a4a">: {akun?.role}</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="role"
+                value={formData?.role || ""}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.role}</Typography>
+            )}
           </Grid>
         </Grid>
+
+        {/* Save Button */}
+        {isEditing && (
+          <Box sx={{ marginTop: 3 }}>
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+              Save Changes
+            </Button>
+          </Box>
+        )}
       </Box>
     </DefaultLayout>
   );

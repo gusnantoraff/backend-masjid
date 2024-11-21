@@ -56,9 +56,9 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
 
     const handleEdit = (id: any, type: 'berita' | 'pengaturan-akun') => {
         if (type === 'berita') {
-            window.location.href = `/berita/edit/${id}`;
+            window.location.href = `/berita/${id}?edit=true`;
         } else if (type === 'pengaturan-akun') {
-            window.location.href = `/pengaturan-akun/edit/${id}`;
+            window.location.href = `/pengaturan-akun/${id}?edit=true`;
         }
     };
     

@@ -7,9 +7,10 @@ interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  onSuccess: (message: string) => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSuccess }) => {
   const [formData, setFormData] = useState({
     nama_kegiatan: '',
     tanggal: '',
@@ -19,7 +20,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
     foto: null as File | null,
   });
 
-  const [fileError, setFileError] = useState(''); // State for the file error message
+  const [fileError, setFileError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -80,8 +81,10 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
       console.log('Response from API:', response.data);
       onClose();
       onSubmit();
+      onSuccess("Hari Besar berhasil ditambahkan!");
     } catch (error) {
       console.error('Error posting data:', error);
+      onSuccess("Hari Besar gagal ditambahkan!");
     }
   };
 

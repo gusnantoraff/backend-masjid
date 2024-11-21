@@ -7,9 +7,10 @@ interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  onSuccess: (message: string) => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSuccess }) => {
   const [formData, setFormData] = useState({
     nama_kegiatan: '',
     tanggal: '',
@@ -77,8 +78,10 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
       console.log('Response from API:', response.data);
       onClose();
       onSubmit();
+      onSuccess("Kegiatan berhasil ditambahkan!");
     } catch (error) {
       console.error('Error posting data:', error);
+      onSuccess("Kegiatan gagal ditambahkan!");
     }
   };
 

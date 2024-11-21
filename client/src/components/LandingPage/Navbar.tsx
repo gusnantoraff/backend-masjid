@@ -24,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
       if (sectionId === "infoMasjid") {
         offset = 5;
       } else if (sectionId === "keuangan") {
-        offset = 130; 
+        offset = 205; 
       }
   
       window.scrollTo({ top: sectionPosition - offset, behavior: 'smooth' });

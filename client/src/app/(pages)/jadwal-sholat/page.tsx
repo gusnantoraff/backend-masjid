@@ -7,6 +7,8 @@ import { useState } from "react";
 import { AiOutlinePlus } from 'react-icons/ai';
 import Modal from '@/components/Modal/ModalHariBesar';
 import ListHariBesar from '@/components/HariBesarComponent/ListHariBesar'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function JadwalSholat() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,10 +59,9 @@ export default function JadwalSholat() {
                     </Button>
                 </Box>
                 </Box>
-                <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleSubmit} />
+                <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleSubmit} onSuccess={(message: string) => toast.success(message)}/>
                 <ListHariBesar refresh={refreshList} />
-                
-
+                <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
                 <Box
                     sx={{
                         display: 'flex',

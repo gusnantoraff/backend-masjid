@@ -5,6 +5,8 @@ import ButtonDefault from '@/components/Buttons/ButtonDefault';
 import { BiPlus } from 'react-icons/bi';
 import Modal from '@/components/Modal/ModalKegiatan';
 import ListKegiatan from '@/components/KegiatanComponents/ListKegiatan';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Kegiatan() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,7 +50,9 @@ export default function Kegiatan() {
           <BiPlus />
         </ButtonDefault>
       </div>
-      <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleSubmit} />
+      <Modal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleSubmit} onSuccess={(message: string) => toast.success(message)}/>
+      
+      <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
 
       {/* Filter Section */}
       <div className="flex justify-start items-center mt-4">

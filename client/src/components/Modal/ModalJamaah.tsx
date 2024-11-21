@@ -4,9 +4,11 @@ import { BiX } from "react-icons/bi";
 interface ModalFormProps {
     isOpen: boolean;
     onClose: () => void;
+    onSubmit: () => void;
+    onSuccess: (message: string) => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSuccess }) => {
     const [formData, setFormData] = useState({
         nama: "",
         gender: "pria",
@@ -46,9 +48,12 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
 
             const responseData = await response.json();
             console.log("Response from API:", responseData);
-            onClose(); // Hanya menutup modal jika pengiriman data berhasil
+            onSubmit();
+            onClose();
+            onSuccess("Jamaah berhasil ditambahkan!");
         } catch (error) {
             console.error("Error posting data:", error);
+            onSuccess("Jamaah gagal ditambahkan!");
         }
     };
 
@@ -147,7 +152,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
                                     +62
                                 </span>
                                 <input
-                                    type="text"
+                                    type="number"
                                     id="kontak"
                                     name="kontak"
                                     value={formData.kontak}

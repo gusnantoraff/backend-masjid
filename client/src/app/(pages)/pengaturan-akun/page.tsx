@@ -5,6 +5,8 @@ import DataTable from '@/components/DataTable/DataTabel1';
 import { Button, Box, Typography } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalAkun';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Column {
   header: string;
@@ -80,7 +82,8 @@ export default function YatimDhuafa() {
             refresh={refresh} // Pass the refresh prop here
           />
         </div>
-        <ModalForm isOpen={isModalOpen} onClose={closeModal}/>
+        <ModalForm isOpen={isModalOpen} onClose={closeModal} onSuccess={(message: string) => toast.success(message)}/>
+        <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
       </DefaultLaout>
     );
   };

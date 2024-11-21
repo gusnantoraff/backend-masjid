@@ -18,6 +18,7 @@ class YatimDhuafa extends Model
     protected $table = 'yatim_dhuafa';
     protected $fillable = [
         'nama',
+        'gender',
         'birth',
         'alamat',
         'keterangan',

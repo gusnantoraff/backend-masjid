@@ -16,6 +16,7 @@ const config: Config = {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
       poppins: ['Poppins', 'sans-serif'],
+      nunito: ['Nunito Sans', 'sans-serif'],
     },
     screens: {
       "2xsm": "375px",

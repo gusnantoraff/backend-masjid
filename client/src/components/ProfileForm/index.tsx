@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Box, Button, TextField, MenuItem, Avatar, Typography } from "@mui/material";
 import { useUser } from "@/context/UserContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ProfileForm() {
   const { user, fetchUser } = useUser();
@@ -78,8 +80,10 @@ export default function ProfileForm() {
       }
       await fetchUser();
       setIsEditing(false);
+      toast.success("Profile berhasil diupdate!");
     } catch (error) {
       console.error("Error updating user data:", error);
+      toast.error("Error updating profile!");
     }
   };
 
@@ -101,6 +105,7 @@ export default function ProfileForm() {
       setSelectedFile(null);
     } catch (error) {
       console.error("Error uploading avatar:", error);
+      toast.error("Error uploading avatar!");
     }
   };
 
@@ -114,6 +119,7 @@ export default function ProfileForm() {
         borderRadius: "10px",
         backgroundColor: "#fff",
         textAlign: "center",
+        position: "relative",
       }}
     >
       <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
@@ -153,7 +159,7 @@ export default function ProfileForm() {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "40px",
-          mb: 5,
+          mb: 8,
         }}
       >
         <TextField
@@ -162,7 +168,7 @@ export default function ProfileForm() {
           value={formData.firstname}
           onChange={handleChange}
           fullWidth
-          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: isEditing ? "#ffffff" : "#f6f8fc" } }}
         />
         <TextField
           label="Nama Belakang"
@@ -170,7 +176,7 @@ export default function ProfileForm() {
           value={formData.lastname}
           onChange={handleChange}
           fullWidth
-          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: isEditing ? "#ffffff" : "#f6f8fc" } }}
         />
         <TextField
           label="Email"
@@ -178,7 +184,7 @@ export default function ProfileForm() {
           value={formData.email}
           onChange={handleChange}
           fullWidth
-          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: isEditing ? "#ffffff" : "#f6f8fc" } }}
         />
         <TextField
           label="Nomor HP"
@@ -186,7 +192,7 @@ export default function ProfileForm() {
           value={formData.phone}
           onChange={handleChange}
           fullWidth
-          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: isEditing ? "#ffffff" : "#f6f8fc" } }}
         />
         <TextField
           label="Tanggal Lahir"
@@ -195,7 +201,7 @@ export default function ProfileForm() {
           value={formData.birth}
           onChange={handleChange}
           fullWidth
-          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: isEditing ? "#ffffff" : "#f6f8fc" } }}
         />
 
         <TextField
@@ -205,26 +211,55 @@ export default function ProfileForm() {
           onChange={handleChange}
           fullWidth
           select
-          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: "#f6f8fc", textAlign: "left" } }}
+          InputProps={{ readOnly: !isEditing, sx: { backgroundColor: isEditing ? "#ffffff" : "#f6f8fc", textAlign: "left" } }}
         >
           <MenuItem value="Male">Male</MenuItem>
           <MenuItem value="Female">Female</MenuItem>
         </TextField>
       </Box>
 
-      <Button
-        variant="contained"
+      <Box
         sx={{
-          backgroundColor: isEditing ? "#F97F30" : "#14B8A6",
-          '&:hover': {
-            backgroundColor: isEditing ? "#d96d28" : "#0D9488",
-          },
+          position: "absolute",
+          bottom: "20px",
+          right: "20px",
+          display: "flex",
+          gap: "10px",
         }}
-        onClick={isEditing ? handleSubmit : handleEditToggle}
       >
-        {isEditing ? "Submit" : "Update"}
-      </Button>
+        {/* Toast Container */}
+        <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
 
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#14B8A6",
+            '&:hover': {
+              backgroundColor: "#0D9488",
+            },
+            width: "110px",
+            height: "40px",
+          }}
+          onClick={handleEditToggle}
+        >
+          Edit
+        </Button>
+
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#F97F30",
+            '&:hover': {
+              backgroundColor: "#d96d28",
+            },
+            width: "110px",
+            height: "40px",
+          }}
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
+      </Box>
     </Box>
   );
 }

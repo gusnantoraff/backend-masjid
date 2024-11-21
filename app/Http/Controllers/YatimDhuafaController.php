@@ -29,6 +29,7 @@ class YatimDhuafaController extends Controller
     {
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
+            'gender' => 'required|in:pria,wanita',
             'alamat' => 'required|string|max:255',
             'birth' => 'required|date',
             'keterangan' => 'required|in:yatim,piatu,yatim piatu,dhuafa',
@@ -76,6 +77,7 @@ class YatimDhuafaController extends Controller
 
         $validatedData = $request->validate([
             'nama' => 'sometimes|string|max:255',
+            'gender' => 'sometimes|in:pria,wanita',
             'alamat' => 'sometimes|string|max:255',
             'birth' => 'sometimes|date',
             'keterangan' => 'sometimes|in:yatim,piatu,yatim piatu,dhuafa',

@@ -11,6 +11,7 @@ class CreateYatimDhuafaTable extends Migration
         Schema::create('yatim_dhuafa', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->enum('gender', ['pria', 'wanita']);
             $table->date('birth')->nullable();
             $table->text('alamat')->nullable();
             $table->enum('keterangan', ['yatim', 'piatu', 'dhuafa', 'yatim piatu']);

@@ -17,7 +17,7 @@ export default function ArticleForm({ onSubmit }: ArticleFormProps) {
 
   const initialFormData = {
     judul: '',
-    tanggal_publikasi: new Date(),
+    tanggal_publikasi: '',
     kategori: 'berita',
     status: 'published',
     foto: null as File | null
@@ -25,7 +25,7 @@ export default function ArticleForm({ onSubmit }: ArticleFormProps) {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -45,8 +45,11 @@ export default function ArticleForm({ onSubmit }: ArticleFormProps) {
     e.preventDefault();
     const data = new FormData();
 
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
     data.append('judul', formData.judul);
-    data.append('tanggal_publikasi', formData.tanggal_publikasi.toISOString().split("T")[0]);
+    data.append('tanggal_publikasi', formattedDate);
     data.append('kategori', formData.kategori);
     data.append('status', formData.status);
     data.append('konten', content);
@@ -84,17 +87,16 @@ export default function ArticleForm({ onSubmit }: ArticleFormProps) {
           {/* Left Column */}
           <div style={styles.leftColumn}>
 
-            {/* Title Input */}
             <div style={styles.formGroup}>
               <label htmlFor="judul" style={styles.label}>Judul</label>
-              <input
-                type="text"
+              <textarea
                 id="judul"
                 name="judul"
                 placeholder="Masukan Judul"
                 value={formData.judul}
                 onChange={handleChange}
-                style={styles.input}
+                rows={2}
+                style={styles.textarea}
               />
             </div>
 
@@ -166,8 +168,8 @@ export default function ArticleForm({ onSubmit }: ArticleFormProps) {
         {/* Footer with Submit Button */}
         <div style={styles.footer}>
           <button type="submit" style={styles.saveButton}>
-          {loading ? 'Loading...' : 'Simpan'}
-            </button>
+            {loading ? 'Loading...' : 'Simpan'}
+          </button>
         </div>
       </form>
     </div>
@@ -216,6 +218,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '10px',
     border: '1px solid #ccc',
     borderRadius: '5px',
+  },
+  textarea: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '16px',
+    resize: 'vertical',
   },
   saveButton: {
     backgroundColor: '#14B8A6',

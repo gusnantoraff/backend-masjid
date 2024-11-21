@@ -30,7 +30,7 @@ interface ListKegiatanProps {
   selectedMonth: string;
 }
 
-const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal', startDate, endDate, selectedMonth }) => {
+const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size = 'normal', startDate, endDate, selectedMonth }) => {
   const [kegiatanList, setKegiatanList] = useState<Kegiatan[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,15 +41,15 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal', sta
   const fetchKegiatan = async () => {
     try {
       const params: { [key: string]: string } = {};
-  
+
       if (startDate) params.start_date = startDate;
       if (endDate) params.end_date = endDate;
       if (selectedMonth) params.month = selectedMonth;
-  
+
       const response = await axios.get('http://localhost:8000/api/kegiatan', {
         params: params,
       });
-  
+
       setKegiatanList(response.data);
       setLoading(false);
     } catch (error) {
@@ -58,7 +58,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal', sta
       setLoading(false);
     }
   };
-  
+
 
   useEffect(() => {
     fetchKegiatan();
@@ -89,22 +89,22 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal', sta
   const truncateText = (text: string, maxLength: number): string => {
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
-  
+
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false, 
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     };
     const date = new Date(dateString);
     const wibDate = new Date(date.getTime());
 
     return new Intl.DateTimeFormat('id-ID', options).format(wibDate) + ' WIB';
-};
+  };
 
 
   if (loading) {
@@ -121,14 +121,14 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal', sta
         <AlertConfirm
           open={showConfirm}
           onClose={() => setShowConfirm(false)}
-          onConfirm={handleDeleteConfirm} 
+          onConfirm={handleDeleteConfirm}
           message="Apakah Anda yakin ingin menghapus data ini?"
         />
       )}
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start'}}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
         {kegiatanList.map((kegiatan) => {
           const getFotoUrl = kegiatan.images.length > 0
-            ? `http://localhost:8000/storage/${kegiatan.images[0].image}` 
+            ? `http://localhost:8000/storage/${kegiatan.images[0].image}`
             : 'https://via.placeholder.com/300';
 
           return (

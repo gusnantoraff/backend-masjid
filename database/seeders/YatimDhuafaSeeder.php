@@ -17,6 +17,7 @@ class YatimDhuafaSeeder extends Seeder
         DB::table('yatim_dhuafa')->insert([
             [
                 'nama' => 'Ahmad Yatim',
+                'gender'=> 'pria',
                 'birth' => '2010-03-03',
                 'alamat' => 'Jl. Sudirman No. 1',
                 'keterangan' => 'yatim',
@@ -27,6 +28,7 @@ class YatimDhuafaSeeder extends Seeder
             ],
             [
                 'nama' => 'Budi Duafa',
+                'gender'=> 'pria',
                 'birth' => '2012-04-04',
                 'alamat' => 'Jl. Sudirman No. 2',
                 'keterangan' => 'dhuafa',
