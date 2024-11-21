@@ -279,7 +279,12 @@ export default function Home() {
                 </div>
             </div>
             <div className="mt-5 flex w-full rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                <LaporanKeuangan isLaporanPage={false} isPenerimaanPage={false} isPengeluaranPage={false} isArusKasPage={true}/>
+                <LaporanKeuangan
+                    isLaporanPage={false}
+                    isPenerimaanPage={false}
+                    isPengeluaranPage={false}
+                    isArusKasPage={true}
+                />
             </div>
 
             <Modal

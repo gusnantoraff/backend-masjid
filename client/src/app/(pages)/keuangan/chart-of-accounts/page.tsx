@@ -4,34 +4,136 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search, Plus } from "lucide-react";
 
-// Define Account interface
-interface Account {
-    code: string;
-    name: string;
-    type: string;
-    balance: number;
-}
-
-// Define FormData interface
-interface FormData {
-    code: string;
-    name: string;
-    type: string;
-}
-
 const API_URL = "http://localhost:8000/api/coa";
 
-const ChartOfAccounts: React.FC = () => {
-    const [accounts, setAccounts] = useState<Account[]>([]);
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [formData, setFormData] = useState<FormData>({
-        code: "",
-        name: "",
-        type: "",
-    });
+// Modal Component
+const Modal = ({ isOpen, onClose, onSubmit, title }) => {
+    const [code, setCode] = useState("");
+    const [name, setName] = useState("");
+    const [type, setType] = useState("");
+    const [formError, setFormError] = useState("");
 
-    // Fetch accounts on page load
+    const resetForm = () => {
+        setCode("");
+        setName("");
+        setType("");
+        setFormError("");
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!code || !name || !type) {
+            setFormError("All fields are required.");
+            return;
+        }
+
+        const newAccount = {
+            kode_akun: code,
+            nama_akun: name,
+            tipe: type,
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newAccount),
+            });
+
+            if (response.ok) {
+                const createdAccount = await response.json();
+                console.log("Account created successfully:", createdAccount);
+                onSubmit();
+                onClose();
+                resetForm();
+            } else {
+                const errorResponse = await response.json();
+                console.error("Error creating account:", errorResponse);
+                alert("Failed to create account.");
+            }
+        } catch (error) {
+            console.error("Error submitting data:", error);
+            alert("An error occurred during submission.");
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+                className="fixed inset-0 bg-black opacity-50"
+                onClick={onClose}
+            ></div>
+            <div className="z-10 w-4/5 max-w-md rounded-lg bg-white p-4 shadow-lg">
+                <h2 className="mb-4 text-xl font-bold">{title}</h2>
+                {formError && (
+                    <div className="mb-4 rounded-lg bg-red-100 p-2 text-red-700">
+                        {formError}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div>
+                        <label>Kode Akun:</label>
+                        <input
+                            type="text"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            className="h-12 w-full rounded-lg border p-2"
+                            placeholder="Kode Akun"
+                        />
+                    </div>
+                    <div>
+                        <label>Nama Akun:</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="h-12 w-full rounded-lg border p-2"
+                            placeholder="Nama Akun"
+                        />
+                    </div>
+                    <div>
+                        <label>Tipe Akun:</label>
+                        <select
+                            value={type}
+                            onChange={(e) => setType(e.target.value)}
+                            className="h-12 w-full rounded-lg border p-2"
+                        >
+                            <option value="">Pilih Tipe Akun</option>
+                            <option value="Aset">Aset</option>
+                            <option value="Kewajiban">Kewajiban</option>
+                            <option value="Penerimaan">Penerimaan</option>
+                            <option value="Pengeluaran">Pengeluaran</option>
+                        </select>
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="rounded-lg bg-gray-300 px-4 py-2"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="submit"
+                            className="rounded-lg bg-blue-500 px-4 py-2 text-white"
+                        >
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+const ChartOfAccounts = () => {
+    const [accounts, setAccounts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
@@ -39,27 +141,20 @@ const ChartOfAccounts: React.FC = () => {
                 if (!response.ok) throw new Error("Failed to fetch accounts.");
                 const data = await response.json();
 
-                const formattedAccounts: Account[] = data.map(
-                    (account: any) => {
-                        const totalPenerimaan = account.penerimaan_kas.reduce(
-                            (sum: number, item: { jumlah: string }) =>
-                                sum + parseFloat(item.jumlah),
+                const formattedAccounts = data.map((account) => ({
+                    code: account.kode_akun,
+                    name: account.nama_akun,
+                    type: account.tipe,
+                    balance:
+                        account.penerimaan_kas.reduce(
+                            (sum, item) => sum + parseFloat(item.jumlah),
                             0,
-                        );
-                        const totalPengeluaran = account.pengeluaran_kas.reduce(
-                            (sum: number, item: { jumlah: string }) =>
-                                sum + parseFloat(item.jumlah),
+                        ) -
+                        account.pengeluaran_kas.reduce(
+                            (sum, item) => sum + parseFloat(item.jumlah),
                             0,
-                        );
-
-                        return {
-                            code: account.kode_akun,
-                            name: account.nama_akun,
-                            type: account.tipe,
-                            balance: totalPenerimaan - totalPengeluaran,
-                        };
-                    },
-                );
+                        ),
+                }));
 
                 setAccounts(formattedAccounts);
             } catch (error) {
@@ -70,57 +165,9 @@ const ChartOfAccounts: React.FC = () => {
         fetchAccounts();
     }, []);
 
-    // Handle modal form submission
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const newAccount = {
-            kode_akun: formData.code,
-            nama_akun: formData.name,
-            tipe: formData.type,
-        };
-
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newAccount),
-            });
-
-            if (response.ok) {
-                const createdAccount: Account = await response.json();
-                setAccounts((prevAccounts) => [
-                    ...prevAccounts,
-                    {
-                        code: createdAccount.code,
-                        name: createdAccount.name,
-                        type: createdAccount.type,
-                        balance: 0,
-                    },
-                ]);
-                setFormData({ code: "", name: "", type: "" });
-                setIsModalOpen(false); // Close modal after submission
-            } else {
-                const errorResponse = await response.json();
-                console.error("Failed to create account:", errorResponse);
-                alert("Gagal menambahkan akun baru.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Terjadi kesalahan saat menambahkan akun.");
-        }
-    };
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    ) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+    const handleNewAccountSubmit = () => {
+        // Fetch updated accounts after a successful form submission
+        window.location.reload();
     };
 
     const filteredAccounts = accounts.filter((account) =>
@@ -225,99 +272,12 @@ const ChartOfAccounts: React.FC = () => {
                 </div>
             </div>
 
-            {/* Modal Rendering */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="w-full max-w-md rounded-lg bg-white p-4">
-                        <h3 className="mb-4 text-lg font-medium text-gray-900">
-                            Tambah Akun Baru
-                        </h3>
-                        <form onSubmit={handleSubmit}>
-                            <div className="space-y-4">
-                                <div>
-                                    <label
-                                        htmlFor="code"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Kode Akun
-                                    </label>
-                                    <input
-                                        id="code"
-                                        name="code"
-                                        type="text"
-                                        required
-                                        value={formData.code}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="name"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Nama Akun
-                                    </label>
-                                    <input
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="type"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Tipe Akun
-                                    </label>
-                                    <select
-                                        id="type"
-                                        name="type"
-                                        required
-                                        value={formData.type}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    >
-                                        <option value="">
-                                            Pilih tipe akun
-                                        </option>
-                                        <option value="Aset">Aset</option>
-                                        <option value="Kewajiban">
-                                            Kewajiban
-                                        </option>
-                                        <option value="Penerimaan">
-                                            Penerimaan
-                                        </option>
-                                        <option value="Pengeluaran">
-                                            Pengeluaran
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="mt-4 flex justify-end space-x-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                >
-                                    Simpan
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleNewAccountSubmit}
+                title="Tambah Akun Baru"
+            />
         </DefaultLayout>
     );
 };
