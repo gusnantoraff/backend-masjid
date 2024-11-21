@@ -41,35 +41,35 @@ export default function AccessibleTable({
     const pageTitle = isLaporanPage
         ? "Laporan Keuangan"
         : isPenerimaanPage
-        ? "Penerimaan"
-        : isPengeluaranPage
-        ? "Pengeluaran"
-        : isArusKasPage
-        ? "Jurnal Arus Kas"
-        : "";
+          ? "Penerimaan"
+          : isPengeluaranPage
+            ? "Pengeluaran"
+            : isArusKasPage
+              ? "Jurnal Arus Kas"
+              : "";
 
     const exportFileName = isLaporanPage
         ? "laporan_keuangan"
         : isPenerimaanPage
-        ? "laporan_penerimaan"
-        : isPengeluaranPage
-        ? "laporan_pengeluaran"
-        : "";
+          ? "laporan_penerimaan"
+          : isPengeluaranPage
+            ? "laporan_pengeluaran"
+            : "";
 
-        const months = [
-            { value: "01", label: "Januari" },
-            { value: "02", label: "Februari" },
-            { value: "03", label: "Maret" },
-            { value: "04", label: "April" },
-            { value: "05", label: "Mei" },
-            { value: "06", label: "Juni" },
-            { value: "07", label: "Juli" },
-            { value: "08", label: "Agustus" },
-            { value: "09", label: "September" },
-            { value: "10", label: "Oktober" },
-            { value: "11", label: "November" },
-            { value: "12", label: "Desember" },
-        ];
+    const months = [
+        { value: "01", label: "Januari" },
+        { value: "02", label: "Februari" },
+        { value: "03", label: "Maret" },
+        { value: "04", label: "April" },
+        { value: "05", label: "Mei" },
+        { value: "06", label: "Juni" },
+        { value: "07", label: "Juli" },
+        { value: "08", label: "Agustus" },
+        { value: "09", label: "September" },
+        { value: "10", label: "Oktober" },
+        { value: "11", label: "November" },
+        { value: "12", label: "Desember" },
+    ];
 
     useEffect(() => {
         const fetchCoaData = async () => {
@@ -139,15 +139,16 @@ export default function AccessibleTable({
         const rowDate = new Date(row.date); // Ubah string menjadi Date object
         const start = startDate ? new Date(startDate) : null; // Pastikan startDate menjadi Date object
         const end = endDate ? new Date(endDate) : null; // Pastikan endDate menjadi Date object
-    
+
         // Mengatur kondisi untuk rentang tanggal
         const isDateInRange =
             (!start || rowDate >= start) && (!end || rowDate <= end);
-    
+
         // Memeriksa apakah bulan yang dipilih sesuai
         const isMonthMatch =
-            !selectedMonth || rowDate.getMonth() + 1 === parseInt(selectedMonth); // +1 karena getMonth() mengembalikan 0 untuk Januari
-    
+            !selectedMonth ||
+            rowDate.getMonth() + 1 === parseInt(selectedMonth); // +1 karena getMonth() mengembalikan 0 untuk Januari
+
         const isStatusMatch =
             (isLaporanPage ||
                 isArusKasPage ||
@@ -156,10 +157,9 @@ export default function AccessibleTable({
             (!status ||
                 (status === "pemasukan" && row.status === "Pemasukan") ||
                 (status === "pengeluaran" && row.status === "Pengeluaran"));
-    
+
         return isDateInRange && isMonthMatch && isStatusMatch;
     });
-    
 
     const displayedRows = filteredRows.slice(
         page * rowsPerPage,
@@ -253,8 +253,10 @@ export default function AccessibleTable({
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <p className="text-3xl font-bold text-black mb-4 px-2 mt-2 text-center">
+        <div
+            style={{ display: "flex", flexDirection: "column", width: "100%" }}
+        >
+            <p className="mb-4 mt-2 px-2 text-center text-3xl font-bold text-black">
                 {pageTitle}
             </p>
 
@@ -267,115 +269,149 @@ export default function AccessibleTable({
                     marginBottom: "16px",
                 }}
             >
-                <div style={{ display: "flex", gap: "16px", paddingTop: "10px" }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-      <div style={{ display: 'flex', gap: '16px', paddingTop: '10px' }}>
-        <TextField
-          label="Tanggal Mulai"
-          type="date"
-          size="small"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField
-          label="Tanggal Akhir"
-          type="date"
-          size="small"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        {isArusKasPage && (
-            <TextField
-            select
-            label="Status"
-            size="small"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            style={{ minWidth: 120 }}
-          >
-            <MenuItem value="">
-              <span>Semua</span>
-            </MenuItem>
-            <MenuItem value="pemasukan">
-              <ArrowDownwardIcon style={{ marginRight: '8px', color: 'green' }} />
-              <span>Pemasukan</span>
-            </MenuItem>
-            <MenuItem value="pengeluaran">
-              <ArrowUpwardIcon style={{ marginRight: '8px', color: 'red' }} />
-              <span>Pengeluaran</span>
-            </MenuItem>
-          </TextField>
-        )}
-        {(isPenerimaanPage || isPengeluaranPage) && (
-                        <TextField
-                            select
-                            label="Pilih Bulan"
-                            size="small"
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(e.target.value)}
-                            style={{ minWidth: "150px" }}
-                        >
-                            <MenuItem value="">Semua Bulan</MenuItem>
-                            {months.map((month) => (
-                                <MenuItem key={month.value} value={month.value}>
-                                    {month.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    )}
-        <Button
-          variant="contained"
-          onClick={() => {
-            setStartDate('');
-            setEndDate('');
-            setStatus('');
-          }}
-        >
-          Reset Filter
-        </Button>
-                {!isArusKasPage && (
-                    <>
-                        <Button
-                            onClick={handleClick}
-                            variant="outlined"
-                            startIcon={<AiOutlineExport />}
+                <div
+                    style={{ display: "flex", gap: "16px", paddingTop: "10px" }}
+                >
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "16px",
+                        }}
+                    >
+                        <div
                             style={{
-                                color: "#008080", // Warna teks dan ikon hijau toska
-                                borderColor: "#008080", // Warna border hijau toska
+                                display: "flex",
+                                gap: "16px",
+                                paddingTop: "10px",
                             }}
                         >
-                            Export
-                        </Button>
-                        <Menu
-                            id="export-menu"
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItemMUI onClick={() => handleExport("CSV")}>
-                                <ListItemIcon>
-                                    <GridOnIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText primary="Export to CSV" />
-                            </MenuItemMUI>
-                            <MenuItemMUI onClick={() => handleExport("PDF")}>
-                                <ListItemIcon>
-                                    <PictureAsPdfIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText primary="Export to PDF" />
-                            </MenuItemMUI>
-                        </Menu>
-                    </>
-                )}
-            </div>
-            </div>
-            </div>
+                            <TextField
+                                label="Tanggal Mulai"
+                                type="date"
+                                size="small"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                            <TextField
+                                label="Tanggal Akhir"
+                                type="date"
+                                size="small"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                            {isArusKasPage && (
+                                <TextField
+                                    select
+                                    label="Status"
+                                    size="small"
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    style={{ minWidth: 120 }}
+                                >
+                                    <MenuItem value="">
+                                        <span>Semua</span>
+                                    </MenuItem>
+                                    <MenuItem value="pemasukan">
+                                        <ArrowDownwardIcon
+                                            style={{
+                                                marginRight: "8px",
+                                                color: "green",
+                                            }}
+                                        />
+                                        <span>Pemasukan</span>
+                                    </MenuItem>
+                                    <MenuItem value="pengeluaran">
+                                        <ArrowUpwardIcon
+                                            style={{
+                                                marginRight: "8px",
+                                                color: "red",
+                                            }}
+                                        />
+                                        <span>Pengeluaran</span>
+                                    </MenuItem>
+                                </TextField>
+                            )}
+                            {(isPenerimaanPage || isPengeluaranPage) && (
+                                <TextField
+                                    select
+                                    label="Pilih Bulan"
+                                    size="small"
+                                    value={selectedMonth}
+                                    onChange={(e) =>
+                                        setSelectedMonth(e.target.value)
+                                    }
+                                    style={{ minWidth: "150px" }}
+                                >
+                                    <MenuItem value="">Semua Bulan</MenuItem>
+                                    {months.map((month) => (
+                                        <MenuItem
+                                            key={month.value}
+                                            value={month.value}
+                                        >
+                                            {month.label}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
+                            <Button
+                                variant="contained"
+                                onClick={() => {
+                                    setStartDate("");
+                                    setEndDate("");
+                                    setStatus("");
+                                }}
+                            >
+                                Reset Filter
+                            </Button>
+                            {!isArusKasPage && (
+                                <>
+                                    <Button
+                                        onClick={handleClick}
+                                        variant="outlined"
+                                        startIcon={<AiOutlineExport />}
+                                        style={{
+                                            color: "#008080", // Warna teks dan ikon hijau toska
+                                            borderColor: "#008080", // Warna border hijau toska
+                                        }}
+                                    >
+                                        Export
+                                    </Button>
+                                    <Menu
+                                        id="export-menu"
+                                        anchorEl={anchorEl}
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleClose}
+                                    >
+                                        <MenuItemMUI
+                                            onClick={() => handleExport("CSV")}
+                                        >
+                                            <ListItemIcon>
+                                                <GridOnIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText primary="Export to CSV" />
+                                        </MenuItemMUI>
+                                        <MenuItemMUI
+                                            onClick={() => handleExport("PDF")}
+                                        >
+                                            <ListItemIcon>
+                                                <PictureAsPdfIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText primary="Export to PDF" />
+                                        </MenuItemMUI>
+                                    </Menu>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Table */}
@@ -383,13 +419,69 @@ export default function AccessibleTable({
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Jenis</TableCell>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Tanggal</TableCell>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Jumlah</TableCell>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Deskripsi</TableCell>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>File</TableCell>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Oleh</TableCell>
-                            <TableCell sx={{ fontFamily: 'Satoshi', fontWeight: 'bold', fontSize: '16px' }}>Status</TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Jenis
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Tanggal
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Jumlah
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Deskripsi
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                File
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Oleh
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Status
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -407,27 +499,43 @@ export default function AccessibleTable({
                                         currency: "IDR",
                                     })}
                                 </TableCell>
-                                <TableCell >{row.description}</TableCell>
-                                <TableCell style={{
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        maxWidth: "10px",
-    }}>{row.file}</TableCell>
+                                <TableCell>{row.description}</TableCell>
+                                <TableCell
+                                    style={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        maxWidth: "10px",
+                                    }}
+                                >
+                                    {row.file}
+                                </TableCell>
                                 <TableCell>{row.oleh}</TableCell>
                                 <TableCell>
-                  {row.amount < 0 ? (
-                    <div style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
-                      <ArrowUpwardIcon />
-                      <span>Pengeluaran</span>
-                    </div>
-                  ) : (
-                    <div style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
-                      <ArrowDownwardIcon />
-                      <span>Pemasukan</span>
-                    </div>
-                  )}
-                </TableCell>
+                                    {row.amount < 0 ? (
+                                        <div
+                                            style={{
+                                                color: "red",
+                                                display: "flex",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <ArrowUpwardIcon />
+                                            <span>Pengeluaran</span>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            style={{
+                                                color: "green",
+                                                display: "flex",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <ArrowDownwardIcon />
+                                            <span>Pemasukan</span>
+                                        </div>
+                                    )}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

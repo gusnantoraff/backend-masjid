@@ -21,11 +21,21 @@ const MonthlyFilter = () => {
     };
 
     const handleSearch = () => {
-        console.log(`Mencari data untuk bulan ${selectedMonth + 1} dan tahun ${selectedYear}`);
+        console.log(
+            `Mencari data untuk bulan ${selectedMonth + 1} dan tahun ${selectedYear}`,
+        );
     };
 
     return (
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', paddingTop: '10px',alignItems: 'center', }}>
+        <div
+            style={{
+                display: "flex",
+                gap: "16px",
+                marginBottom: "16px",
+                paddingTop: "10px",
+                alignItems: "center",
+            }}
+        >
             <TextField
                 select
                 label="Bulan"
@@ -34,7 +44,7 @@ const MonthlyFilter = () => {
                 variant="outlined"
                 margin="dense"
                 size="small"
-                style={{ width: "130px"}}
+                style={{ width: "130px" }}
             >
                 {Array.from({ length: 12 }, (_, index) => (
                     <MenuItem key={index} value={index}>
@@ -57,7 +67,7 @@ const MonthlyFilter = () => {
             <Button
                 variant="contained"
                 color="primary"
-                style={{ height:"42px", marginTop:"3px"}}
+                style={{ height: "42px", marginTop: "3px" }}
                 onClick={handleSearch}
             >
                 Cari

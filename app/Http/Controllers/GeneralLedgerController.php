@@ -3,53 +3,70 @@
 namespace App\Http\Controllers;
 
 use App\Models\GeneralLedger;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class GeneralLedgerController extends Controller
 {
     /**
      * Display a listing of the general ledger entries.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
-        $generalLedger = GeneralLedger::with('coa')->get();
+        // Fetch all general ledger entries with calculated debit and kredit
+        $generalLedger = GeneralLedger::with('coa.penerimaanKas', 'coa.pengeluaranKas')->get();
+
         return response()->json($generalLedger);
     }
 
     /**
      * Store a newly created general ledger entry in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
+        // Validate the incoming request data
         $validatedData = $request->validate([
             'coa_id' => 'required|exists:coa,id',
             'tanggal' => 'required|date',
-            'debit' => 'required|numeric',
-            'kredit' => 'required|numeric',
+            'debit' => 'sometimes|numeric',
+            'kredit' => 'sometimes|numeric',
+            'keterangan' => 'nullable|string',
         ]);
 
+        // Check if a record with the same coa_id and tanggal already exists
+        $existingLedger = GeneralLedger::where('coa_id', $validatedData['coa_id'])
+            ->where('tanggal', $validatedData['tanggal'])
+            ->first();
+
+        if ($existingLedger) {
+            return response()->json(['message' => 'A General Ledger entry with the same COA ID and Date already exists.'], 400);
+        }
+
+        // Set default values for debit and kredit if not provided
+        $validatedData['debit'] = $validatedData['debit'] ?? 0;
+        $validatedData['kredit'] = $validatedData['kredit'] ?? 0;
+
+        // Create the new general ledger entry
         $generalLedger = GeneralLedger::create($validatedData);
 
-        return response()->json(['message' => 'General Ledger entry created successfully', 'generalLedger' => $generalLedger], 201);
+        // Load related COA data for response
+        $generalLedger->load('coa.penerimaanKas', 'coa.pengeluaranKas');
+
+        // Return a success response
+        return response()->json([
+            'message' => 'General Ledger entry created successfully',
+            'generalLedger' => $generalLedger,
+        ], 201);
     }
 
     /**
      * Display the specified general ledger entry.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): JsonResponse
     {
-        $generalLedger = GeneralLedger::with('coa')->find($id);
+        $generalLedger = GeneralLedger::with('coa.penerimaanKas', 'coa.pengeluaranKas')->find($id);
 
-        if (!$generalLedger) {
+        if (! $generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
         }
 
@@ -58,16 +75,12 @@ class GeneralLedgerController extends Controller
 
     /**
      * Update the specified general ledger entry in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         $generalLedger = GeneralLedger::find($id);
 
-        if (!$generalLedger) {
+        if (! $generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
         }
 
@@ -76,24 +89,32 @@ class GeneralLedgerController extends Controller
             'tanggal' => 'sometimes|date',
             'debit' => 'sometimes|numeric',
             'kredit' => 'sometimes|numeric',
+            'keterangan' => 'nullable|string',
         ]);
+
+        // Set default values for debit and kredit if not provided
+        $validatedData['debit'] = $validatedData['debit'] ?? $generalLedger->debit ?? 0;
+        $validatedData['kredit'] = $validatedData['kredit'] ?? $generalLedger->kredit ?? 0;
 
         $generalLedger->update($validatedData);
 
-        return response()->json(['message' => 'General Ledger entry updated successfully', 'generalLedger' => $generalLedger]);
+        // Return the updated entry with recalculated debit and kredit
+        $generalLedger->load('coa.penerimaanKas', 'coa.pengeluaranKas');
+
+        return response()->json([
+            'message' => 'General Ledger entry updated successfully',
+            'generalLedger' => $generalLedger,
+        ]);
     }
 
     /**
      * Remove the specified general ledger entry from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $generalLedger = GeneralLedger::find($id);
 
-        if (!$generalLedger) {
+        if (! $generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
         }
 

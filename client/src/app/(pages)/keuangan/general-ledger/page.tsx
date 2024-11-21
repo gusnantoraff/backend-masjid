@@ -1,201 +1,163 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { Search, Plus, X } from "lucide-react";
 
-const fetchUrl = 'http://localhost:8000/api/general-ledger';
+import React, { useEffect, useState } from "react";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { Search, Plus } from "lucide-react";
+
+const ledgerUrl = "http://localhost:8000/api/general-ledger";
+const coaUrl = "http://localhost:8000/api/coa";
 
 const GeneralLedger = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [newEntry, setNewEntry] = useState({
-        date: "",
-        description: "",
-        debit: "",
-        credit: "",
-        reference: "",
-    });
     const [transactions, setTransactions] = useState([]);
+    const [coaData, setCoaData] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        tanggal: "",
+        keterangan: "",
+        coa_id: "",
+    });
 
-    // Fetch data from API on component mount
-    useEffect(() => {
-        const fetchTransactions = async () => {
-            try {
-                const response = await fetch(fetchUrl);
-                const data = await response.json();
-                
-                // Map the data to include a reference (formatted TRX-xxx)
-                const mappedData = data.map((trx, index) => ({
+    // Fetch data from both APIs
+    const fetchData = async () => {
+        try {
+            const [ledgerRes, coaRes] = await Promise.all([
+                fetch(ledgerUrl),
+                fetch(coaUrl),
+            ]);
+
+            const ledgerData = await ledgerRes.json();
+            const coaData = await coaRes.json();
+
+            const mappedTransactions = ledgerData.map((trx) => {
+                const coa = coaData.find((c) => c.id === trx.coa_id);
+                return {
                     ...trx,
-                    reference: `TRX-${String(index + 1).padStart(3, "0")}`,
-                }));
-                setTransactions(mappedData);
-            } catch (error) {
-                console.error("Failed to fetch transactions:", error);
-            }
-        };
-        fetchTransactions();
+                    kodeAkun: coa?.kode_akun || "N/A",
+                    namaAkun: coa?.nama_akun || "N/A",
+                    jenis: coa?.tipe || "N/A",
+                };
+            });
+
+            setTransactions(mappedTransactions);
+            setCoaData(coaData);
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const newTransaction = {
-            ...newEntry,
-            debit: parseFloat(newEntry.debit),
-            credit: parseFloat(newEntry.credit),
-            reference: `TRX-${String(transactions.length + 1).padStart(3, "0")}`,
-        };
 
-        setTransactions([...transactions, newTransaction]);
-        setIsOpen(false);
-        setNewEntry({
-            date: "",
-            description: "",
-            debit: "",
-            credit: "",
-            reference: "",
+        if (isSubmitting) return; // Prevent multiple submissions
+
+        setIsSubmitting(true); // Disable the submit button
+
+        try {
+            // Check if the same COA ID and tanggal already exist in the transactions state
+            const existingTransaction = transactions.find(
+                (trx) =>
+                    trx.coa_id === formData.coa_id &&
+                    trx.tanggal === formData.tanggal,
+            );
+
+            if (existingTransaction) {
+                alert(
+                    "A General Ledger entry with the same COA ID and Date already exists.",
+                );
+                return;
+            }
+
+            // Proceed with submitting the data to the backend
+            const response = await fetch(ledgerUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    debit: "0.00", // Default value
+                    kredit: "0.00", // Default value
+                }),
+            });
+
+            if (!response.ok) throw new Error("Failed to create transaction.");
+
+            const newLedger = await response.json();
+
+            // Fetch latest transactions
+            await fetchData();
+
+            resetForm();
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to create transaction. Please try again.");
+        } finally {
+            setIsSubmitting(false); // Re-enable the submit button
+        }
+    };
+
+    const resetForm = () => {
+        setFormData({
+            tanggal: "",
+            keterangan: "",
+            coa_id: "",
         });
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setNewEntry((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Modal component
-    const Modal = () => (
-        <>
-            <div
-                className="fixed inset-0 z-[999] bg-black bg-opacity-50"
-                onClick={() => setIsOpen(false)}
-            />
-            <div className="fixed inset-0 z-[1000] overflow-y-auto flex items-center justify-center p-4">
-                <div
-                    className="relative w-full max-w-md rounded-lg bg-white shadow-xl"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {/* Modal Header */}
-                    <div className="flex items-center justify-between border-b border-gray-200 p-6">
-                        <h3 className="text-lg font-semibold text-gray-900">Tambah Jurnal Baru</h3>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                        >
-                            <X className="h-5 w-5" />
-                        </button>
-                    </div>
-
-                    {/* Modal Body */}
-                    <form onSubmit={handleSubmit} className="p-6">
-                        <div className="space-y-4">
-                            {/* Date Input */}
-                            <div>
-                                <label htmlFor="date" className="mb-1 block text-sm font-medium text-gray-700">
-                                    Tanggal
-                                </label><span className="text-red-500">*</span>
-                                <input
-                                    type="date"
-                                    id="date"
-                                    name="date"
-                                    value={newEntry.date}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            {/* Additional Inputs (description, debit, credit, amount) */}
-                            <div>
-                                <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700">
-                                    Keterangan
-                                </label><span className="text-red-500">*</span>
-                                <input
-                                    type="text"
-                                    id="description"
-                                    name="description"
-                                    value={newEntry.description}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="debit" className="mb-1 block text-sm font-medium text-gray-700">
-                                    Debit
-                                </label><span className="text-red-500">*</span>
-                                <input
-                                    type="number"
-                                    id="debit"
-                                    name="debit"
-                                    value={newEntry.debit}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="credit" className="mb-1 block text-sm font-medium text-gray-700">
-                                    Kredit
-                                </label><span className="text-red-500">*</span>
-                                <input
-                                    type="number"
-                                    id="credit"
-                                    name="credit"
-                                    value={newEntry.credit}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Modal Footer */}
-                        <div className="mt-6 flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                onClick={() => setIsOpen(false)}
-                                className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="submit"
-                                className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                            >
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </>
+    const filteredTransactions = transactions.filter((trx) =>
+        trx.namaAkun.toLowerCase().includes(searchTerm.toLowerCase()),
     );
+
+    // Calculate totals
+    const totalDebit = filteredTransactions.reduce(
+        (sum, trx) => sum + parseFloat(trx.debit || 0),
+        0,
+    );
+    const totalKredit = filteredTransactions.reduce(
+        (sum, trx) => sum + parseFloat(trx.kredit || 0),
+        0,
+    );
+    const totalNominal = totalDebit - totalKredit;
 
     return (
         <DefaultLayout>
-            <h1 className="p-2 text-4xl font-bold text-black">General Ledger</h1>
-
-            <div className="mt-2 rounded-lg border border-gray-200 bg-white shadow-sm">
-                {/* Card Header */}
-                <div className="border-b border-gray-200 p-6">
+            <h1 className="p-2 text-4xl font-bold text-black">
+                General Ledger
+            </h1>
+            <div className="mt-2 rounded-lg border bg-white shadow-sm">
+                <div className="border-b p-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-gray-900">Jurnal Umum</h2>
+                        <h2 className="text-xl font-semibold text-gray-900">
+                            Jurnal Umum
+                        </h2>
                         <div className="flex space-x-4">
-                            {/* Search Input */}
                             <div className="relative">
                                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                                 <input
                                     type="text"
                                     placeholder="Cari transaksi..."
-                                    className="rounded-md border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    className="rounded-md border py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
-                            {/* Entry Button */}
                             <button
-                                onClick={() => setIsOpen(true)}
-                                className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                                onClick={() => setIsModalOpen(true)}
+                                className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                             >
                                 <Plus className="mr-2 h-4 w-4" />
                                 Tambah Jurnal
@@ -204,42 +166,212 @@ const GeneralLedger = () => {
                     </div>
                 </div>
 
-                {/* Card Content */}
                 <div className="p-6">
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-gray-200">
-                                    <th className="pb-3 text-left font-medium text-gray-600">Tanggal</th>
-                                    <th className="pb-3 text-left font-medium text-gray-600">Keterangan</th>
-                                    <th className="pb-3 text-left font-medium text-gray-600">Debit</th>
-                                    <th className="pb-3 text-left font-medium text-gray-600">Kredit</th>
-                                    <th className="pb-3 text-right font-medium text-gray-600">Nominal</th>
+                                <tr className="border-b">
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Tanggal
+                                    </th>
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Jenis
+                                    </th>
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Kode Akun
+                                    </th>
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Nama Akun
+                                    </th>
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Keterangan
+                                    </th>
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Debit
+                                    </th>
+                                    <th className="pb-3 text-left font-medium text-gray-600">
+                                        Kredit
+                                    </th>
+                                    <th className="pb-3 text-right font-medium text-gray-600">
+                                        Nominal
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {transactions.map((trx, index) => (
-                                    <tr key={trx.id || index} className="border-b border-gray-100 hover:bg-gray-50">
-                                        <td className="py-4">{trx.tanggal}</td>
-                                        <td className="py-4">{trx.description}</td>
-                                        <td className="py-4">{trx.debit}</td>
-                                        <td className="py-4">{trx.kredit}</td>
-                                        <td className="py-4 text-right">
-                                            {(trx.debit - trx.kredit).toLocaleString("id-ID", {
-                                                style: "currency",
-                                                currency: "IDR",
-                                            })}
+                                {filteredTransactions.length > 0 ? (
+                                    filteredTransactions.map((trx, index) => (
+                                        <tr
+                                            key={index}
+                                            className="border-b hover:bg-gray-50"
+                                        >
+                                            <td className="py-4">
+                                                {trx.tanggal}
+                                            </td>
+                                            <td className="py-4">
+                                                {trx.jenis}
+                                            </td>
+                                            <td className="py-4">
+                                                {trx.kodeAkun}
+                                            </td>
+                                            <td className="py-4">
+                                                {trx.namaAkun}
+                                            </td>
+                                            <td className="py-4">
+                                                {trx.keterangan}
+                                            </td>
+                                            <td className="py-4">
+                                                {parseFloat(
+                                                    trx.debit,
+                                                ).toLocaleString("id-ID", {
+                                                    style: "currency",
+                                                    currency: "IDR",
+                                                })}
+                                            </td>
+                                            <td className="py-4">
+                                                {parseFloat(
+                                                    trx.kredit,
+                                                ).toLocaleString("id-ID", {
+                                                    style: "currency",
+                                                    currency: "IDR",
+                                                })}
+                                            </td>
+                                            <td className="py-4 text-right">
+                                                {(
+                                                    parseFloat(trx.debit) -
+                                                    parseFloat(trx.kredit)
+                                                ).toLocaleString("id-ID", {
+                                                    style: "currency",
+                                                    currency: "IDR",
+                                                })}
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td
+                                            colSpan={8}
+                                            className="py-4 text-center text-gray-500"
+                                        >
+                                            No transactions available.
                                         </td>
                                     </tr>
-                                ))}
+                                )}
+                                <tr className="border-t font-bold">
+                                    <td colSpan={5} className="py-4 text-right">
+                                        Total
+                                    </td>
+                                    <td className="py-4">
+                                        {totalDebit.toLocaleString("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                        })}
+                                    </td>
+                                    <td className="py-4">
+                                        {totalKredit.toLocaleString("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                        })}
+                                    </td>
+                                    <td className="py-4 text-right">
+                                        {totalNominal.toLocaleString("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                        })}
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            {/* Render modal if isOpen is true */}
-            {isOpen && ReactDOM.createPortal(<Modal />, document.body)}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="w-full max-w-md rounded-lg bg-white p-4">
+                        <h3 className="mb-4 text-lg font-medium text-gray-900">
+                            Tambah Jurnal Baru
+                        </h3>
+                        <form onSubmit={handleSubmit}>
+                            <div className="space-y-4">
+                                <div>
+                                    <label
+                                        htmlFor="tanggal"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        Tanggal
+                                    </label>
+                                    <input
+                                        id="tanggal"
+                                        name="tanggal"
+                                        type="date"
+                                        required
+                                        value={formData.tanggal}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        htmlFor="keterangan"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        Keterangan
+                                    </label>
+                                    <input
+                                        id="keterangan"
+                                        name="keterangan"
+                                        type="text"
+                                        required
+                                        value={formData.keterangan}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        htmlFor="coa_id"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        Nama Akun
+                                    </label>
+                                    <select
+                                        id="coa_id"
+                                        name="coa_id"
+                                        required
+                                        value={formData.coa_id}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                                    >
+                                        <option value="" disabled>
+                                            Pilih Akun
+                                        </option>
+                                        {coaData.map((coa) => (
+                                            <option key={coa.id} value={coa.id}>
+                                                {coa.nama_akun}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="mt-4 flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="rounded-md border px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                                >
+                                    Simpan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </DefaultLayout>
     );
 };

@@ -16,6 +16,7 @@ class GeneralLedger extends Model
         'tanggal',
         'debit',
         'kredit',
+        'keterangan',
     ];
 
     /**
@@ -24,5 +25,21 @@ class GeneralLedger extends Model
     public function coa()
     {
         return $this->belongsTo(Coa::class);
+    }
+
+    /**
+     * Accessor for dynamic 'debit' value.
+     */
+    public function getDebitAttribute()
+    {
+        return $this->coa->penerimaanKas->sum('jumlah');
+    }
+
+    /**
+     * Accessor for dynamic 'kredit' value.
+     */
+    public function getKreditAttribute()
+    {
+        return $this->coa->pengeluaranKas->sum('jumlah');
     }
 }
