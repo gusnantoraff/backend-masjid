@@ -81,7 +81,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
     };
 
     // Function to truncate text content with a given character limit
-    const truncateContent = (text: string, limit: number = 50) => {
+    const truncateContent = (text: string, limit: number = 30) => {
         return text.length > limit ? text.substring(0, limit) + '...' : text;
     };
 
