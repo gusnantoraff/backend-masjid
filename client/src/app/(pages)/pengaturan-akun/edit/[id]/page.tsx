@@ -66,7 +66,7 @@ const AkunPage = ({ params }: { params: { id: string } }) => {
             <DataTabel
                 refresh={refreshList}
                 columns={[
-                    { header: 'No', accessor: 'id' },
+                    { header: 'No', accessor: 'nomor' },
                     { header: 'First Name', accessor: 'firstname' },
                     { header: 'Last Name', accessor: 'lastname' },
                     { header: 'Email', accessor: 'email' },

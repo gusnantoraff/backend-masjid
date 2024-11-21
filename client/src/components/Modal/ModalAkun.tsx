@@ -100,7 +100,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
             <div>
               <label htmlFor="phone">Kontak:</label>
               <input
-                type="text"
+                type="number"
                 id="phone"
                 name="phone"
                 value={formData.phone}
