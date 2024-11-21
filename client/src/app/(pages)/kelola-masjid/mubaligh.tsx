@@ -2,6 +2,8 @@
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import { AiOutlinePlus } from 'react-icons/ai';
+import Button from '@mui/material/Button';
 
 const MubalighMasjid = () => {
   const [mubalighData, setMubalighData] = useState([]);
@@ -171,11 +173,14 @@ const MubalighMasjid = () => {
     <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md dark:border-gray-dark dark:bg-gray-dark">
       <div className="mb-4 flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Mubaligh Masjid</h1>
-        <ButtonDefault
-          customClasses="bg-emerald-400 text-white px-4 py-2 rounded-lg flex items-center ml-2 dark:text-gray-dark"
-          label="Tambah"
-          onClick={toggleModal}
-        />
+        <Button
+                    variant="contained"
+                    onClick={toggleModal}
+                    sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+                    startIcon={<AiOutlinePlus />}
+                >
+                    Tambah Data
+                </Button>
       </div>
 
       {showAlert && (

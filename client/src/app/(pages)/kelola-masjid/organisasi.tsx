@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
+import { AiOutlinePlus } from 'react-icons/ai';
+import Button from '@mui/material/Button';
 
 const StrukturOrganisasiMasjid = () => {
     const [struktur, setStruktur] = useState([]);
@@ -168,12 +170,14 @@ const StrukturOrganisasiMasjid = () => {
                 <h1 className="text-heading-6 font-bold text-dark dark:text-white">
                     Struktur Organisasi Masjid
                 </h1>
-                <button
+                <Button
+                    variant="contained"
                     onClick={() => setIsModalOpen(true)}
-                    className="rounded-lg bg-emerald-400 px-4 py-2 text-white dark:text-gray-dark"
+                    sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+                    startIcon={<AiOutlinePlus />}
                 >
-                    Tambah
-                </button>
+                    Tambah Data
+                </Button>
             </div>
 
             {errorMessage && (

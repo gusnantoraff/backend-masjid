@@ -1,6 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { AiOutlinePlus } from 'react-icons/ai';
+import Button from '@mui/material/Button';
 
 const FasilitasMasjid = () => {
   const [fasilitas, setFasilitas] = useState([]);
@@ -152,13 +154,14 @@ const FasilitasMasjid = () => {
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">
           Fasilitas Masjid
         </h1>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-emerald-400 px-4 py-2 text-white dark:text-gray-dark"
-        >
-
-          Tambah
-        </button>
+        <Button
+                    variant="contained"
+                    onClick={() => setIsModalOpen(true)}
+                    sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+                    startIcon={<AiOutlinePlus />}
+                >
+                    Tambah Data
+                </Button>
       </div>
 
       {showAlert && (

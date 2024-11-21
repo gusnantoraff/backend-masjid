@@ -1,38 +1,40 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { AiOutlinePlus } from 'react-icons/ai';
+import Button from '@mui/material/Button';
 
 const RekeningMasjid = () => {
-    const [rekeningData, setRekeningData] = useState([]);
-    const [newNamaBank, setNewNamaBank] = useState('');
-    const [newNomorRekening, setNewNomorRekening] = useState('');
-    const [newAtasNama, setNewAtasNama] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [editIndex, setEditIndex] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-    const [showAlert, setShowAlert] = useState(false);
-    const [deleteId, setDeleteId] = useState(null);
-  
-    useEffect(() => {
-      fetchRekeningMasjid();
-    }, []);
-  
-    const fetchRekeningMasjid = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/rekening-bank');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setRekeningData(data);
-      } catch (error) {
-        console.error('Error fetching rekening masjid:', error);
-        setErrorMessage('Terjadi kesalahan dalam mengambil data.');
-        setShowAlert(true);
+  const [rekeningData, setRekeningData] = useState([]);
+  const [newNamaBank, setNewNamaBank] = useState('');
+  const [newNomorRekening, setNewNomorRekening] = useState('');
+  const [newAtasNama, setNewAtasNama] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+
+  useEffect(() => {
+    fetchRekeningMasjid();
+  }, []);
+
+  const fetchRekeningMasjid = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/rekening-bank');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
       }
-    };
+      const data = await response.json();
+      setRekeningData(data);
+    } catch (error) {
+      console.error('Error fetching rekening masjid:', error);
+      setErrorMessage('Terjadi kesalahan dalam mengambil data.');
+      setShowAlert(true);
+    }
+  };
 
   const addRekening = async () => {
     if (!newNamaBank || !newNomorRekening || !newAtasNama) {
@@ -154,7 +156,14 @@ const RekeningMasjid = () => {
     <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md dark:border-gray-dark dark:bg-gray-dark">
       <div className="mb-4 flex justify-between">
         <h1 className="text-heading-6 font-bold text-dark dark:text-white">Rekening Masjid</h1>
-        <button onClick={() => setIsModalOpen(true)} className="rounded-lg bg-emerald-400 px-4 py-2 text-white dark:text-gray-dark">Tambah</button>
+        <Button
+          variant="contained"
+          onClick={() => setIsModalOpen(true)}
+          sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+          startIcon={<AiOutlinePlus />}
+        >
+          Tambah Data
+        </Button>
       </div>
 
       {showAlert && (
@@ -187,9 +196,8 @@ const RekeningMasjid = () => {
         </thead>
         <tbody>
           {rekeningData.map((item, index) => (
-            <tr key={item.id}className={`${
-              index % 2 === 0 ? "bg-gray-100" : "bg-white"
-            } dark:bg-dark-3 dark:odd:bg-dark-2`}>
+            <tr key={item.id} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"
+              } dark:bg-dark-3 dark:odd:bg-dark-2`}>
               <td className="border-b dark:border-gray-dark px-4 py-2">{index + 1}</td>
               <td className="border-b dark:border-gray-dark px-4 py-2">{item.nama_bank}</td>
               <td className="border-b dark:border-gray-dark px-4 py-2">{item.nomor_rekening}</td>
@@ -198,13 +206,13 @@ const RekeningMasjid = () => {
                 <div className="flex space-x-2">
                   {isEditMode && editIndex === index ? (
                     <>
-                      <button onClick={updateRekening} className="text-green-500"><FaCheck size={20}/></button>
-                      <button onClick={() => { setIsEditMode(false); setEditIndex(null); }} className="text-gray-500"><FaTimes size={20}/></button>
+                      <button onClick={updateRekening} className="text-green-500"><FaCheck size={20} /></button>
+                      <button onClick={() => { setIsEditMode(false); setEditIndex(null); }} className="text-gray-500"><FaTimes size={20} /></button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEditClick(index)} className="text-yellow-500"><FaEdit  size={20}/></button>
-                      <button onClick={() => deleteRekening(item.id)} className="text-red-500"><FaTrash size={20}/></button>
+                      <button onClick={() => handleEditClick(index)} className="text-yellow-500"><FaEdit size={20} /></button>
+                      <button onClick={() => deleteRekening(item.id)} className="text-red-500"><FaTrash size={20} /></button>
                     </>
                   )}
                 </div>
@@ -244,7 +252,8 @@ const RekeningMasjid = () => {
             />
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="rounded-lg bg-gray-500 px-4 py-2 text-white">Batal</button>
-              <button onClick={addRekening} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
+              <button
+                onClick={addRekening} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
             </div>
           </div>
         </div>

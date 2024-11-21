@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search, Plus } from "lucide-react";
+import { AiOutlinePlus } from 'react-icons/ai';
+import Button from '@mui/material/Button';
 
 const ledgerUrl = "http://localhost:8000/api/general-ledger";
 const coaUrl = "http://localhost:8000/api/coa";
@@ -155,13 +157,14 @@ const GeneralLedger = () => {
                                     className="rounded-md border py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
-                            <button
+                            <Button
+                                variant="contained"
                                 onClick={() => setIsModalOpen(true)}
-                                className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+                                startIcon={<AiOutlinePlus />}
                             >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Tambah Jurnal
-                            </button>
+                                Tambah Akun
+                            </Button>
                         </div>
                     </div>
                 </div>
