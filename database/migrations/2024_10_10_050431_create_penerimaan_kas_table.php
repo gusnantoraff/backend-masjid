@@ -11,7 +11,7 @@ class CreatePenerimaanKasTable extends Migration
         Schema::create('penerimaan_kas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('coa_id')->constrained('coa')->onDelete('cascade');
-            $table->foreignId('arus_kas_id')->constrained('arus_kas')->default(1);
+            $table->foreignId('arus_kas_id')->constrained('arus_kas')->default(1)->onDelete('cascade');
             $table->text('jenis')->nullable();
             $table->date('tanggal');
             $table->decimal('jumlah', 15, 2);

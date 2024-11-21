@@ -38,7 +38,7 @@ const HariBesarCard: React.FC<HariBesarCardProps> = ({ nama_kegiatan, tanggal, l
           border: 1px solid #ddd;
           border-radius: 8px;
           overflow: hidden;
-          width: 575px;
+          width: 565px;
           height: 175px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           margin: 10px;
