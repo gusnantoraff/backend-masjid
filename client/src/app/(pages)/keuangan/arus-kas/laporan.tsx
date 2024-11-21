@@ -136,16 +136,18 @@ export default function AccessibleTable({
     }));
 
     const filteredRows = mappedRows.filter((row) => {
-        const rowDate = new Date(row.date);
-        const start = startDate ? new Date(startDate) : null;
-        const end = endDate ? new Date(endDate) : null;
-
+        const rowDate = new Date(row.date); // Ubah string menjadi Date object
+        const start = startDate ? new Date(startDate) : null; // Pastikan startDate menjadi Date object
+        const end = endDate ? new Date(endDate) : null; // Pastikan endDate menjadi Date object
+    
+        // Mengatur kondisi untuk rentang tanggal
         const isDateInRange =
             (!start || rowDate >= start) && (!end || rowDate <= end);
-
-            const isMonthMatch =
-            !selectedMonth || row.date.split("-")[1] === selectedMonth;
-
+    
+        // Memeriksa apakah bulan yang dipilih sesuai
+        const isMonthMatch =
+            !selectedMonth || rowDate.getMonth() + 1 === parseInt(selectedMonth); // +1 karena getMonth() mengembalikan 0 untuk Januari
+    
         const isStatusMatch =
             (isLaporanPage ||
                 isArusKasPage ||
@@ -154,9 +156,10 @@ export default function AccessibleTable({
             (!status ||
                 (status === "pemasukan" && row.status === "Pemasukan") ||
                 (status === "pengeluaran" && row.status === "Pengeluaran"));
-
-        return isDateInRange && isStatusMatch;
+    
+        return isDateInRange && isMonthMatch && isStatusMatch;
     });
+    
 
     const displayedRows = filteredRows.slice(
         page * rowsPerPage,
@@ -404,8 +407,13 @@ export default function AccessibleTable({
                                         currency: "IDR",
                                     })}
                                 </TableCell>
-                                <TableCell>{row.description}</TableCell>
-                                <TableCell>{row.file}</TableCell>
+                                <TableCell >{row.description}</TableCell>
+                                <TableCell style={{
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        maxWidth: "10px",
+    }}>{row.file}</TableCell>
                                 <TableCell>{row.oleh}</TableCell>
                                 <TableCell>
                   {row.amount < 0 ? (
