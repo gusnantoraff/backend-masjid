@@ -309,8 +309,8 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
                                         src={fotoUrl}
                                         alt="Pratinjau Foto"
                                         layout="intrinsic"
-                                        width={500}
-                                        height={300}
+                                        width={400}
+                                        height={250}
                                         style={{
                                             marginBottom: '5px',
                                             objectFit: 'contain',
@@ -326,10 +326,22 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
                                 />
                             </div>
 
-                            <Button type="submit" variant="contained" color="primary" sx={{ width: '100%' }}>
-                                Save Changes
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                sx={{
+                                    width: '100%',
+                                    backgroundColor: '#14B8A6', 
+                                    '&:hover': {
+                                        backgroundColor: '#14B8A6', 
+                                    },
+                                }}
+                            >
+                                Update Berita
                             </Button>
+
                         </Box>
+
                     </form>
                 ) : (
                     <>

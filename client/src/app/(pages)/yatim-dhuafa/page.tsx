@@ -61,6 +61,7 @@ export default function YatimDhuafa() {
         yatim.birth.toLowerCase().includes(searchTerm.toLowerCase()) ||
         yatim.alamat.toLowerCase().includes(searchTerm.toLowerCase()) ||
         yatim.kontak.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        yatim.gender.toLowerCase().includes(searchTerm.toLowerCase()) ||
         yatim.status.toLowerCase().includes(searchTerm.toLowerCase())
 
       );
@@ -106,10 +107,11 @@ export default function YatimDhuafa() {
   const handleExport = () => {
     const doc = new jsPDF("p", "cm", "a4");
 
-    const headers = ["No", "Nama", "Kontak", "Tanggal Lahir", "Alamat", "Keterangan", "Status"];
+    const headers = ["No", "Nama","Jenis Kelamin", "Kontak", "Tanggal Lahir", "Alamat", "Keterangan", "Status"];
     const tableData = yatimData.map((row, index) => [
       index + 1,
       row.nama,
+      row.gender,
       row.kontak,
       row.birth,
       row.alamat,

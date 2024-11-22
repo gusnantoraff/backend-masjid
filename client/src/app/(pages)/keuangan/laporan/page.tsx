@@ -1,4 +1,5 @@
-import { Metadata } from "next";
+"use client"
+
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React from "react";
 import Stats from "../arus-kas/stats";
@@ -6,13 +7,21 @@ import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
 import StatsLine from "@/components/DataStats/stats1";
 import LaporanKeuangan from "../arus-kas/laporan";
+import DateFilter from "../arus-kas/DateFilter";
+import StatsArus from "../arus-kas/stats";
 
-export const metadata: Metadata = {
-    title: "SIstem Manajemen Masjid",
-    description: "This is Next.js Home page for NextAdmin Dashboard Kit",
-};
 
 export default function Home() {
+    const [filter, setFilter] = React.useState({
+        month: new Date().getMonth() + 1, // Bulan saat ini, dimulai dari 1
+        year: new Date().getFullYear(),   // Tahun saat ini
+    });
+
+    const handleFilterChange = (newFilter) => {
+        setFilter(newFilter);
+      };
+
+
     return (
         <>
             <DefaultLayout>
@@ -22,8 +31,13 @@ export default function Home() {
                            Laporan Keuangan
                         </h1>
                     </div>
+                    <div className="items-left justify-left flex grid flex-col">
+                <div className="mt-2">
+                    <DateFilter filter={filter} onFilterChange={handleFilterChange} />
                 </div>
-                <Stats />
+            </div>
+                </div>
+                <StatsArus filter={filter} />
                 <div className="mt-5 flex w-full rounded-xl border border-gray-300 px-2 py-2 shadow-md">
                     <StatsLine />
                 </div>
