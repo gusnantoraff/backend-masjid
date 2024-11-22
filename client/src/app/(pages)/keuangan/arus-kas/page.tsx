@@ -9,6 +9,7 @@ import LaporanKeuangan from "./laporan";
 import PendapatanChart from "./pendapatanchart";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
+import Filter from "./DateFilter";
 
 const penerimaanUrl = "http://localhost:8000/api/penerimaan-kas";
 const pengeluaranUrl = "http://localhost:8000/api/pengeluaran-kas";
@@ -24,6 +25,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
     const [oleh, setOleh] = useState("");
     const [coaOptions, setCoaOptions] = useState([]);
     const [formError, setFormError] = useState("");
+ 
 
     const jenisOptions =
         title === "Tambah Pemasukan"
@@ -43,6 +45,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
         };
         fetchCoaData();
     }, []);
+
 
     // Function to format number with dots as thousand separators
     const formatNumberWithDots = (number) => {
@@ -222,11 +225,22 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
 export default function Home() {
     const [showModalPemasukan, setShowModalPemasukan] = useState(false);
     const [showModalPengeluaran, setShowModalPengeluaran] = useState(false);
+    const [filter, setFilter] = React.useState({
+        month: new Date().getMonth() + 1, // Bulan saat ini, dimulai dari 1
+        year: new Date().getFullYear(),   // Tahun saat ini
+    });
+
+    const handleFilterChange = (newFilter) => {
+        setFilter(newFilter);
+      };
 
     const handleSubmit = () => {
         console.log("Data submitted successfully.");
         window.location.reload(); // Reload the page to fetch the latest data
     };
+
+
+
 
     return (
         <DefaultLayout>
@@ -256,17 +270,17 @@ export default function Home() {
 
             <div className="items-left justify-left flex grid flex-col">
                 <div className="mt-2">
-                    <DateFilter />
+                    <DateFilter filter={filter} onFilterChange={handleFilterChange} />
                 </div>
             </div>
-            <StatsArus />
+            <StatsArus filter={filter} />
             <div className="grid grid-cols-2 gap-4 text-center">
                 <div className="cols-span-1">
                     <h1 className="mt-5 text-center text-2xl font-bold text-black">
                         Pemasukan
                     </h1>
                     <div className="mt-5 flex grid h-auto rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                        <PendapatanChart />
+                        <PendapatanChart filter={filter} />
                     </div>
                 </div>
                 <div className="cols-span-1">
@@ -274,7 +288,7 @@ export default function Home() {
                         Pengeluaran
                     </h1>
                     <div className="mt-5 flex grid h-auto rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                        <PengeluaranChart />
+                        <PengeluaranChart filter={filter}/>
                     </div>
                 </div>
             </div>

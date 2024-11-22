@@ -2,21 +2,40 @@
 import * as React from "react";
 import Chart from "react-apexcharts";
 
-export default function PendapatanChart() {
+export default function PendapatanChart({ filter }) {
   const [data, setData] = React.useState({
     series: [],
     labels: [],
   });
+  const [noData, setNoData] = React.useState(false);
 
   React.useEffect(() => {
-    // Fetch data from API
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:8000/api/penerimaan-kas");
         const result = await response.json();
 
+        // Filter data based on month and year
+        const filteredData = result.filter((item) => {
+          const date = new Date(item.tanggal);
+          const itemMonth = date.getMonth() + 1; // Month starts from 0
+          const itemYear = date.getFullYear();
+
+          return (
+            (!filter.month || itemMonth === parseInt(filter.month)) &&
+            (!filter.year || itemYear === parseInt(filter.year))
+          );
+        });
+
+        if (filteredData.length === 0) {
+          setNoData(true);
+          return; // Stop further processing
+        } else {
+          setNoData(false); // If data exists, reset the noData flag
+        }
+
         // Process data for the chart
-        const groupedData = result.reduce((acc, item) => {
+        const groupedData = filteredData.reduce((acc, item) => {
           const label = item.jenis;
           const amount = parseFloat(item.jumlah);
 
@@ -39,9 +58,16 @@ export default function PendapatanChart() {
     };
 
     fetchData();
-  }, []);
+  }, [filter]); // Refetch data when filter changes
 
   return (
+    <div>
+    {/* If no data is found, show a warning */}
+    {noData ? (
+      <div style={{ color: "red", fontWeight: "bold" }}>
+        Tidak ada data untuk bulan dan tahun yang dipilih.
+      </div>
+    ) : (
     <Chart
       options={{
         labels: data.labels,
@@ -100,5 +126,7 @@ export default function PendapatanChart() {
       width="100%"
       height={300}
     />
-  );
+  )}
+  </div>
+);
 }
