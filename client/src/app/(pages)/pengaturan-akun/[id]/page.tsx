@@ -278,7 +278,6 @@ const Akun = ({ params }: { params: { id: string } }) => {
           <Grid item xs={12} sm={8}>
             {isEditing ? (
               <FormControl fullWidth>
-                <InputLabel>Gender</InputLabel>
                 <Select
                   name="gender"
                   value={formData?.gender || ""}
@@ -316,9 +315,19 @@ const Akun = ({ params }: { params: { id: string } }) => {
         {/* Save Button */}
         {isEditing && (
           <Box sx={{ marginTop: 3 }}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Save Changes
-            </Button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: '#14B8A6',
+                  '&:hover': { backgroundColor: '#14B8A6' },
+                }}
+                onClick={handleSubmit}
+              >
+                Update
+              </Button>
+            </div>
+
           </Box>
         )}
       </Box>
