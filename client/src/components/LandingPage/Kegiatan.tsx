@@ -79,11 +79,17 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     };
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('id-ID', options).format(date);
+    const wibDate = new Date(date.getTime());
+
+    return new Intl.DateTimeFormat('id-ID', options).format(wibDate) + ' WIB';
   };
+
 
   return (
     <section
