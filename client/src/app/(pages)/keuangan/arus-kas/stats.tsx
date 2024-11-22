@@ -1,94 +1,161 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-// Definisi tipe props
 interface StatsArusProps {
-    showDashboardOnly?: boolean; // Properti opsional
-    filter: { month: number; year: number }; // Properti untuk filter bulan dan tahun
+    showDashboardOnly?: boolean;
+    filter: { month: number; year: number };
 }
 
-const StatsArus: React.FC<StatsArusProps> = ({ showDashboardOnly = false, filter }) => {
+const StatsArus: React.FC<StatsArusProps> = ({
+    showDashboardOnly = false,
+    filter,
+}) => {
     const [dataStatsList, setDataStatsList] = useState<any[]>([]);
 
     useEffect(() => {
-        // Pastikan filter bulan dan tahun tersedia
-        const month = filter?.month ?? new Date().getMonth() + 1;  // Default ke bulan saat ini
-        const year = filter?.year ?? new Date().getFullYear();     // Default ke tahun saat ini
+        const month = filter?.month ?? new Date().getMonth() + 1;
+        const year = filter?.year ?? new Date().getFullYear();
 
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/arus-kas");
+                const response = await fetch(
+                    "http://localhost:8000/api/arus-kas",
+                );
                 const result = await response.json();
 
-                // Debugging: Log data hasil fetch untuk melihat format tanggal dan data yang diterima
-                console.log(result);
-
-                // Filter data berdasarkan bulan dan tahun
+                // Filter data for current month
                 const filteredData = result.map((item: any) => {
-                    // Filter penerimaan_kas berdasarkan bulan dan tahun
-                    const filteredPenerimaan = item.penerimaan_kas.filter((penerimaan: any) => {
-                        const date = new Date(penerimaan.tanggal); // Tanggal yang ada di penerimaan_kas
-                        const itemMonth = date.getMonth() + 1; // Bulan dimulai dari 0
-                        const itemYear = date.getFullYear();
-                        console.log(`Checking penerimaan: ${penerimaan.tanggal}, month: ${itemMonth}, year: ${itemYear}`);
-                        return itemMonth === month && itemYear === year;
-                    });
-
-                    // Filter pengeluaran_kas berdasarkan bulan dan tahun
-                    const filteredPengeluaran = item.pengeluaran_kas.filter((pengeluaran: any) => {
-                        const date = new Date(pengeluaran.tanggal); // Tanggal yang ada di pengeluaran_kas
-                        const itemMonth = date.getMonth() + 1; // Bulan dimulai dari 0
-                        const itemYear = date.getFullYear();
-                        console.log(`Checking pengeluaran: ${pengeluaran.tanggal}, month: ${itemMonth}, year: ${itemYear}`);
-                        return itemMonth === month && itemYear === year;
-                    });
-
-                    // Calculate total pemasukan and pengeluaran based on the filtered data
-                    const totalPemasukan = filteredPenerimaan.reduce(
-                        (sum: number, penerimaan: any) => sum + parseFloat(penerimaan.jumlah),
-                        0
+                    const filteredPenerimaan = item.penerimaan_kas.filter(
+                        (penerimaan: any) => {
+                            const date = new Date(penerimaan.tanggal);
+                            return (
+                                date.getMonth() + 1 === month &&
+                                date.getFullYear() === year
+                            );
+                        },
                     );
+
+                    const filteredPengeluaran = item.pengeluaran_kas.filter(
+                        (pengeluaran: any) => {
+                            const date = new Date(pengeluaran.tanggal);
+                            return (
+                                date.getMonth() + 1 === month &&
+                                date.getFullYear() === year
+                            );
+                        },
+                    );
+
+                    const totalPemasukan = filteredPenerimaan.reduce(
+                        (sum: number, penerimaan: any) =>
+                            sum + parseFloat(penerimaan.jumlah),
+                        0,
+                    );
+
                     const totalPengeluaran = filteredPengeluaran.reduce(
-                        (sum: number, pengeluaran: any) => sum + parseFloat(pengeluaran.jumlah),
-                        0
+                        (sum: number, pengeluaran: any) =>
+                            sum + parseFloat(pengeluaran.jumlah),
+                        0,
                     );
 
                     return {
-                        sisa_kas_total: item.sisa_kas_total,
+                        sisa_kas_total: totalPemasukan - totalPengeluaran,
                         pemasukan_total: totalPemasukan,
                         pengeluaran_total: totalPengeluaran,
                     };
                 });
 
-                // Jika tidak ada data setelah filter
-                if (filteredData.length === 0 || !filteredData[0]) {
-                    setDataStatsList([]);
-                    return;
-                }
+                // Fetch data for previous month
+                const previousMonth = month === 1 ? 12 : month - 1;
+                const previousYear = month === 1 ? year - 1 : year;
 
-                // Format data untuk komponen
+                const previousFilteredData = result.map((item: any) => {
+                    const filteredPenerimaan = item.penerimaan_kas.filter(
+                        (penerimaan: any) => {
+                            const date = new Date(penerimaan.tanggal);
+                            return (
+                                date.getMonth() + 1 === previousMonth &&
+                                date.getFullYear() === previousYear
+                            );
+                        },
+                    );
+
+                    const filteredPengeluaran = item.pengeluaran_kas.filter(
+                        (pengeluaran: any) => {
+                            const date = new Date(pengeluaran.tanggal);
+                            return (
+                                date.getMonth() + 1 === previousMonth &&
+                                date.getFullYear() === previousYear
+                            );
+                        },
+                    );
+
+                    const totalPemasukan = filteredPenerimaan.reduce(
+                        (sum: number, penerimaan: any) =>
+                            sum + parseFloat(penerimaan.jumlah),
+                        0,
+                    );
+
+                    const totalPengeluaran = filteredPengeluaran.reduce(
+                        (sum: number, pengeluaran: any) =>
+                            sum + parseFloat(pengeluaran.jumlah),
+                        0,
+                    );
+
+                    return {
+                        sisa_kas_total: totalPemasukan - totalPengeluaran,
+                        pemasukan_total: totalPemasukan,
+                        pengeluaran_total: totalPengeluaran,
+                    };
+                });
+
+                // Calculate growth rates
+                const currentData = filteredData[0] || {};
+                const previousData = previousFilteredData[0] || {};
+
+                const growthRatePemasukan = previousData.pemasukan_total
+                    ? ((currentData.pemasukan_total -
+                          previousData.pemasukan_total) /
+                          previousData.pemasukan_total) *
+                      100
+                    : 0;
+
+                const growthRatePengeluaran = previousData.pengeluaran_total
+                    ? ((currentData.pengeluaran_total -
+                          previousData.pengeluaran_total) /
+                          previousData.pengeluaran_total) *
+                      100
+                    : 0;
+
+                const growthRateSisaKas = previousData.sisa_kas_total
+                    ? ((currentData.sisa_kas_total -
+                          previousData.sisa_kas_total) /
+                          previousData.sisa_kas_total) *
+                      100
+                    : 0;
+
                 const formattedData = [
                     {
                         title: "Total Sisa Kas",
-                        value: filteredData[0]?.sisa_kas_total || 0,
-                        growthRate: 0.43, // Logika pertumbuhan aktual jika tersedia
+                        value: currentData.sisa_kas_total || 0,
+                        growthRate: growthRateSisaKas,
                     },
                     {
                         title: "Total Pemasukan",
-                        value: filteredData[0]?.pemasukan_total || 0,
-                        growthRate: -0.43, // Logika pertumbuhan aktual jika tersedia
+                        value: currentData.pemasukan_total || 0,
+                        growthRate: growthRatePemasukan,
                     },
                     {
                         title: "Total Pengeluaran",
-                        value: filteredData[0]?.pengeluaran_total || 0,
-                        growthRate: 0.43, // Logika pertumbuhan aktual jika tersedia
+                        value: currentData.pengeluaran_total || 0,
+                        growthRate: growthRatePengeluaran,
                     },
                 ];
 
-                // Terapkan filter berdasarkan parameter showDashboardOnly
                 const filteredDataStats = showDashboardOnly
                     ? formattedData.filter((item) =>
-                          ["Total Pemasukan", "Total Pengeluaran"].includes(item.title)
+                          ["Total Pemasukan", "Total Pengeluaran"].includes(
+                              item.title,
+                          ),
                       )
                     : formattedData;
 
@@ -101,14 +168,12 @@ const StatsArus: React.FC<StatsArusProps> = ({ showDashboardOnly = false, filter
         fetchData();
     }, [filter, showDashboardOnly]);
 
-    // Format angka ke format Rupiah Indonesia
     const formatRupiah = (number: number) =>
         new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
         }).format(number);
 
-    // Tentukan grid layout berdasarkan jumlah item
     const gridLayout =
         dataStatsList.length === 2
             ? "grid-cols-2"
@@ -117,7 +182,7 @@ const StatsArus: React.FC<StatsArusProps> = ({ showDashboardOnly = false, filter
     return (
         <div className={`grid gap-4 ${gridLayout} 2xl:gap-6`}>
             {dataStatsList.length === 0 ? (
-                <div className="text-center text-red-500 font-bold">
+                <div className="text-center font-bold text-red-500">
                     Tidak ada data untuk bulan dan tahun yang dipilih.
                 </div>
             ) : (
@@ -128,8 +193,8 @@ const StatsArus: React.FC<StatsArusProps> = ({ showDashboardOnly = false, filter
                             item.title === "Total Pemasukan"
                                 ? " bg-green-200"
                                 : item.title === "Total Pengeluaran"
-                                ? " bg-red-600"
-                                : " bg-amber-500"
+                                  ? " bg-red-600"
+                                  : " bg-amber-500"
                         }`}
                     >
                         <h2 className="w-auto text-xl font-medium text-black dark:text-slate-800">
@@ -142,12 +207,14 @@ const StatsArus: React.FC<StatsArusProps> = ({ showDashboardOnly = false, filter
                             <div
                                 className={`rounded-full px-2 py-1 text-sm font-medium text-white ${
                                     item.growthRate > 0
-                                        ? "bg-green-700 border border-green-500"
-                                        : "bg-red-700 border border-red-400"
+                                        ? "border border-green-500 bg-green-700"
+                                        : item.growthRate < 0
+                                          ? "border border-red-400 bg-red-700"
+                                          : "border border-gray-400 bg-gray-700"
                                 }`}
                             >
                                 {item.growthRate > 0 ? "+" : ""}
-                                {item.growthRate}%
+                                {item.growthRate.toFixed(2)}%
                             </div>
                         </div>
                     </div>

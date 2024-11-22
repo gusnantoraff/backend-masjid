@@ -9,7 +9,7 @@ import LaporanKeuangan from "./laporan";
 import PendapatanChart from "./pendapatanchart";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
-import Filter from "./DateFilter";
+// import Filter from "./DateFilter";
 
 const penerimaanUrl = "http://localhost:8000/api/penerimaan-kas";
 const pengeluaranUrl = "http://localhost:8000/api/pengeluaran-kas";
@@ -25,7 +25,6 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
     const [oleh, setOleh] = useState("");
     const [coaOptions, setCoaOptions] = useState([]);
     const [formError, setFormError] = useState("");
- 
 
     const jenisOptions =
         title === "Tambah Pemasukan"
@@ -45,7 +44,6 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
         };
         fetchCoaData();
     }, []);
-
 
     // Function to format number with dots as thousand separators
     const formatNumberWithDots = (number) => {
@@ -227,20 +225,17 @@ export default function Home() {
     const [showModalPengeluaran, setShowModalPengeluaran] = useState(false);
     const [filter, setFilter] = React.useState({
         month: new Date().getMonth() + 1, // Bulan saat ini, dimulai dari 1
-        year: new Date().getFullYear(),   // Tahun saat ini
+        year: new Date().getFullYear(), // Tahun saat ini
     });
 
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
-      };
+    };
 
     const handleSubmit = () => {
         console.log("Data submitted successfully.");
         window.location.reload(); // Reload the page to fetch the latest data
     };
-
-
-
 
     return (
         <DefaultLayout>
@@ -270,7 +265,10 @@ export default function Home() {
 
             <div className="items-left justify-left flex grid flex-col">
                 <div className="mt-2">
-                    <DateFilter filter={filter} onFilterChange={handleFilterChange} />
+                    <DateFilter
+                        filter={filter}
+                        onFilterChange={handleFilterChange}
+                    />
                 </div>
             </div>
             <StatsArus filter={filter} />
@@ -288,7 +286,7 @@ export default function Home() {
                         Pengeluaran
                     </h1>
                     <div className="mt-5 flex grid h-auto rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                        <PengeluaranChart filter={filter}/>
+                        <PengeluaranChart filter={filter} />
                     </div>
                 </div>
             </div>
