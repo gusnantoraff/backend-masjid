@@ -13,7 +13,7 @@ class CoaSeeder extends Seeder
             [
                 'kode_akun' => '1001',
                 'nama_akun' => 'Kas Masjid',
-                'tipe' => 'Kas Masjid',
+                'tipe' => 'Aset',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

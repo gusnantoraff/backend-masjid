@@ -28,9 +28,21 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
 
     const jenisOptions =
         title === "Tambah Pemasukan"
-            ? ["Infaq", "Donasi", "Zakat"]
-            : ["Operasional", "Listrik", "Zakat", "Pembangunan"];
-
+            ? [
+                  "Donasi Tunai",
+                  "Donasi Uang Digital",
+                  "Donasi Berbasis Program",
+                  "Donasi Khusus",
+              ]
+            : [
+                  "Pengeluaran Operasional",
+                  "Pengeluaran Kegiatan Keagamaan",
+                  "Pengeluaran Sosial",
+                  "Pengeluaran Pembangunan dan Renovasi",
+                  "Pengeluaran Dakwah dan Penyebaran",
+                  "Pengeluaran Musiman",
+                  "Pengeluaran Administrasi",
+              ];
     useEffect(() => {
         const fetchCoaData = async () => {
             try {

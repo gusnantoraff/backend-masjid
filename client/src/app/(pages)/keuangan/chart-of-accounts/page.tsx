@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search, Plus } from "lucide-react";
-import { AiOutlinePlus } from 'react-icons/ai';
-import Button from '@mui/material/Button';
+import { AiOutlinePlus } from "react-icons/ai";
+import Button from "@mui/material/Button";
 
 const API_URL = "http://localhost:8000/api/coa";
 
@@ -104,10 +104,10 @@ const Modal = ({ isOpen, onClose, onSubmit, title }) => {
                             className="h-12 w-full rounded-lg border p-2"
                         >
                             <option value="">Pilih Tipe Akun</option>
-                            <option value="Aset">Aset</option>
-                            <option value="Kewajiban">Kewajiban</option>
-                            <option value="Penerimaan">Penerimaan</option>
-                            <option value="Pengeluaran">Pengeluaran</option>
+                            <option value="Infaq">Infaq</option>
+                            <option value="Operasional">Operasional</option>
+                            <option value="Kas">Kas</option>
+                            <option value="Hutang">Hutang</option>
                         </select>
                     </div>
                     <div className="mt-4 flex justify-end gap-2">
@@ -204,7 +204,11 @@ const ChartOfAccounts = () => {
                                 <Button
                                     variant="contained"
                                     onClick={() => setIsModalOpen(true)}
-                                    sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+                                    sx={{
+                                        backgroundColor: "#14B8A6",
+                                        color: "white",
+                                        marginRight: "10px",
+                                    }}
                                     startIcon={<AiOutlinePlus />}
                                 >
                                     Tambah Akun
