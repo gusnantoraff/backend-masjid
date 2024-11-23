@@ -25,10 +25,10 @@ const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lok
       margin: '6px'
     },
     normal: { 
-      cardWidth: '550px', 
-      cardHeight: '175px', 
-      imgWidth: 200, 
-      imgHeight: 155, 
+      cardWidth: '565px', 
+      cardHeight: '200px', 
+      imgWidth: 275, 
+      imgHeight: 175, 
       fontSize: '16px', 
       buttonSize: '14px', 
       iconSize: 20,

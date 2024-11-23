@@ -75,6 +75,8 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     fetchKegiatan();
   }, [kegiatan]);
 
+  console.log('data',kegiatan);
+
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
