@@ -73,7 +73,7 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     };
 
     fetchKegiatan();
-  }, []);
+  }, [kegiatan]);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -115,7 +115,7 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
                 }
                 alt={item.nama_kegiatan || "Tidak ada kegiatan terdekat"}
                 layout="fill"
-                objectFit="cover"
+                style={{ objectFit: "cover" }}
                 className="rounded-t-lg"
               />
             </div>
