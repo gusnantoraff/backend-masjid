@@ -41,7 +41,7 @@ const Akun = ({ params }: { params: { id: string } }) => {
           notFound();
         }
         setAkun(data);
-        setFormData(data);
+        setFormData(data);  // Set initial form data
         setLoading(false);
       })
       .catch((err) => {
@@ -49,6 +49,7 @@ const Akun = ({ params }: { params: { id: string } }) => {
         setLoading(false);
       });
   }, [id]);
+  
 
   if (loading) {
     return <Typography variant="h6" sx={{ padding: "20px" }}>Loading...</Typography>;
@@ -62,12 +63,13 @@ const Akun = ({ params }: { params: { id: string } }) => {
     ? `http://localhost:8000/storage/${akun.avatar}`
     : "/images/user/user.png";
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (formData) {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      if (formData) {
+        setFormData({ ...formData, [name]: value });
+      }
+    };
+    
 
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
     const { name, value } = e.target;
@@ -86,14 +88,21 @@ const Akun = ({ params }: { params: { id: string } }) => {
     })
       .then((response) => response.json())
       .then((updatedData) => {
-        setAkun(updatedData);
-        setIsEditing(false);
-        router.push(`/pengaturan-akun/${id}`);
+      
+        fetch(`http://localhost:8000/api/users/${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setAkun(data);  
+            setIsEditing(false);
+            router.push(`/pengaturan-akun/${id}`);  
+          })
+          .catch((err) => setError("Failed to load updated profile."));
       })
       .catch((error) => {
         setError("Failed to update profile.");
       });
   };
+  
 
   const handleKembali = () => {
     router.push(`/pengaturan-akun`);
