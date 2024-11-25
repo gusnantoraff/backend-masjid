@@ -3,8 +3,11 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search, Plus } from "lucide-react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineExport, AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable"; // Import for autoTable support
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 const ledgerUrl = "http://localhost:8000/api/general-ledger";
 const coaUrl = "http://localhost:8000/api/coa";
@@ -20,6 +23,10 @@ const GeneralLedger = () => {
         keterangan: "",
         coa_id: "",
     });
+
+    const [exportDialogOpen, setExportDialogOpen] = useState(false);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
 
     // Fetch data from both APIs
     const fetchData = async () => {
@@ -133,11 +140,73 @@ const GeneralLedger = () => {
     );
     const totalNominal = totalDebit - totalKredit;
 
+    const handleExport = (format) => {
+        if (format === "CSV") {
+            exportToCSV();
+        } else if (format === "PDF") {
+            exportToPDF();
+        }
+        setExportDialogOpen(false);
+    };
+    const exportToPDF = () => {
+        const doc = new jsPDF("p", "cm", "a4");
+        const headers = [
+            "No",
+            "Jenis",
+            "Tanggal",
+            "Jumlah",
+            "Deskripsi",
+            "File",
+            "Oleh",
+            "Status",
+        ];
+        const tableData = filteredTransactions.map((row, index) => [
+            index + 1,
+            row.jenis,
+            row.tanggal,
+            row.kodeAkun,
+            row.namaAkun,
+            row.keterangan,
+            row.debit.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
+            row.kredit.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
+            (parseFloat(row.debit) - parseFloat(row.kredit)).toLocaleString(
+                "id-ID",
+                {
+                    style: "currency",
+                    currency: "IDR",
+                }
+            ),
+        ]);
+
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Buku Besar Periode " + selectedMonth + "/" + selectedYear, 10.5, 1, {
+            align: "center",
+        });
+
+        doc.autoTable({
+            head: [headers],
+            body: tableData,
+            startY: 2,
+            theme: "grid",
+        });
+
+        doc.save(`Buku_Besar_Period_${selectedMonth}_${selectedYear}.pdf`);
+    };
+
+
     return (
         <DefaultLayout>
             <h1 className="p-2 text-4xl font-bold text-black">
                 General Ledger
             </h1>
+
             <div className="mt-2 rounded-lg border bg-white shadow-sm">
                 <div className="border-b p-6">
                     <div className="flex items-center justify-between">
@@ -157,6 +226,17 @@ const GeneralLedger = () => {
                                     className="rounded-md border py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
+                            <Button
+                            variant="outlined"
+                            startIcon={<PictureAsPdfIcon />}
+                            onClick={() => setExportDialogOpen(true)}
+                            style={{
+                                color: "#008080", // Warna teks dan ikon hijau toska
+                                borderColor: "#008080", // Warna border hijau toska
+                            }}
+                        >
+                            Export PDF
+                        </Button>
                             <Button
                                 variant="contained"
                                 onClick={() => setIsModalOpen(true)}
@@ -302,44 +382,10 @@ const GeneralLedger = () => {
                             <div className="space-y-4">
                                 <div>
                                     <label
-                                        htmlFor="tanggal"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Tanggal
-                                    </label>
-                                    <input
-                                        id="tanggal"
-                                        name="tanggal"
-                                        type="date"
-                                        required
-                                        value={formData.tanggal}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="keterangan"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Keterangan
-                                    </label>
-                                    <input
-                                        id="keterangan"
-                                        name="keterangan"
-                                        type="text"
-                                        required
-                                        value={formData.keterangan}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label
                                         htmlFor="coa_id"
                                         className="block text-sm font-medium text-gray-700"
                                     >
-                                        Nama Akun
+                                        Tipe
                                     </label>
                                     <select
                                         id="coa_id"
@@ -379,6 +425,62 @@ const GeneralLedger = () => {
                     </div>
                 </div>
             )}
+
+{exportDialogOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="w-full max-w-md rounded-lg bg-white p-4">
+                        <h3 className="mb-4 text-lg font-medium text-gray-900">
+                            Pilih Periode untuk Export
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Tahun
+                                </label>
+                                <input
+                                    type="number"
+                                    value={selectedYear}
+                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                    className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Bulan
+                                </label>
+                                <select
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                    className="mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                                >
+                                    {/* Populate months */}
+                                    {Array.from({ length: 12 }, (_, i) => (
+                                        <option key={i} value={i + 1}>
+                                            {i + 1}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex justify-end space-x-2">
+                            <button
+                                onClick={() => setExportDialogOpen(false)}
+                                className="rounded-md border px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={() => handleExport("PDF")}
+                                className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                            >
+                                <PictureAsPdfIcon fontSize="small" sx={{marginRight: "10px"}}/>
+                                Export PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </DefaultLayout>
     );
 };

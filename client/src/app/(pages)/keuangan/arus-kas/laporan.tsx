@@ -21,6 +21,8 @@ import GridOnIcon from "@mui/icons-material/GridOn";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { AiOutlineExport } from "react-icons/ai";
 import { jsPDF } from "jspdf";
+import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { FaEye, FaTrash } from "react-icons/fa6";
 
 export default function AccessibleTable({
     isLaporanPage,
@@ -37,6 +39,10 @@ export default function AccessibleTable({
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null); // Row for modal
+    const [modalOpen, setModalOpen] = useState(false); // Modal state
+    const [editMode, setEditMode] = useState(false);
+
 
     const pageTitle = isLaporanPage
         ? "Laporan Keuangan"
@@ -161,7 +167,7 @@ export default function AccessibleTable({
         return isDateInRange && isMonthMatch && isStatusMatch;
     });
 
-    const displayedRows = filteredRows.slice(
+    const displayedRows = mappedRows.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
     );
@@ -250,6 +256,22 @@ export default function AccessibleTable({
         }
 
         setAnchorEl(null);
+    };
+
+    const handleDelete = (index) => {
+        const newRows = [...rows];
+        newRows.splice(index, 1);
+        setRows(newRows);
+    };
+
+    const handleDetail = (row) => {
+        setSelectedRow(row);
+        setModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setModalOpen(false);
+        setSelectedRow(null);
     };
 
     return (
@@ -482,6 +504,15 @@ export default function AccessibleTable({
                             >
                                 Status
                             </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontFamily: "Satoshi",
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Aksi
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -536,6 +567,20 @@ export default function AccessibleTable({
                                         </div>
                                     )}
                                 </TableCell>
+                                <TableCell className="space-x-2">
+                                    <button
+                                        onClick={() => handleDetail(row)}
+                        className="text-blue-500"
+                      >
+                        <FaEye size={20}/>
+                      </button>
+                                    <button
+                        onClick={() => handleDelete(index)}
+                        className="text-red-500"
+                      >
+                        <FaTrash size={20}/>
+                      </button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -545,12 +590,225 @@ export default function AccessibleTable({
             {/* Pagination */}
             <TablePagination
                 component="div"
-                count={filteredRows.length}
+                count={mappedRows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
+
+            {/* Modal for Detail */}
+            {selectedRow && (
+    <Dialog open={modalOpen} onClose={handleModalClose}>
+        <DialogTitle>Detail Data</DialogTitle>
+        <DialogContent>
+            {editMode ? (
+                // Edit Mode
+                <>
+                    <TextField
+                        label="Jenis"
+                        value={selectedRow.name}
+                        fullWidth
+                        margin="dense"
+                        select
+                        onChange={(e) =>
+                            setSelectedRow((prev) => ({ ...prev, name: e.target.value }))
+                        }
+                    >
+                        <MenuItem value="Jenis A">Jenis A</MenuItem>
+                        <MenuItem value="Jenis B">Jenis B</MenuItem>
+                        <MenuItem value="Jenis C">Jenis C</MenuItem>
+                    </TextField>
+                    <TextField
+                        label="Tanggal"
+                        value={selectedRow.date}
+                        type="date"
+                        fullWidth
+                        margin="dense"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={(e) =>
+                            setSelectedRow((prev) => ({ ...prev, date: e.target.value }))
+                        }
+                    />
+                    <TextField
+                        label="Jumlah"
+                        value={selectedRow.amount}
+                        fullWidth
+                        margin="dense"
+                        onChange={(e) =>
+                            setSelectedRow((prev) => ({
+                                ...prev,
+                                amount: parseFloat(e.target.value),
+                            }))
+                        }
+                    />
+                    <TextField
+                        label="Deskripsi"
+                        value={selectedRow.description}
+                        fullWidth
+                        margin="dense"
+                        onChange={(e) =>
+                            setSelectedRow((prev) => ({
+                                ...prev,
+                                description: e.target.value,
+                            }))
+                        }
+                    />
+                    <TextField
+                        label="File"
+                        value={selectedRow.file}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="Oleh"
+                        value={selectedRow.oleh}
+                        fullWidth
+                        margin="dense"
+                        select
+                        onChange={(e) =>
+                            setSelectedRow((prev) => ({ ...prev, oleh: e.target.value }))
+                        }
+                    >
+                        {Object.keys(coaMap).map((key) => (
+                            <MenuItem key={key} value={coaMap[key]}>
+                                {coaMap[key]}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        label="Status"
+                        value={selectedRow.status}
+                        fullWidth
+                        margin="dense"
+                        select
+                        onChange={(e) =>
+                            setSelectedRow((prev) => ({
+                                ...prev,
+                                status: e.target.value,
+                            }))
+                        }
+                    >
+                        <MenuItem value="Pemasukan">Pemasukan</MenuItem>
+                        <MenuItem value="Pengeluaran">Pengeluaran</MenuItem>
+                    </TextField>
+                </>
+            ) : (
+                // View Mode
+                <>
+                    <TextField
+                        label="Jenis"
+                        value={selectedRow.name}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="Tanggal"
+                        value={selectedRow.date}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="Jumlah"
+                        value={selectedRow.amount.toLocaleString("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                        })}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="Deskripsi"
+                        value={selectedRow.description}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="File"
+                        value={selectedRow.file}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="Oleh"
+                        value={selectedRow.oleh}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <TextField
+                        label="Status"
+                        value={selectedRow.status}
+                        fullWidth
+                        margin="dense"
+                        InputProps={{ readOnly: true }}
+                    />
+                </>
+            )}
+        </DialogContent>
+        <DialogActions>
+            {editMode ? (
+                <>
+                    <Button
+                        onClick={async () => {
+                            try {
+                                const response = await fetch(
+                                    `http://localhost:8000/api/arus-kas/${selectedRow.id}`,
+                                    {
+                                        method: "PUT",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(selectedRow),
+                                    }
+                                );
+                                if (response.ok) {
+                                    setRows((prev) =>
+                                        prev.map((row) =>
+                                            row.id === selectedRow.id ? selectedRow : row
+                                        )
+                                    );
+                                    setEditMode(false);
+                                    setModalOpen(false);
+                                } else {
+                                    console.error("Failed to update data.");
+                                }
+                            } catch (error) {
+                                console.error("Error updating data:", error);
+                            }
+                        }}
+                        variant="contained"
+                        color="primary"
+                    >
+                        Simpan
+                    </Button>
+                    <Button
+                        onClick={() => setEditMode(false)}
+                        variant="outlined"
+                        color="secondary"
+                    >
+                        Batal
+                    </Button>
+                </>
+            ) : (
+                <Button
+                    onClick={() => setEditMode(true)}
+                    variant="contained"
+                    color="primary"
+                >
+                    Edit
+                </Button>
+            )}
+            <Button onClick={handleModalClose} color="secondary">
+                Tutup
+            </Button>
+        </DialogActions>
+    </Dialog>
+)};
         </div>
     );
 }

@@ -5,11 +5,10 @@ import React, { useState, useEffect } from "react";
 import StatsArus from "./stats";
 import ButtonDefault from "@/components/Buttons/ButtonDefault";
 import { IoMdAdd } from "react-icons/io";
-import LaporanKeuangan from "./laporan";
 import PendapatanChart from "./pendapatanchart";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
-// import Filter from "./DateFilter";
+import Jurnal from "./jurnal";
 
 const penerimaanUrl = "http://localhost:8000/api/penerimaan-kas";
 const pengeluaranUrl = "http://localhost:8000/api/pengeluaran-kas";
@@ -303,7 +302,7 @@ export default function Home() {
                 </div>
             </div>
             <div className="mt-5 flex w-full rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                <LaporanKeuangan
+                <Jurnal
                     isLaporanPage={false}
                     isPenerimaanPage={false}
                     isPengeluaranPage={false}
