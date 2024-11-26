@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import { AiOutlinePlus } from 'react-icons/ai';
 import Button from '@mui/material/Button';
+import fetchWithAuth from "@/utils/fetch";
 
 const RekeningMasjid = () => {
   const [rekeningData, setRekeningData] = useState([]);
@@ -23,11 +24,7 @@ const RekeningMasjid = () => {
 
   const fetchRekeningMasjid = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/rekening-bank');
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
+      const data = await fetchWithAuth('http://localhost:8000/api/rekening-bank');
       setRekeningData(data);
     } catch (error) {
       console.error('Error fetching rekening masjid:', error);
@@ -51,19 +48,13 @@ const RekeningMasjid = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/rekening-bank', {
+      const data = await fetchWithAuth('http://localhost:8000/api/rekening-bank', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newRekening),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to add data');
-      }
-
-      const data = await response.json();
       setRekeningData([...rekeningData, data.rekeningBank]);
       setNewNamaBank('');
       setNewNomorRekening('');
@@ -82,19 +73,13 @@ const RekeningMasjid = () => {
     const updatedRekening = { ...rekeningData[editIndex], namaBank: newNamaBank, nomorRekening: newNomorRekening, atasNama: newAtasNama };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/rekening-bank/${updatedRekening.id}`, {
+      const data = await fetchWithAuth(`http://localhost:8000/api/rekening-bank/${updatedRekening.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedRekening),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to update data');
-      }
-
-      const data = await response.json();
       const updatedRekeningData = [...rekeningData];
       updatedRekeningData[editIndex] = data.rekeningBank;
       setRekeningData(updatedRekeningData);
@@ -116,13 +101,9 @@ const RekeningMasjid = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/rekening-bank/${deleteId}`, {
+      await fetchWithAuth(`http://localhost:8000/api/rekening-bank/${deleteId}`, {
         method: 'DELETE',
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete data');
-      }
 
       setRekeningData(rekeningData.filter((item) => item.id !== deleteId));
       setShowAlert(false);

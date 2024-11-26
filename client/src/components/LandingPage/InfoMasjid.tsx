@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import { FaMosque, FaCheckCircle } from 'react-icons/fa';
 
 interface Facility {
@@ -25,7 +25,7 @@ const InfoMasjid: React.FC<InfoMasjidProps> = ({ id }) => {
   useEffect(() => {
     const fetchMasjidData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/info-masjid');
+        const response = await axios.get('/info-masjid');
         setInfoMasjid(response.data[0]);
       } catch (error) {
         console.error("Error fetching masjid data:", error);

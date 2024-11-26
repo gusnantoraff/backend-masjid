@@ -7,6 +7,8 @@ import { Typography, Button, Box, Grid, Divider } from "@mui/material";
 import { SlActionUndo } from "react-icons/sl";
 import { FiVolume2 } from 'react-icons/fi';
 import { AiOutlineMail } from "react-icons/ai";
+import axios from '@/utils/axios';
+import fetchWithAuth from "@/utils/fetch";
 
 interface Pesan {
     nama_pengirim: string;
@@ -22,8 +24,7 @@ const PesanDetail = ({ params }: { params: { id: string } }) => {
     const [error, setError] = useState<string>("");
 
     useEffect(() => {
-        fetch(`http://localhost:8000/api/pesan-website/${id}`)
-            .then((response) => response.json())
+        fetchWithAuth(`http://localhost:8000/api/pesan-website/${id}`)
             .then((data) => {
                 if (!data) {
                     notFound();

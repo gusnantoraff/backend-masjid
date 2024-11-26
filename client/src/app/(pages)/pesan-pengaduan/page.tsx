@@ -17,7 +17,7 @@ const Pengaduan = () => {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/pesan-website';
+  const fetchUrl = '/pesan-website';
 
   return (
     <DefaultLayout>

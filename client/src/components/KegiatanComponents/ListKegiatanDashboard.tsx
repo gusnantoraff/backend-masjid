@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import KegiatanCard from '@/components/KegiatanComponents/KegiatanCard';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import { useRouter } from 'next/navigation';
 import AlertConfirm from '../Alerts/AlertConfirm';
 
@@ -37,7 +37,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal' }) =
 
   const fetchKegiatan = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/kegiatan');
+      const response = await axios.get('/kegiatan');
       setKegiatanList(response.data);
       setLoading(false);
     } catch (error) {
@@ -54,7 +54,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size='normal' }) =
   const handleDeleteConfirm = async () => {
     if (selectedId !== null) {
       try {
-        await axios.delete(`http://localhost:8000/api/kegiatan/${selectedId}`);
+        await axios.delete(`/kegiatan/${selectedId}`);
         setKegiatanList(kegiatanList.filter(kegiatan => kegiatan.id !== selectedId));
         setShowConfirm(false);
         setSelectedId(null);

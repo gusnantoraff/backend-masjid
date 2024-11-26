@@ -39,7 +39,7 @@ export default function Artikel() {
         { header: "Tindakan", accessor: "", type: "berita"},
     ];
 
-    const fetchUrl = "http://localhost:8000/api/berita";
+    const fetchUrl = "/berita";
 
   return (
     <DefaultLayout>

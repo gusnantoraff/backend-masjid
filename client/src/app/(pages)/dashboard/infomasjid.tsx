@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiPhone, FiMapPin } from "react-icons/fi";
+import fetchWithAuth from "@/utils/fetch";
 
 // URL API
 const fetchUrl = 'http://localhost:8000/api/info-masjid';
@@ -21,11 +22,7 @@ const InfoMasjid = () => {
     useEffect(() => {
         const fetchInfoMasjid = async () => {
             try {
-                const response = await fetch(fetchUrl);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch data");
-                }
-                const data: InfoMasjidData[] = await response.json();
+                const data: InfoMasjidData[] = await await fetchWithAuth(fetchUrl);
                 setInfoMasjid(data[0]);
                 setLoading(false);
             } catch (error) {

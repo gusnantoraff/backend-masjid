@@ -8,6 +8,7 @@ import Image from 'next/image';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import fetchWithAuth from "@/utils/fetch";
 
 SwiperCore.use([Navigation, Pagination]);
 
@@ -37,8 +38,7 @@ const Galeri: React.FC<GaleriProps> = ({ id }) => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/images?kategori=galeri')
-      .then(response => response.json())
+    fetchWithAuth('http://localhost:8000/api/images?kategori=galeri')
       .then(data => setImages(data))
       .catch(error => console.error('Error fetching images:', error));
   }, []);

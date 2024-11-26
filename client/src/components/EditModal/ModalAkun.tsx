@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@/utils/axios';
 import React, { useEffect, useState } from 'react';
 import { BiX } from 'react-icons/bi';
 
@@ -26,7 +26,7 @@ const EditAkun: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) =
     if (isOpen && id) {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/users/${id}`);
+                const response = await axios.get(`/users/${id}`);
                 const data = response.data;
 
                 // Setel data kegiatan ke formData dan set foto URL untuk pratinjau
@@ -70,7 +70,7 @@ const EditAkun: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id }) =
     };
 
     try {
-        await axios.put(`http://localhost:8000/api/users/${id}`, data);
+        await axios.put(`/users/${id}`, data);
         onClose();
         onSubmit(); 
     } catch (error) {

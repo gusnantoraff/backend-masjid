@@ -19,7 +19,7 @@ export default function RekeningMasjid() {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/rekening-bank';
+  const fetchUrl = '/rekening-bank';
 
   const RekeningMasjid = () => {
     return (

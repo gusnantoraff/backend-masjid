@@ -8,7 +8,6 @@ import { BiLock } from "react-icons/bi";
 import { useUser } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
 
-
 const DropdownUser = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { user } = useUser();

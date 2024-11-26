@@ -7,7 +7,8 @@ import { Typography, Button, Box, Grid, Divider, TextField, MenuItem, Select, In
 import { SlActionUndo, SlPencil } from "react-icons/sl";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-import axios from 'axios';
+import axios from '@/utils/axios';
+import fetchWithAuth from "@/utils/fetch";
 import dynamic from 'next/dynamic';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
@@ -56,7 +57,7 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
 
     const fetchArticleData = () => {
         setLoading(true);
-        fetch(`http://localhost:8000/api/berita/${id}`)
+        fetchWithAuth(`http://localhost:8000/api/berita/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 if (!data) {
@@ -99,7 +100,7 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
                 kategori: formData.kategori,
             };
 
-            await axios.put(`http://localhost:8000/api/berita/${id}`, data, {
+            await axios.put(`/berita/${id}`, data, {
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -119,7 +120,7 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
         formData.append("foto", file);
 
         try {
-            await axios.post(`http://localhost:8000/api/berita/${id}/upload-foto`, formData, {
+            await axios.post(`/berita/${id}/upload-foto`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

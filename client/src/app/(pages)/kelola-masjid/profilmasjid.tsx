@@ -2,6 +2,7 @@
 import ButtonDefault from '@/components/Buttons/ButtonDefault'
 import { FaEdit, FaCheck, FaTimes } from 'react-icons/fa'
 import React, { useState, useEffect } from 'react'
+import fetchWithAuth from "@/utils/fetch";
 
 const ProfilMasjid = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -19,19 +20,13 @@ const ProfilMasjid = () => {
 
   const fetchMasjidInfo = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/info-masjid/1');
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch masjid info');
-      }
-      const data = await response.json();
+      const data = await fetchWithAuth('http://localhost:8000/api/info-masjid/1');
       setNamaMasjid(data.nama_masjid);
       setAlamatMasjid(data.alamat);
       setDeskripsiMasjid(data.deskripsi);
       setKontak(data.kontak);
     } catch (error) {
       console.error('Error fetching masjid info:', error);
-      setErrorMessage(error.message);
       setShowAlert(true);
     }
   }
@@ -54,17 +49,13 @@ const ProfilMasjid = () => {
 
   const handleSaveClick = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/info-masjid/1', {
+       await fetchWithAuth('http://localhost:8000/api/info-masjid/1', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ nama_masjid: namaMasjid, alamat: alamatMasjid, deskripsi: deskripsiMasjid, kontak: kontak })
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update masjid info');
-      }
       setIsEditing(false);
       setSuccessMessage('Data berhasil diperbarui.');
       setShowAlert(true);

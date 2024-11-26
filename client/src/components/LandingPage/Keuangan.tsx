@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/utils/axios';
 
 interface KeuanganProps {
   id?: string;
@@ -36,7 +36,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
         };
 
         for (let period of periods) {
-          const response = await axios.get('http://localhost:8000/api/laporan-keuangan2/periode', {
+          const response = await axios.get('/laporan-keuangan2/periode', {
             params: { periode: period },
           });
           fetchedReports[period] = response.data;

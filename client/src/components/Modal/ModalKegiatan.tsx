@@ -1,5 +1,5 @@
 "use client";
-import axios from 'axios';
+import axios from '@/utils/axios';
 import React, { useState } from 'react';
 import { BiX } from 'react-icons/bi';
 
@@ -70,7 +70,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/kegiatan', data, {
+      const response = await axios.post('/kegiatan', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

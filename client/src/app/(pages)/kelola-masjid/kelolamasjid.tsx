@@ -20,7 +20,7 @@ export default function KelolaMasjid() {
     { header: 'Tindakan', accessor: '' },
   ];
 
-  const fetchUrl = 'http://localhost:8000/api/info-masjid';
+  const fetchUrl = '/info-masjid';
 
   const KelolaMasjid = () => {
     return (

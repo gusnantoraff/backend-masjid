@@ -1,4 +1,5 @@
 "use client";
+import fetchWithAuth from "@/utils/fetch";
 import React, { useEffect, useState } from "react";
 
 interface StatsArusProps {
@@ -18,11 +19,9 @@ const StatsArus: React.FC<StatsArusProps> = ({
 
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const result = await fetchWithAuth(
                     "http://localhost:8000/api/arus-kas",
                 );
-                const result = await response.json();
-
                 // Filter data for current month
                 const filteredData = result.map((item: any) => {
                     const filteredPenerimaan = item.penerimaan_kas.filter(

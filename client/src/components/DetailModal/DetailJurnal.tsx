@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import { FaEdit, FaTimes } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
+import fetchWithAuth from "@/utils/fetch";
 
 export default function DetailJurnal({
     modalData,
@@ -25,7 +26,7 @@ export default function DetailJurnal({
     const handleSave = async () => {
         try {
             // Kirim permintaan PUT ke server dengan data rowData
-            const response = await fetch(
+            const response = await fetchWithAuth(
                 `http://localhost:8000/api/arus-kas/${rowData.id}`, // Endpoint dengan ID data
                 {
                     method: "PUT", // Gunakan PUT atau PATCH sesuai kebutuhan

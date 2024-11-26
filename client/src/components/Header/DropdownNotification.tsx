@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ClickOutside from "../ClickOutside";
+import fetchWithAuth from "@/utils/fetch";
 
 type Notification = {
   id: number;
@@ -17,7 +18,7 @@ const DropdownNotification = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/pesan-website");
+        const response = await fetchWithAuth("http://localhost:8000/api/pesan-website");
         if (response.ok) {
           const data: Notification[] = await response.json();
           // Sort notifications by date in descending order (latest first)

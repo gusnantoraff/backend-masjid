@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Typography, Button, Box, Grid, Divider, Avatar, TextField, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from "@mui/material";
 import { SlActionUndo, SlPencil } from "react-icons/sl";
 import { useSearchParams, useRouter } from "next/navigation";
+import fetchWithAuth from "@/utils/fetch";
 
 interface Akun {
   firstname: string;
@@ -34,8 +35,7 @@ const Akun = ({ params }: { params: { id: string } }) => {
   const [formData, setFormData] = useState<Akun | null>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/users/${id}`)
-      .then((response) => response.json())
+    fetchWithAuth(`http://localhost:8000/api/users/${id}`)
       .then((data) => {
         if (!data) {
           notFound();
@@ -79,18 +79,16 @@ const Akun = ({ params }: { params: { id: string } }) => {
   };
 
   const handleSubmit = () => {
-    fetch(`http://localhost:8000/api/users/${id}`, {
+    fetchWithAuth(`http://localhost:8000/api/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
     })
-      .then((response) => response.json())
       .then((updatedData) => {
       
-        fetch(`http://localhost:8000/api/users/${id}`)
-          .then((response) => response.json())
+        fetchWithAuth(`http://localhost:8000/api/users/${id}`)
           .then((data) => {
             setAkun(data);  
             setIsEditing(false);

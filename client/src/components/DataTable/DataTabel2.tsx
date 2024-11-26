@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
 import { BiTrash } from 'react-icons/bi';
 import AlertConfirm from "../Alerts/AlertConfirm";
 import { AiOutlineEye, AiOutlineMail } from 'react-icons/ai';
+import axios from '@/utils/axios';
 
 interface Column {
     header: string;
@@ -40,9 +40,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, reloadData}) =
 
     const handleDelete = async () => {
         if (selectedId !== null) {
-            await fetch(`${fetchUrl}/${selectedId}`, {
-                method: 'DELETE',
-            });
+            await axios.delete(`${fetchUrl}/${selectedId}`);
             setData(data.filter((item) => item.id !== selectedId));
             setShowConfirm(false);
         }

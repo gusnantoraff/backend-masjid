@@ -1,4 +1,5 @@
 "use client";
+import fetchWithAuth from "@/utils/fetch";
 import * as React from "react";
 import Chart from "react-apexcharts";
 
@@ -12,11 +13,9 @@ export default function PendapatanChart({ filter }) {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const result = await fetchWithAuth(
                     "http://localhost:8000/api/penerimaan-kas",
                 );
-                const result = await response.json();
-
                 // Filter data based on month and year
                 const filteredData = result.filter((item) => {
                     const date = new Date(item.tanggal);

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Typography, Button, Box, TextField, MenuItem, Select, InputLabel, FormControl, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { SlActionUndo, SlPencil } from "react-icons/sl";
-import axios from "axios";
+import axios from '@/utils/axios';
 import { useSearchParams, useRouter } from "next/navigation";
 
 interface Jamaah {
@@ -32,7 +32,7 @@ const JamaahPage = ({ params }: { params: { id: string } }) => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8000/api/jamaah/${id}`)
+            .get(`/jamaah/${id}`)
             .then((response) => {
                 const data = response.data;
                 if (!data) {
@@ -69,7 +69,7 @@ const JamaahPage = ({ params }: { params: { id: string } }) => {
 
     const handleUpdate = () => {
         axios
-            .put(`http://localhost:8000/api/jamaah/${id}`, formData)
+            .put(`/jamaah/${id}`, formData)
             .then((response) => {
                 const data = response.data;
                 setJamaah(data);
@@ -77,7 +77,7 @@ const JamaahPage = ({ params }: { params: { id: string } }) => {
                 setLoading(true);
                 router.push(`/jamaah/${id}`);
                 axios
-                    .get(`http://localhost:8000/api/jamaah/${id}`)
+                    .get(`/jamaah/${id}`)
                     .then((response) => {
                         setJamaah(response.data);
                         setLoading(false);

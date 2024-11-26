@@ -1,4 +1,5 @@
 "use client";
+import fetchWithAuth from "@/utils/fetch";
 import * as React from "react";
 import Chart from "react-apexcharts";
 
@@ -13,9 +14,7 @@ export default function PengeluaranChart({ filter }) {
     // Fetch data from API
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/pengeluaran-kas");
-        const result = await response.json();
-
+        const result = await fetchWithAuth("http://localhost:8000/api/pengeluaran-kas");
         // Filter data based on month and year
         const filteredData = result.filter((item) => {
           const date = new Date(item.tanggal);

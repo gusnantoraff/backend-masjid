@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import KegiatanCard from './KegiatanCard';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import AlertConfirm from '../Alerts/AlertConfirm';
 import { useRouter } from 'next/navigation';
 
@@ -46,7 +46,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size = 'normal', s
       if (endDate) params.end_date = endDate;
       if (selectedMonth) params.month = selectedMonth;
 
-      const response = await axios.get('http://localhost:8000/api/kegiatan', {
+      const response = await axios.get('/kegiatan', {
         params: params,
       });
 
@@ -76,7 +76,7 @@ const ListKegiatan: React.FC<ListKegiatanProps> = ({ refresh, size = 'normal', s
   const handleDeleteConfirm = async () => {
     if (selectedId !== null) {
       try {
-        await axios.delete(`http://localhost:8000/api/kegiatan/${selectedId}`);
+        await axios.delete(`/kegiatan/${selectedId}`);
         setKegiatanList(kegiatanList.filter(kegiatan => kegiatan.id !== selectedId));
         setShowConfirm(false);
         setSelectedId(null);

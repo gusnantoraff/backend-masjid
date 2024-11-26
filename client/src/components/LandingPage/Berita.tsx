@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import Image from 'next/image';
 import { FaRegCalendarAlt } from "react-icons/fa";
 
@@ -25,7 +25,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ id }) => {
   useEffect(() => {
     const fetchBerita = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/berita');
+        const response = await axios.get('/berita');
         setBerita(response.data);
         setLoading(false);
       } catch (error) {

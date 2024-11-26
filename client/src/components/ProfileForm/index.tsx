@@ -5,6 +5,7 @@ import { Box, Button, TextField, MenuItem, Avatar, Typography } from "@mui/mater
 import { useUser } from "@/context/UserContext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import fetchWithAuth from "@/utils/fetch";
 
 export default function ProfileForm() {
   const { user, fetchUser } = useUser();
@@ -67,7 +68,7 @@ export default function ProfileForm() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/users/${user?.id}`, {
+      const response = await fetchWithAuth(`http://localhost:8000/api/users/${user?.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +95,7 @@ export default function ProfileForm() {
     formData.append("avatar", file);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/users/${user?.id}/avatar`, {
+      const response = await fetchWithAuth(`http://localhost:8000/api/users/${user?.id}/avatar`, {
         method: "POST",
         body: formData,
       });

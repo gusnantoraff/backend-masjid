@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import PendapatanChart from "../arus-kas/pendapatanchart";
 import LaporanKeuangan from "../arus-kas/laporan";
 import DateFilter from "../arus-kas/DateFilter";
+import fetchWithAuth from "@/utils/fetch";
 
 const Home = () => {
     const [pemasukanTotal, setPemasukanTotal] = useState(0);
@@ -27,8 +28,7 @@ const Home = () => {
     useEffect(() => {
         const fetchPemasukanTotal = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/arus-kas");
-                const result = await response.json();
+                const result = await fetchWithAuth("http://localhost:8000/api/arus-kas");
 
                 if (result && result.length > 0) {
                     const filteredData = result[0].penerimaan_kas.filter((item) => {

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
 import { AiOutlinePlus } from 'react-icons/ai';
 import Button from '@mui/material/Button';
+import fetchWithAuth from "@/utils/fetch";
+import axios from '@/utils/axios';
 
 const StrukturOrganisasiMasjid = () => {
     const [struktur, setStruktur] = useState([]);
@@ -24,13 +26,10 @@ const StrukturOrganisasiMasjid = () => {
 
     const fetchStrukturOrganisasi = async () => {
         try {
-            const response = await fetch(
+            const data = await fetchWithAuth(
                 "http://localhost:8000/api/struktur-organisasi",
             );
-            if (!response.ok) {
-                throw new Error("Failed to fetch data");
-            }
-            const data = await response.json();
+
             setStruktur(data);
             setNewStruktur(data);
         } catch (error) {
@@ -52,7 +51,7 @@ const StrukturOrganisasiMasjid = () => {
         };
 
         try {
-            const response = await fetch(
+            const data = await fetchWithAuth(
                 "http://localhost:8000/api/struktur-organisasi",
                 {
                     method: "POST",
@@ -63,16 +62,6 @@ const StrukturOrganisasiMasjid = () => {
                 },
             );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrorMessage(
-                    `Failed to add data: ${errorData.message || "Unknown error"}`,
-                );
-                console.error("Error adding data:", errorData);
-                return;
-            }
-
-            const data = await response.json();
             const { id, ...strukturData } = data.strukturOrganisasi;
             setStruktur([...struktur, { id: id, ...strukturData }]);
             setNewStruktur([...newStruktur, { id: id, ...strukturData }]);
@@ -91,7 +80,7 @@ const StrukturOrganisasiMasjid = () => {
     const updateStruktur = async (id) => {
         const updatedEntry = newStruktur.find((item) => item.id === id);
         try {
-            const response = await fetch(
+            const updatedData = await fetchWithAuth(
                 `http://localhost:8000/api/struktur-organisasi/${id}`,
                 {
                     method: "PUT",
@@ -102,11 +91,6 @@ const StrukturOrganisasiMasjid = () => {
                 },
             );
 
-            if (!response.ok) {
-                throw new Error("Failed to update data");
-            }
-
-            const updatedData = await response.json();
             setStruktur(
                 struktur.map((item) =>
                     item.id === id ? updatedData.strukturOrganisasi : item,
@@ -134,15 +118,9 @@ const StrukturOrganisasiMasjid = () => {
 
     const confirmDelete = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:8000/api/struktur-organisasi/${deleteItemId}`,
-                {
-                    method: "DELETE",
-                },
-            );
-            if (!response.ok) {
-                throw new Error("Failed to delete data");
-            }
+            await axios.delete(
+                `http://localhost:8000/api/struktur-organisasi/${deleteItemId}`);
+
             const updatedStruktur = newStruktur.filter(
                 (item) => item.id !== deleteItemId,
             );

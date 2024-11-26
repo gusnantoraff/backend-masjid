@@ -9,6 +9,7 @@ import Filters from "@/components/filter/FilterTable";
 import TableContent from "@/components/DataTable/TableJurnal";
 import ExportJurnal from "@/components/filter/ExportJurnal";
 import DetailJurnal from "@/components/DetailModal/DetailJurnal";
+import fetchWithAuth from "@/utils/fetch";
 
 export default function Jurnal({
     isLaporanPage,
@@ -39,8 +40,7 @@ export default function Jurnal({
     useEffect(() => {
         const fetchCoaData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/coa");
-                const result = await response.json();
+                const result = await fetchWithAuth("http://localhost:8000/api/coa");
                 const coaMapping = {};
                 result.forEach((coa) => {
                     coaMapping[coa.id] = coa.nama_akun;
@@ -53,11 +53,10 @@ export default function Jurnal({
 
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const result = await fetchWithAuth(
                     "http://localhost:8000/api/arus-kas",
                 );
-                const result = await response.json();
-
+                
                 const formattedRows = [];
                 if (isLaporanPage) {
                     result.forEach((item) => {

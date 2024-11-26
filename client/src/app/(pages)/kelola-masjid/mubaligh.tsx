@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 import { AiOutlinePlus } from 'react-icons/ai';
 import Button from '@mui/material/Button';
+import fetchWithAuth from "@/utils/fetch";
 
 const MubalighMasjid = () => {
   const [mubalighData, setMubalighData] = useState([]);
@@ -26,11 +27,7 @@ const MubalighMasjid = () => {
 
   const fetchMubalighData = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/mubaligh");
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
-      const data = await response.json();
+      const data = await fetchWithAuth("http://localhost:8000/api/mubaligh");
       setMubalighData(data);
     } catch (error) {
       console.error("Error fetching mubaligh data:", error);
@@ -62,7 +59,7 @@ const MubalighMasjid = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/mubaligh", {
+      const newMubaligh = await fetchWithAuth("http://localhost:8000/api/mubaligh", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,12 +70,6 @@ const MubalighMasjid = () => {
           info_masjid_id: 1,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to add mubaligh data");
-      }
-
-      const newMubaligh = await response.json();
       setMubalighData((prevData) => [...prevData, newMubaligh]);
       setFormData({ namaMubaligh: "", kontakMubaligh: "" });
       setIsModalOpen(false);

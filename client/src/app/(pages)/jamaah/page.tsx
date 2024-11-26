@@ -7,7 +7,7 @@ import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import SearchIcon from '@mui/icons-material/Search';
 import ModalForm from '@/components/Modal/ModalJamaah';
 import { jsPDF } from "jspdf";
-import axios from 'axios';
+import axios from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -36,7 +36,7 @@ export default function Jamaah() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/jamaah');
+      const response = await axios.get('/jamaah');
       setJamaahData(response.data);
       setFilteredData(response.data);
     } catch (error) {
@@ -71,7 +71,7 @@ export default function Jamaah() {
 
   const reloadData = () => {
     axios
-      .get('http://localhost:8000/api/jamaah')
+      .get('/jamaah')
       .then((response) => {
         setJamaahData(response.data);
         setFilteredData(response.data);
@@ -277,7 +277,7 @@ export default function Jamaah() {
         </Box>
 
         <Box sx={{ marginTop: '20px' }}>
-          <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='http://localhost:8000/api/jamaah' reloadData={reloadData} />
+          <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='/jamaah' reloadData={reloadData} />
         </Box>
       </div>
       <ModalForm isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} onSuccess={(message: string) => toast.success(message)}/>

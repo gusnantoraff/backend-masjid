@@ -5,6 +5,7 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search, Plus } from "lucide-react";
 import { AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
+import fetchWithAuth from "@/utils/fetch";
 
 const API_URL = "http://localhost:8000/api/coa";
 
@@ -37,23 +38,15 @@ const Modal = ({ isOpen, onClose, onSubmit, title }) => {
         };
 
         try {
-            const response = await fetch(API_URL, {
+            const createdAccount = await fetchWithAuth(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newAccount),
             });
-
-            if (response.ok) {
-                const createdAccount = await response.json();
                 console.log("Account created successfully:", createdAccount);
                 onSubmit();
                 onClose();
                 resetForm();
-            } else {
-                const errorResponse = await response.json();
-                console.error("Error creating account:", errorResponse);
-                alert("Failed to create account.");
-            }
         } catch (error) {
             console.error("Error submitting data:", error);
             alert("An error occurred during submission.");
@@ -139,9 +132,7 @@ const ChartOfAccounts = () => {
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error("Failed to fetch accounts.");
-                const data = await response.json();
+                const data = await fetchWithAuth(API_URL);
 
                 const formattedAccounts = data.map((account) => ({
                     code: account.kode_akun,

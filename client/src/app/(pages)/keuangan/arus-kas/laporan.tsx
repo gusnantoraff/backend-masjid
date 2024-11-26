@@ -23,6 +23,7 @@ import { AiOutlineExport } from "react-icons/ai";
 import { jsPDF } from "jspdf";
 import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { FaEye, FaTrash } from "react-icons/fa6";
+import fetchWithAuth from "@/utils/fetch";
 
 export default function AccessibleTable({
     isLaporanPage,
@@ -80,8 +81,7 @@ export default function AccessibleTable({
     useEffect(() => {
         const fetchCoaData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/coa");
-                const result = await response.json();
+                const result = await fetchWithAuth("http://localhost:8000/api/coa");
                 const coaMapping = {};
                 result.forEach((coa) => {
                     coaMapping[coa.id] = coa.nama_akun;
@@ -94,10 +94,9 @@ export default function AccessibleTable({
 
         const fetchData = async () => {
             try {
-                const response = await fetch(
+                const result = await fetchWithAuth(
                     "http://localhost:8000/api/arus-kas",
                 );
-                const result = await response.json();
 
                 const formattedRows = [];
                 result.forEach((item) => {
@@ -758,7 +757,7 @@ export default function AccessibleTable({
                     <Button
                         onClick={async () => {
                             try {
-                                const response = await fetch(
+                                await fetchWithAuth(
                                     `http://localhost:8000/api/arus-kas/${selectedRow.id}`,
                                     {
                                         method: "PUT",
@@ -766,7 +765,7 @@ export default function AccessibleTable({
                                         body: JSON.stringify(selectedRow),
                                     }
                                 );
-                                if (response.ok) {
+                               
                                     setRows((prev) =>
                                         prev.map((row) =>
                                             row.id === selectedRow.id ? selectedRow : row
@@ -774,9 +773,6 @@ export default function AccessibleTable({
                                     );
                                     setEditMode(false);
                                     setModalOpen(false);
-                                } else {
-                                    console.error("Failed to update data.");
-                                }
                             } catch (error) {
                                 console.error("Error updating data:", error);
                             }

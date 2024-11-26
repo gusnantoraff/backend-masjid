@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@/utils/axios';
 import React, { useState } from 'react';
 import { BiX } from 'react-icons/bi';
 
@@ -31,7 +31,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await axios.post('http://localhost:8000/api/yatim-dhuafa', formData);
+        const response = await axios.post('/yatim-dhuafa', formData);
         console.log('Response from API:', response.data);
         onSubmit();
         onClose();

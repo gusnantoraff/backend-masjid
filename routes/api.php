@@ -12,6 +12,7 @@ $resources = [
     'kegiatan' => \App\Http\Controllers\KegiatanController::class,
     'laporan-keuangan' => \App\Http\Controllers\LaporanKeuanganController::class,
     'mubaligh' => \App\Http\Controllers\MubalighController::class,
+    'pesan-website' => \App\Http\Controllers\PesanWebsiteController::class,
     'arus-kas' => \App\Http\Controllers\ArusKasController::class,
     'penerimaan-kas' => \App\Http\Controllers\PenerimaanKasController::class,
     'pengeluaran-kas' => \App\Http\Controllers\PengeluaranKasController::class,
@@ -36,22 +37,26 @@ Route::get('encrypt', [EncryptionController::class, 'encryptLink']);
 Route::post('decrypt', [EncryptionController::class, 'decryptLink']);
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware('auth:sanctum')->post('/change-password', [ChangePasswordController::class, 'store']);
 
 Route::middleware('auth.cookie')->get('/me', [AuthenticatedSessionController::class, 'me']);
 
-foreach ($resources as $route => $controller) {
-    Route::apiResource($route, $controller);
-    Route::patch("$route/{id}/restore", [$controller, 'restore'])->name("$route.restore");
-}
+Route::middleware('auth:sanctum')->group(function () use ($resources) {
 
-Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode']);
-Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
-Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
-Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
-Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
+    foreach ($resources as $route => $controller) {
+        Route::apiResource($route, $controller);
+        Route::patch("$route/{id}/restore", [$controller, 'restore'])->name("$route.restore");
+    }
+
+    Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode']);
+    Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
+    Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
+    Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
+    Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
+});
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

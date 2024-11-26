@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from '@/utils/axios';
 import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
 import { BiTrash, BiEdit } from 'react-icons/bi';
 import AlertConfirm from "../Alerts/AlertConfirm";
@@ -41,9 +41,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
 
     const handleDelete = async () => {
         if (selectedId !== null) {
-            await fetch(`${fetchUrl}/${selectedId}`, {
-                method: 'DELETE',
-            });
+            await axios.delete(`${fetchUrl}/${selectedId}`);
             setData(data.filter((item) => item.id !== selectedId));
             setShowConfirm(false);
         }

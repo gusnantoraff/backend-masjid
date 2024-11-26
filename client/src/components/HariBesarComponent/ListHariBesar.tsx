@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import HariBesarCard from './HariBesarCard';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import AlertConfirm from '../Alerts/AlertConfirm';
 import { useRouter } from 'next/navigation';
 
@@ -35,7 +35,7 @@ const ListHariBesar: React.FC<ListHariBesarProps> = ({ refresh }) => {
 
   const fetchHariBesar = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/kegiatan');
+      const response = await axios.get('/kegiatan');
       // Filter data to show only "hari-besar" category
       const filteredData = response.data.filter((item: HariBesar) => item.kategori === 'hari-besar');
       console.log(filteredData);
@@ -64,7 +64,7 @@ const ListHariBesar: React.FC<ListHariBesarProps> = ({ refresh }) => {
   const handleDeleteConfirm = async () => {
     if (selectedId !== null) {
       try {
-        await axios.delete(`http://localhost:8000/api/kegiatan/${selectedId}`);
+        await axios.delete(`/kegiatan/${selectedId}`);
         setHariBesarList(haribesarList.filter(haribesar => haribesar.id !== selectedId));
         setShowConfirm(false);
         setSelectedId(null);

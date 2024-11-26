@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import fetchWithAuth from "@/utils/fetch";
 
 interface ImageType {
     id: number;
@@ -15,11 +16,12 @@ const Galeri: React.FC = () => {
     const router = useRouter();
 
     useEffect(() => {
-        fetch('http://localhost:8000/api/images?kategori=galeri')
-            .then(response => response.json())
+        fetchWithAuth('http://localhost:8000/api/images?kategori=galeri')
             .then(data => setImages(data))
             .catch(error => console.error('Error fetching images:', error));
     }, []);
+
+    console.log('data',images);
 
     const handleImageClick = (src: string) => {
         setSelectedImage(src);

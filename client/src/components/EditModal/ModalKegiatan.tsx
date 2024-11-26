@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@/utils/axios';
 import React, { useEffect, useState } from 'react';
 import { BiX } from 'react-icons/bi';
 import Image from 'next/image';
@@ -47,7 +47,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
         if (isOpen) {
             const fetchData = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8000/api/kegiatan/${id}`);
+                    const response = await axios.get(`/kegiatan/${id}`);
                     const data = response.data;
 
                     setFormData({
@@ -129,7 +129,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
                 keterangan: formData.keterangan,
             };
 
-            await axios.put(`http://localhost:8000/api/kegiatan/${id}`, data, {
+            await axios.put(`/kegiatan/${id}`, data, {
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -148,7 +148,7 @@ const EditKegiatan: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, id 
         formData.append("foto", file);
 
         try {
-            await axios.post(`http://localhost:8000/api/kegiatan/${id}/upload-foto`, formData, {
+            await axios.post(`/kegiatan/${id}/upload-foto`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

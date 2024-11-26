@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BiX } from "react-icons/bi";
+import fetchWithAuth from "@/utils/fetch";
 
 interface ModalFormProps {
     isOpen: boolean;
@@ -34,7 +35,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:8000/api/jamaah", {
+            const response = await fetchWithAuth("http://localhost:8000/api/jamaah", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -9,6 +9,7 @@ import PendapatanChart from "./pendapatanchart";
 import PengeluaranChart from "./pengeluaranchart";
 import DateFilter from "./DateFilter";
 import Jurnal from "./jurnal";
+import fetchWithAuth from "@/utils/fetch";
 
 const penerimaanUrl = "http://localhost:8000/api/penerimaan-kas";
 const pengeluaranUrl = "http://localhost:8000/api/pengeluaran-kas";
@@ -45,9 +46,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
     useEffect(() => {
         const fetchCoaData = async () => {
             try {
-                const response = await fetch(coaUrl);
-                if (!response.ok) throw new Error("Failed to fetch COA data.");
-                const data = await response.json();
+                const data = await fetchWithAuth(coaUrl);
                 setCoaOptions(data);
             } catch (error) {
                 console.error("Error fetching COA data:", error);
@@ -88,31 +87,24 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
         data.append("coa_id", oleh);
 
         try {
-            const response = await fetch(targetUrl, {
+            const result = await fetchWithAuth(targetUrl, {
                 method: "POST",
-                body: data,
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                console.log("Submission successful:", result);
-                onSubmit();
-                onClose();
-                setJenis("");
-                setTanggal("");
-                setAmount("");
-                setDescription("");
-                setFile(null);
-                setOleh("");
-            } else {
-                const errorResponse = await response.json();
-                console.error("Submission failed:", errorResponse);
-                alert("Failed to submit transaction.");
+                body: data, 
+              });
+          
+              console.log("Submission successful:", result);
+              onSubmit();
+              onClose();
+              setJenis("");
+              setTanggal("");
+              setAmount("");
+              setDescription("");
+              setFile(null);
+              setOleh("");
+            } catch (error) {
+              console.error("Error submitting data:", error);
+              alert("An error occurred during submission.");
             }
-        } catch (error) {
-            console.error("Error submitting data:", error);
-            alert("An error occurred during submission.");
-        }
     };
 
     if (!isOpen) return null;

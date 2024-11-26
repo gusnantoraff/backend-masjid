@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import { AiOutlinePlus } from 'react-icons/ai';
 import Button from '@mui/material/Button';
+import fetchWithAuth from "@/utils/fetch";
+import axios from '@/utils/axios';
 
 const FasilitasMasjid = () => {
   const [fasilitas, setFasilitas] = useState([]);
@@ -22,11 +24,7 @@ const FasilitasMasjid = () => {
 
   const fetchFasilitasMasjid = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/fasilitas');
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
+      const data = await fetchWithAuth('http://localhost:8000/api/fasilitas');
       setFasilitas(data);
     } catch (error) {
       console.error('Error fetching fasilitas masjid:', error);
@@ -47,7 +45,7 @@ const FasilitasMasjid = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/fasilitas', {
+      const data = await fetchWithAuth('http://localhost:8000/api/fasilitas', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,11 +53,6 @@ const FasilitasMasjid = () => {
         body: JSON.stringify(newEntry),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add data');
-      }
-
-      const data = await response.json();
       setFasilitas([...fasilitas, data.fasilitas]);
       setNewFasilitas('');
       setNewDeskripsi('');
@@ -77,7 +70,7 @@ const FasilitasMasjid = () => {
     const updatedFasilitas = { ...fasilitas[editIndex], deskripsi: newDeskripsi };
 
     try {
-      const response = await fetch(
+      const data = await fetchWithAuth(
         `http://localhost:8000/api/fasilitas/${updatedFasilitas.id}`,
         {
           method: 'PUT',
@@ -87,12 +80,6 @@ const FasilitasMasjid = () => {
           body: JSON.stringify(updatedFasilitas),
         }
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to update data');
-      }
-
-      const data = await response.json();
       const updatedFasilitasArray = [...fasilitas];
       updatedFasilitasArray[editIndex] = data.fasilitas;
       setFasilitas(updatedFasilitasArray);
@@ -114,13 +101,7 @@ const FasilitasMasjid = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/fasilitas/${deleteId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete data');
-      }
+     await axios.delete(`http://localhost:8000/api/fasilitas/${deleteId}`,);
 
       setFasilitas(fasilitas.filter((item) => item.id !== deleteId));
       setShowAlert(false);

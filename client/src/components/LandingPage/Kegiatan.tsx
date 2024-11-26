@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import { BiCalendar, BiMap } from 'react-icons/bi';
 import { FaArrowRight } from "react-icons/fa6";
 import Image from 'next/image';
@@ -31,7 +31,7 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
   useEffect(() => {
     const fetchKegiatan = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/kegiatan');
+        const response = await axios.get('/kegiatan');
         const kegiatanData: Kegiatan[] = response.data;
 
         const today = new Date();

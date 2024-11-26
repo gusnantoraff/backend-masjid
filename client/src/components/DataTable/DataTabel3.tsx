@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from '@/utils/axios';
 import {
   Table,
   TableBody,
@@ -53,9 +53,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
 
   const handleDelete = async () => {
     if (selectedId !== null) {
-      await fetch(`${fetchUrl}/${selectedId}`, {
-        method: "DELETE",
-      });
+      await axios.delete(`${fetchUrl}/${selectedId}`);
       if (reloadData) {
         reloadData(); 
       }

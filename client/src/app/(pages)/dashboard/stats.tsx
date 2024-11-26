@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from '@/utils/axios';
 
 const StatsArus = () => {
     const [dataStatsList, setDataStatsList] = useState([]);
@@ -11,7 +11,7 @@ const StatsArus = () => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:8000/api/arus-kas",
+                    "/arus-kas",
                 );
                 const data = response.data;
 

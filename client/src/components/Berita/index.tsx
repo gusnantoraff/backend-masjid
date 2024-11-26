@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef } from 'react';
-import axios from 'axios';
+import axios from '@/utils/axios';
 import dynamic from 'next/dynamic';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
@@ -61,7 +61,7 @@ export default function ArticleForm({ onSubmit }: ArticleFormProps) {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/berita', data, {
+      const response = await axios.post('/berita', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
