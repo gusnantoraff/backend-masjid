@@ -83,6 +83,20 @@ class CoaController extends Controller
 
         $coa->delete();
 
-        return response()->json(['message' => 'COA deleted successfully']);
+        return response()->json(['message' => 'COA soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $coa = Coa::onlyTrashed()->find($id);
+
+        if (! $coa) {
+            return response()->json(['message' => 'COA not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $coa->restore();
+
+        return response()->json(['message' => 'COA restored successfully']);
     }
 }

@@ -17,6 +17,7 @@ class CreateJadwalSholatTable extends Migration
             $table->time('maghrib');
             $table->time('isya');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

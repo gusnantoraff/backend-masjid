@@ -187,6 +187,19 @@ class KegiatanController extends Controller
 
         $kegiatan->delete();
 
-        return response()->json(['message' => 'Kegiatan deleted successfully']);
+        return response()->json(['message' => 'Kegiatan soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $kegiatan = Kegiatan::onlyTrashed()->find($id);
+
+        if (! $kegiatan) {
+            return response()->json(['message' => 'Kegiatan not found or not soft-deleted'], 404);
+        }
+
+        $kegiatan->restore();
+
+        return response()->json(['message' => 'Kegiatan restored successfully']);
     }
 }

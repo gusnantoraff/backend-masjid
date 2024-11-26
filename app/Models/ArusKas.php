@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ArusKas extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'arus_kas';
 
@@ -18,6 +19,10 @@ class ArusKas extends Model
         'pemasukan_total',
         'pengeluaran_total',
         'sisa_kas_total',
+    ];
+
+    protected $dates = [
+        'deleted_at',
     ];
 
     public function penerimaanKas()
@@ -53,4 +58,21 @@ class ArusKas extends Model
     //     return $this->belongsTo(PengeluaranKas::class, 'pengeluaran_kas_id');
     // }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            if (!$model->isForceDeleting()) {
+                $model->deleted_status = 1;
+                $model->saveQuietly();
+            }
+        });
+
+        static::restoring(function ($model) {
+            $model->deleted_status = 0;
+            $model->restored_at = now();
+            $model->saveQuietly();
+        });
+    }
 }

@@ -14,6 +14,7 @@ class CreateFasilitasTable extends Migration
             $table->string('nama_fasilitas');
             $table->text('deskripsi')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('info_masjid_id')->references('id')->on('info_masjid')->onDelete('cascade');
 

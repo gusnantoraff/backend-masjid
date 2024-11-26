@@ -107,6 +107,20 @@ class FasilitasController extends Controller
 
         $fasilitas->delete();
 
-        return response()->json(['message' => 'Fasilitas deleted successfully']);
+        return response()->json(['message' => 'Fasilitas soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $fasilitas = Fasilitas::onlyTrashed()->find($id);
+
+        if (! $fasilitas) {
+            return response()->json(['message' => 'fasilitas not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $fasilitas->restore();
+
+        return response()->json(['message' => 'fasilitas restored successfully']);
     }
 }

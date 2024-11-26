@@ -15,6 +15,7 @@ class CreatePesanWebsiteTable extends Migration
             $table->text('pesan');
             $table->date('tanggal');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -105,6 +105,19 @@ class JamaahController extends Controller
 
         $jamaah->delete();
 
-        return response()->json(['message' => 'Jamaah deleted successfully']);
+        return response()->json(['message' => 'Jamaah soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $jamaah = Jamaah::onlyTrashed()->find($id);
+
+        if (! $jamaah) {
+            return response()->json(['message' => 'jamaah not found or not soft-deleted'], 404);
+        }
+
+        $jamaah->restore();
+
+        return response()->json(['message' => 'jamaah restored successfully']);
     }
 }

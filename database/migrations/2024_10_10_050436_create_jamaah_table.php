@@ -18,6 +18,7 @@ class CreateJamaahTable extends Migration
             $table->text('alamat')->nullable();
             $table->enum('keterangan', ['aktif', 'pindah', 'wafat'])->default('aktif');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

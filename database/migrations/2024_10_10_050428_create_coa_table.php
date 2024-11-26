@@ -14,6 +14,7 @@ class CreateCoaTable extends Migration
             $table->string('nama_akun');
             $table->string('tipe')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             // Set the character set and collation
             $table->charset = 'utf8mb4';

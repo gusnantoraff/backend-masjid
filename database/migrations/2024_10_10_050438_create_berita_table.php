@@ -17,6 +17,7 @@ class CreateBeritaTable extends Migration
             $table->enum('status', ['draft', 'published', 'archived']);
             $table->string('foto')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InfoMasjid extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'info_masjid';
 
@@ -17,6 +18,10 @@ class InfoMasjid extends Model
         'kontak',
         'deskripsi',
         'ad-art',
+    ];
+
+    protected $dates = [
+        'deleted_at',
     ];
 
     /**
@@ -43,5 +48,23 @@ class InfoMasjid extends Model
     public function rekeningBank()
     {
         return $this->hasMany(RekeningBank::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            if (!$model->isForceDeleting()) {
+                $model->deleted_status = 1;
+                $model->saveQuietly();
+            }
+        });
+
+        static::restoring(function ($model) {
+            $model->deleted_status = 0;
+            $model->restored_at = now();
+            $model->saveQuietly();
+        });
     }
 }

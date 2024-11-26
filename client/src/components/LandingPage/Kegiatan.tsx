@@ -73,7 +73,9 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     };
 
     fetchKegiatan();
-  }, [kegiatan]);
+  }, []);
+
+  console.log('data',kegiatan);
 
   console.log('data',kegiatan);
 

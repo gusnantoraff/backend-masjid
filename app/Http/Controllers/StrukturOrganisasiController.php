@@ -110,4 +110,18 @@ class StrukturOrganisasiController extends Controller
 
         return response()->json(['message' => 'Struktur Organisasi deleted successfully']);
     }
+
+    public function restore(int $id): JsonResponse
+    {
+        $struktur = StrukturOrganisasi::onlyTrashed()->find($id);
+
+        if (! $struktur) {
+            return response()->json(['message' => 'struktur organisasi not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $struktur->restore();
+
+        return response()->json(['message' => 'struktur organisasi restored successfully']);
+    }
 }

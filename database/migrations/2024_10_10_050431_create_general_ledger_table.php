@@ -15,6 +15,7 @@ class CreateGeneralLedgerTable extends Migration
             $table->decimal('kredit', 15, 2)->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             // Set the character set and collation
             $table->charset = 'utf8mb4';

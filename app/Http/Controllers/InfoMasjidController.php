@@ -107,6 +107,20 @@ class InfoMasjidController extends Controller
 
         $infoMasjid->delete();
 
-        return response()->json(['message' => 'Info Masjid deleted successfully']);
+        return response()->json(['message' => 'Info masjid soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $infoMasjid = InfoMasjid::onlyTrashed()->find($id);
+
+        if (! $infoMasjid) {
+            return response()->json(['message' => 'Info masjid not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $infoMasjid->restore();
+
+        return response()->json(['message' => 'Info masjid restored successfully']);
     }
 }

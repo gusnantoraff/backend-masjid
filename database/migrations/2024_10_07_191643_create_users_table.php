@@ -21,10 +21,11 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('phone')->nullable();
             $table->date('birth')->nullable();
-            $table->enum('gender', ['Male', 'Female'])->nullable(); // Allow gender to be nullable
+            $table->enum('gender', ['Male', 'Female'])->nullable();
             $table->enum('role', ['ADMIN', 'PENGURUS_MASJID'])->default('PENGURUS_MASJID');
             $table->string('avatar')->nullable();
-            $table->timestamps(); // This creates the created_at and updated_at columns
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -1,30 +1,40 @@
 <?php
 
-use App\Http\Controllers\ArusKasController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\CoaController;
-use App\Http\Controllers\FasilitasController;
-use App\Http\Controllers\GeneralLedgerController;
-use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\InfoMasjidController;
-use App\Http\Controllers\JadwalSholatController;
-use App\Http\Controllers\JamaahController;
-use App\Http\Controllers\JurnalUmumController;
-use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\LaporanKeuanganController;
-use App\Http\Controllers\MubalighController;
-use App\Http\Controllers\PenerimaanKasController;
-use App\Http\Controllers\PengeluaranKasController;
-use App\Http\Controllers\PesanWebsiteController;
-use App\Http\Controllers\PosisiKeuanganController;
-use App\Http\Controllers\RekeningBankController;
-use App\Http\Controllers\StrukturOrganisasiController;
-use App\Http\Controllers\TemplateSuratController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\YatimDhuafaController;
+$resources = [
+    'users' => \App\Http\Controllers\UserController::class,
+    'berita' => \App\Http\Controllers\BeritaController::class,
+    'coa' => \App\Http\Controllers\CoaController::class,
+    'fasilitas' => \App\Http\Controllers\FasilitasController::class,
+    'general-ledger' => \App\Http\Controllers\GeneralLedgerController::class,
+    'images' => \App\Http\Controllers\ImagesController::class,
+    'info-masjid' => \App\Http\Controllers\InfoMasjidController::class,
+    'jamaah' => \App\Http\Controllers\JamaahController::class,
+    'kegiatan' => \App\Http\Controllers\KegiatanController::class,
+    'laporan-keuangan' => \App\Http\Controllers\LaporanKeuanganController::class,
+    'mubaligh' => \App\Http\Controllers\MubalighController::class,
+    'arus-kas' => \App\Http\Controllers\ArusKasController::class,
+    'penerimaan-kas' => \App\Http\Controllers\PenerimaanKasController::class,
+    'pengeluaran-kas' => \App\Http\Controllers\PengeluaranKasController::class,
+    'rekening-bank' => \App\Http\Controllers\RekeningBankController::class,
+    'posisi-keuangan' => \App\Http\Controllers\PosisiKeuanganController::class,
+    'struktur-organisasi' => \App\Http\Controllers\StrukturOrganisasiController::class,
+    'template-surat' => \App\Http\Controllers\TemplateSuratController::class,
+    'yatim-dhuafa' => \App\Http\Controllers\YatimDhuafaController::class,
+];
+
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\LaporanKeuanganController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\EncryptionController;
+
+Route::get('encrypt', [EncryptionController::class, 'encryptLink']);
+Route::post('decrypt', [EncryptionController::class, 'decryptLink']);
+
 
 require __DIR__.'/auth.php';
 
@@ -32,39 +42,16 @@ Route::middleware('auth:sanctum')->post('/change-password', [ChangePasswordContr
 
 Route::middleware('auth.cookie')->get('/me', [AuthenticatedSessionController::class, 'me']);
 
-Route::apiResource('info-masjid', InfoMasjidController::class);
-Route::apiResource('mubaligh', MubalighController::class);
-Route::apiResource('fasilitas', FasilitasController::class);
-Route::apiResource('struktur-organisasi', StrukturOrganisasiController::class);
+foreach ($resources as $route => $controller) {
+    Route::apiResource($route, $controller);
+    Route::patch("$route/{id}/restore", [$controller, 'restore'])->name("$route.restore");
+}
 
-//keuangan
-Route::apiResource('coa', CoaController::class);
-Route::apiResource('penerimaan-kas', PenerimaanKasController::class);
-Route::apiResource('pengeluaran-kas', PengeluaranKasController::class);
-Route::apiResource('arus-kas', ArusKasController::class);
-Route::apiResource('general-ledger', GeneralLedgerController::class);
-Route::apiResource('jurnal-umum', JurnalUmumController::class);
-Route::apiResource('posisi-keuangan', PosisiKeuanganController::class);
-Route::apiResource('laporan-keuangan', LaporanKeuanganController::class);
 Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode']);
-
-
-Route::apiResource('pesan-website', PesanWebsiteController::class);
-Route::apiResource('yatim-dhuafa', YatimDhuafaController::class);
-Route::apiResource('images', ImagesController::class);
-Route::apiResource('jamaah', JamaahController::class);
-Route::apiResource('template-surat', TemplateSuratController::class);
-Route::apiResource('berita', BeritaController::class);
-Route::apiResource('jadwal-sholat', JadwalSholatController::class);
-Route::apiResource('kegiatan', KegiatanController::class);
-Route::apiResource('rekening-bank', RekeningBankController::class);
-Route::apiResource('users', UserController::class);
-
 Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
 Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
 Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
 Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
-
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

@@ -13,6 +13,7 @@ class CreatePosisiKeuanganTable extends Migration
             $table->decimal('aktiva', 15, 2)->default(0);
             $table->decimal('pasiva', 15, 2)->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

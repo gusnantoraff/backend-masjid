@@ -18,6 +18,7 @@ class CreateYatimDhuafaTable extends Migration
             $table->string('kontak');
             $table->enum('status', ['aktif', 'pindah', 'wafat'])->default('aktif');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

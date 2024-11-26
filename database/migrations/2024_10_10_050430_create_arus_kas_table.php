@@ -17,6 +17,7 @@ class CreateArusKasTable extends Migration
             $table->decimal('pengeluaran_total', 15, 2)->nullable();
             $table->decimal('sisa_kas_total', 15, 2)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

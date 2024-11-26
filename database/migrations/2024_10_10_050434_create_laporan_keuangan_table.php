@@ -14,6 +14,7 @@ class CreateLaporanKeuanganTable extends Migration
             $table->decimal('total_pemasukan', 15, 2);
             $table->decimal('total_pengeluaran', 15, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

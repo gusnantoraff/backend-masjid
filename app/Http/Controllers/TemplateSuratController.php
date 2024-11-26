@@ -101,4 +101,18 @@ class TemplateSuratController extends Controller
 
         return response()->json(['message' => 'Template Surat deleted successfully']);
     }
+
+    public function restore(int $id): JsonResponse
+    {
+        $template = TemplateSurat::onlyTrashed()->find($id);
+
+        if (! $template) {
+            return response()->json(['message' => 'template not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $template->restore();
+
+        return response()->json(['message' => 'template restored successfully']);
+    }
 }

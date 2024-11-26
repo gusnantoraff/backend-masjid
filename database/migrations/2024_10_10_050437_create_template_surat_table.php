@@ -15,6 +15,7 @@ class CreateTemplateSuratTable extends Migration
             $table->text('tanda_tangan')->nullable();
             $table->text('stempel')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

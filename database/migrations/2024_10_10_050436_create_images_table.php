@@ -14,6 +14,7 @@ class CreateImagesTable extends Migration
             $table->string('kategori');
             $table->text('image')->nullable(); // Allow NULL values
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

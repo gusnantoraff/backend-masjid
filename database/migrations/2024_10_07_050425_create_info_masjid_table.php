@@ -16,6 +16,7 @@ class CreateInfoMasjidTable extends Migration
             $table->text('deskripsi')->nullable();
             $table->text('ad_art')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';

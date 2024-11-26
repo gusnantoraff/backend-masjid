@@ -125,6 +125,20 @@ class GeneralLedgerController extends Controller
 
         $generalLedger->delete();
 
-        return response()->json(['message' => 'General Ledger entry deleted successfully']);
+        return response()->json(['message' => 'general ledger soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $generalLedger = GeneralLedger::onlyTrashed()->find($id);
+
+        if (! $generalLedger) {
+            return response()->json(['message' => 'general ledger not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $generalLedger->restore();
+
+        return response()->json(['message' => 'General Ledger restored successfully']);
     }
 }

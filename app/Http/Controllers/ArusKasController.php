@@ -97,6 +97,19 @@ class ArusKasController extends Controller
 
         $arusKas->delete();
 
-        return response()->json(['message' => 'Arus Kas deleted successfully']);
+        return response()->json(['message' => 'Arus Kas soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $arusKas = ArusKas::onlyTrashed()->find($id);
+
+        if (! $arusKas) {
+            return response()->json(['message' => 'Berita not found or not soft-deleted'], 404);
+        }
+
+        $arusKas->restore();
+
+        return response()->json(['message' => 'Arus Kas restored successfully']);
     }
 }

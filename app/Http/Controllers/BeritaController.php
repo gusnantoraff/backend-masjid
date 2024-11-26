@@ -131,6 +131,19 @@ class BeritaController extends Controller
 
         $berita->delete();
 
-        return response()->json(['message' => 'Berita deleted successfully']);
+        return response()->json(['message' => 'Berita soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $berita = Berita::onlyTrashed()->find($id);
+
+        if (! $berita) {
+            return response()->json(['message' => 'Berita not found or not soft-deleted'], 404);
+        }
+
+        $berita->restore();
+
+        return response()->json(['message' => 'Berita restored successfully']);
     }
 }

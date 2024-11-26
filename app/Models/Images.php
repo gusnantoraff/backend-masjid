@@ -4,16 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Images extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'image',
         'keterangan',
         'kategori',
         'imageable_id',
+    ];
+
+    protected $dates = [
+        'deleted_at',
     ];
 
     /**
@@ -28,5 +33,23 @@ class Images extends Model
             default:
                 return null;
         }
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            if (!$model->isForceDeleting()) {
+                $model->deleted_status = 1;
+                $model->saveQuietly();
+            }
+        });
+
+        static::restoring(function ($model) {
+            $model->deleted_status = 0;
+            $model->restored_at = now();
+            $model->saveQuietly();
+        });
     }
 }

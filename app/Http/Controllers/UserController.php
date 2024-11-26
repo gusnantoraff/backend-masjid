@@ -159,6 +159,19 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->json(['message' => 'User soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $user = User::onlyTrashed()->find($id);
+
+        if (! $user) {
+            return response()->json(['message' => 'User not found or not soft-deleted'], 404);
+        }
+
+        $user->restore();
+
+        return response()->json(['message' => 'User restored successfully']);
     }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('atas_nama');
             $table->string('image_transfer')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

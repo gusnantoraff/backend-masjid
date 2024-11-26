@@ -108,4 +108,18 @@ class YatimDhuafaController extends Controller
 
         return response()->json(['message' => 'Orphan deleted successfully']);
     }
+
+    public function restore(int $id): JsonResponse
+    {
+        $yatim = YatimDhuafa::onlyTrashed()->find($id);
+
+        if (! $yatim) {
+            return response()->json(['message' => 'yatim not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $yatim->restore();
+
+        return response()->json(['message' => 'yatim restored successfully']);
+    }
 }

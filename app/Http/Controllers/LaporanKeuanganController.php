@@ -99,7 +99,21 @@ class LaporanKeuanganController extends Controller
 
         $laporanKeuangan->delete();
 
-        return response()->json(['message' => 'Laporan Keuangan deleted successfully']);
+        return response()->json(['message' => 'Laporan Keuangan soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $laporanKeuangan = LaporanKeuangan::onlyTrashed()->find($id);
+
+        if (! $laporanKeuangan) {
+            return response()->json(['message' => 'Laporan Keuangan not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $laporanKeuangan->restore();
+
+        return response()->json(['message' => 'Laporan Keuangan restored successfully']);
     }
 
     /**

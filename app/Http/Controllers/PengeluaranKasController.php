@@ -122,13 +122,22 @@ class PengeluaranKasController extends Controller
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
         }
 
-        // Delete the image file if it exists
-        if ($pengeluaranKas->image) {
-            Storage::disk('public')->delete($pengeluaranKas->image);
-        }
-
         $pengeluaranKas->delete();
 
         return response()->json(['message' => 'Pengeluaran Kas deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $pengeluaranKas = PengeluaranKas::onlyTrashed()->find($id);
+
+        if (! $pengeluaranKas) {
+            return response()->json(['message' => 'Pengeluaran Kas not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $pengeluaranKas->restore();
+
+        return response()->json(['message' => 'Pengeluaran Kas restored successfully']);
     }
 }

@@ -16,6 +16,7 @@ class CreateKegiatanTable extends Migration
             $table->enum('kategori', ['khatib', 'muazin', 'umum','hari-besar']);
             $table->text('keterangan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

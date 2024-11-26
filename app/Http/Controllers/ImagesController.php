@@ -136,7 +136,21 @@ class ImagesController extends Controller
         Storage::disk('public')->delete($image->image);
         $image->delete();
 
-        return response()->json(['message' => 'Image deleted successfully']);
+        return response()->json(['message' => 'Image soft deleted successfully']);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $image = Images::onlyTrashed()->find($id);
+
+        if (! $image) {
+            return response()->json(['message' => 'Image not found or not soft-deleted'], 404);
+        }
+
+        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        $image->restore();
+
+        return response()->json(['message' => 'Image restored successfully']);
     }
 
     /**

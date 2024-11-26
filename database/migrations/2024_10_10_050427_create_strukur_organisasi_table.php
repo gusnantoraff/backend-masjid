@@ -15,6 +15,7 @@ class CreateStrukurOrganisasiTable extends Migration
             $table->string('nama');
             $table->string('kontak')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             // Correct the foreign key constraint
             $table->foreign('info_masjid_id')->references('id')->on('info_masjid')->onDelete('cascade');

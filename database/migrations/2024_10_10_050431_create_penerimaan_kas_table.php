@@ -18,6 +18,7 @@ class CreatePenerimaanKasTable extends Migration
             $table->text('deskripsi')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
