@@ -13,7 +13,7 @@ class CoaController extends Controller
      */
     public function index(): JsonResponse
     {
-        $coa = Coa::with(['penerimaanKas', 'pengeluaranKas', 'jurnalUmum', 'generalLedger'])->get();
+        $coa = Coa::with(['penerimaanKas', 'pengeluaranKas'])->get();
 
         return response()->json($coa);
     }

@@ -12,34 +12,17 @@ class GeneralLedger extends Model
     protected $table = 'general_ledger';
 
     protected $fillable = [
-        'coa_id',
+        // 'coa_id',
         'tanggal',
         'debit',
         'kredit',
         'keterangan',
     ];
 
-    /**
-     * Relasi ke model Coa.
-     */
-    public function coa()
+    // Many-to-many relationship with Coa
+    public function coas()
     {
-        return $this->belongsTo(Coa::class);
-    }
-
-    /**
-     * Accessor for dynamic 'debit' value.
-     */
-    public function getDebitAttribute()
-    {
-        return $this->coa->penerimaanKas->sum('jumlah');
-    }
-
-    /**
-     * Accessor for dynamic 'kredit' value.
-     */
-    public function getKreditAttribute()
-    {
-        return $this->coa->pengeluaranKas->sum('jumlah');
+        return $this->belongsToMany(Coa::class, 'coa_general_ledger', 'general_ledger_id', 'coa_id')
+            ->withTimestamps(); // Include timestamps if you want
     }
 }

@@ -18,6 +18,9 @@ class CreateCoaTable extends Migration
             // Set the character set and collation
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
+
+            // $table->unsignedBigInteger('general_ledger_id');
+            // $table->foreign('general_ledger_id')->references('id')->on('general_ledger')->onDelete('cascade');
         });
     }
 

@@ -15,6 +15,7 @@ class Coa extends Model
         'kode_akun',
         'nama_akun',
         'tipe',
+        // 'general_ledger_id',
     ];
 
     /**
@@ -33,13 +34,10 @@ class Coa extends Model
         return $this->hasMany(PengeluaranKas::class);
     }
 
-    public function jurnalUmum()
+    // Many-to-many relationship with GeneralLedger
+    public function generalLedgers()
     {
-        return $this->hasMany(JurnalUmum::class);
-    }
-
-    public function generalLedger()
-    {
-        return $this->hasMany(GeneralLedger::class);
+        return $this->belongsToMany(GeneralLedger::class, 'coa_general_ledger', 'coa_id', 'general_ledger_id')
+            ->withTimestamps(); // Include timestamps if you want
     }
 }

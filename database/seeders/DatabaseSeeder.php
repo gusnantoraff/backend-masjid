@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+// use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             PenerimaanKasSeeder::class,
             PengeluaranKasSeeder::class,
             GeneralLedgerSeeder::class,
-            JurnalUmumSeeder::class,
+            // JurnalUmumSeeder::class,
             PosisiKeuanganSeeder::class,
             PesanWebsiteSeeder::class,
             LaporanKeuanganSeeder::class,

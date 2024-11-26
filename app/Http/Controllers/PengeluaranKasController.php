@@ -14,7 +14,8 @@ class PengeluaranKasController extends Controller
      */
     public function index(): JsonResponse
     {
-        $pengeluaranKas = PengeluaranKas::with(['coa', 'arus_kas'])->get();
+        // $pengeluaranKas = PengeluaranKas::with(['coa', 'arus_kas'])->get();
+        $pengeluaranKas = PengeluaranKas::with('coa')->get();
 
         return response()->json($pengeluaranKas);
     }

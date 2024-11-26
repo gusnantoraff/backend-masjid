@@ -10,10 +10,9 @@ class CreateGeneralLedgerTable extends Migration
     {
         Schema::create('general_ledger', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('coa_id');
             $table->date('tanggal');
-            $table->decimal('debit', 15, 2);
-            $table->decimal('kredit', 15, 2);
+            $table->decimal('debit', 15, 2)->nullable();
+            $table->decimal('kredit', 15, 2)->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
 
@@ -22,7 +21,8 @@ class CreateGeneralLedgerTable extends Migration
             $table->collation = 'utf8mb4_unicode_ci';
 
             // Foreign key constraint
-            $table->foreign('coa_id')->references('id')->on('coa')->onDelete('cascade');
+            // $table->unsignedBigInteger('coa_id');
+            // $table->foreign('coa_id')->references('id')->on('coa')->onDelete('cascade');
         });
     }
 
