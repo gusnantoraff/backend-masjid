@@ -7,6 +7,7 @@ import ListKegiatan from "@/components/KegiatanComponents/ListKegiatanDashboard"
 import StatsArus from "../dashboard/stats";
 import PendapatanChart from "../keuangan/arus-kas/pendapatanchart";
 import PengeluaranChart from "../keuangan/arus-kas/pengeluaranchart";
+import Filter from "../keuangan/arus-kas/DateFilter";
 
 export default function Home() {
     const [refreshList, setRefreshList] = useState(false);
@@ -29,10 +30,10 @@ export default function Home() {
                         {/* Pendapatan dan Pengeluaran Charts */}
                         <div className="flex gap-2 rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-dark dark:bg-gray-dark dark:shadow-lg">
                             <div className="w-1/2 p-2">
-                                <PendapatanChart />
+                                <PendapatanChart filter={Filter}/>
                             </div>
                             <div className="w-1/2 p-2">
-                                <PengeluaranChart />
+                                <PengeluaranChart filter={Filter}/>
                             </div>
                         </div>
 
