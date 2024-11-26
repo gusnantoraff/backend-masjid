@@ -14,6 +14,7 @@ class CoaController extends Controller
     public function index(): JsonResponse
     {
         $coa = Coa::with(['penerimaanKas', 'pengeluaranKas'])->get();
+        // $coa = Coa::all();
 
         return response()->json($coa);
     }
@@ -27,6 +28,7 @@ class CoaController extends Controller
             'kode_akun' => 'required|string|max:255|unique:coa,kode_akun',
             'nama_akun' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
+            'general_ledger_id' => 'nullable|exists:general_ledgers,id',  // assuming this relationship
         ]);
 
         $coa = Coa::create($validatedData);
@@ -39,7 +41,7 @@ class CoaController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $coa = Coa::with(['penerimaanKas', 'pengeluaranKas', 'jurnalUmum', 'generalLedger'])->find($id);
+        $coa = Coa::with(['penerimaanKas', 'pengeluaranKas', 'generalLedgers'])->find($id);
 
         if (! $coa) {
             return response()->json(['message' => 'COA not found'], 404);
@@ -63,6 +65,7 @@ class CoaController extends Controller
             'kode_akun' => 'sometimes|string|max:255|unique:coa,kode_akun,'.$id,
             'nama_akun' => 'sometimes|string|max:255',
             'tipe' => 'required|string|max:255',
+            'general_ledger_id' => 'nullable|exists:general_ledgers,id',  // assuming this relationship
         ]);
 
         $coa->update($validatedData);
@@ -71,7 +74,7 @@ class CoaController extends Controller
     }
 
     /**
-     * Remove the specified COA from storage.
+     * Soft delete the specified COA from storage.
      */
     public function destroy(int $id): JsonResponse
     {
@@ -81,20 +84,24 @@ class CoaController extends Controller
             return response()->json(['message' => 'COA not found'], 404);
         }
 
+        // Soft delete the COA, mark deleted_status as 1
         $coa->delete();
 
         return response()->json(['message' => 'COA soft deleted successfully']);
     }
 
+    /**
+     * Restore the specified COA.
+     */
     public function restore(int $id): JsonResponse
     {
         $coa = Coa::onlyTrashed()->find($id);
 
-        if (! $coa) {
+        if (! $coa || $coa->deleted_status == 0) {
             return response()->json(['message' => 'COA not found or not soft-deleted'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
+        // Restore the COA and reset its deleted status
         $coa->restore();
 
         return response()->json(['message' => 'COA restored successfully']);

@@ -43,10 +43,10 @@ const Modal = ({ isOpen, onClose, onSubmit, title }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newAccount),
             });
-                console.log("Account created successfully:", createdAccount);
-                onSubmit();
-                onClose();
-                resetForm();
+            console.log("Account created successfully:", createdAccount);
+            onSubmit();
+            onClose();
+            resetForm();
         } catch (error) {
             console.error("Error submitting data:", error);
             alert("An error occurred during submission.");

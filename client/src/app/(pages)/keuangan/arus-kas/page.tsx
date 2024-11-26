@@ -89,22 +89,22 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
         try {
             const result = await fetchWithAuth(targetUrl, {
                 method: "POST",
-                body: data, 
-              });
-          
-              console.log("Submission successful:", result);
-              onSubmit();
-              onClose();
-              setJenis("");
-              setTanggal("");
-              setAmount("");
-              setDescription("");
-              setFile(null);
-              setOleh("");
-            } catch (error) {
-              console.error("Error submitting data:", error);
-              alert("An error occurred during submission.");
-            }
+                body: data,
+            });
+
+            console.log("Submission successful:", result);
+            onSubmit();
+            onClose();
+            setJenis("");
+            setTanggal("");
+            setAmount("");
+            setDescription("");
+            setFile(null);
+            setOleh("");
+        } catch (error) {
+            console.error("Error submitting data:", error);
+            alert("An error occurred during submission.");
+        }
     };
 
     if (!isOpen) return null;

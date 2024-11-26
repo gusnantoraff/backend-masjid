@@ -9,13 +9,13 @@ class EncryptionController extends Controller
     // Fungsi untuk mengenkripsi link API
     public function encryptLink(Request $request)
     {
-        $api_link = "http://localhost:8000/api/berita";  // Link yang ingin dienkripsi
+        $api_link = 'http://localhost:8000/api/berita';  // Link yang ingin dienkripsi
         $key = 'your-32-byte-long-encryption-key';  // Kunci enkripsi (pastikan panjangnya 32 karakter)
-        
+
         $encrypted_link = $this->encrypt($api_link, $key);
 
         return response()->json([
-            'encrypted_link' => $encrypted_link
+            'encrypted_link' => $encrypted_link,
         ]);
     }
 
@@ -28,7 +28,7 @@ class EncryptionController extends Controller
         $decrypted_link = $this->decrypt($encrypted_link, $key);
 
         return response()->json([
-            'decrypted_link' => $decrypted_link
+            'decrypted_link' => $decrypted_link,
         ]);
     }
 
@@ -38,7 +38,8 @@ class EncryptionController extends Controller
         $method = 'AES-256-CBC';  // Metode enkripsi
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($method));  // IV yang acak
         $encrypted = openssl_encrypt($plaintext, $method, $key, 0, $iv);  // Enkripsi
-        $encrypted = base64_encode($iv . $encrypted);  // Gabungkan IV dengan hasil enkripsi dan encode base64
+        $encrypted = base64_encode($iv.$encrypted);  // Gabungkan IV dengan hasil enkripsi dan encode base64
+
         return $encrypted;
     }
 
@@ -53,6 +54,7 @@ class EncryptionController extends Controller
 
         // Dekripsi teks
         $decrypted = openssl_decrypt($ciphertext, $method, $key, 0, $iv);
+
         return $decrypted;
     }
 }

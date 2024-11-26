@@ -11,6 +11,7 @@ class CoaSeeder extends Seeder
     {
         DB::table('coa')->insert([
             [
+                'general_ledger_id' => 1,
                 'kode_akun' => '1001',
                 'nama_akun' => 'Kas Masjid',
                 'tipe' => 'Aset',
@@ -18,6 +19,7 @@ class CoaSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'general_ledger_id' => 1,
                 'kode_akun' => '2001',
                 'nama_akun' => 'Operasional',
                 'tipe' => 'Kewajiban',

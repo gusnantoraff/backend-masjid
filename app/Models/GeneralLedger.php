@@ -14,16 +14,15 @@ class GeneralLedger extends Model
 
     protected $fillable = [
         // 'coa_id',
-        'tanggal',
-        'debit',
+        'tanggal_total',
+        'debit_total',
         'kredit',
-        'keterangan',
+        // 'keterangan',
     ];
 
-    public function coas()
+    public function coa()
     {
-        return $this->belongsToMany(Coa::class, 'coa_general_ledger', 'general_ledger_id', 'coa_id')
-            ->withTimestamps(); // Include timestamps if you want
+        return $this->hasMany(Coa::class); // Include timestamps if you want
     }
 
     protected $dates = [

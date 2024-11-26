@@ -10,10 +10,10 @@ class CreateGeneralLedgerTable extends Migration
     {
         Schema::create('general_ledger', function (Blueprint $table) {
             $table->id();
-            $table->date('tanggal');
-            $table->decimal('debit', 15, 2)->nullable();
-            $table->decimal('kredit', 15, 2)->nullable();
-            $table->text('keterangan')->nullable();
+            // $table->date('tanggal');
+            $table->decimal('debit_total', 15, 2)->nullable();
+            $table->decimal('kredit_total', 15, 2)->nullable();
+            // $table->text('keterangan')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

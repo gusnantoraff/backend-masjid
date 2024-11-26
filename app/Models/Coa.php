@@ -13,10 +13,10 @@ class Coa extends Model
     protected $table = 'coa';
 
     protected $fillable = [
+        'general_ledger_id',
         'kode_akun',
         'nama_akun',
         'tipe',
-        // 'general_ledger_id',
     ];
 
     protected $dates = [
@@ -42,8 +42,7 @@ class Coa extends Model
     // Many-to-many relationship with GeneralLedger
     public function generalLedgers()
     {
-        return $this->belongsToMany(GeneralLedger::class, 'coa_general_ledger', 'coa_id', 'general_ledger_id')
-            ->withTimestamps(); // Include timestamps if you want
+        return $this->belongsTo(GeneralLedger::class, 'general_ledger_id');
     }
 
     protected static function boot()
@@ -51,7 +50,7 @@ class Coa extends Model
         parent::boot();
 
         static::deleting(function ($model) {
-            if (!$model->isForceDeleting()) {
+            if (! $model->isForceDeleting()) {
                 $model->deleted_status = 1;
                 $model->saveQuietly();
             }
