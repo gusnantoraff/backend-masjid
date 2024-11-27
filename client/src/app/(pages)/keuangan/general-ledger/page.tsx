@@ -3,16 +3,18 @@
 import React, { useState, useEffect } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search } from "lucide-react";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineExport, AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; // Import for autoTable support
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import ExportDialog from "@/components/filter/ExportGeneralLedger";
 
 const GeneralLedger = () => {
     const [transactions, setTransactions] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -94,45 +96,120 @@ const GeneralLedger = () => {
 
     const exportToPDF = () => {
         const doc = new jsPDF("p", "cm", "a4");
-        const headers = [
-            "No",
-            "Tanggal",
-            "Tipe",
-            "Kode Akun",
-            "Nama Akun",
-            "Deskripsi",
-            "Debit",
-            "Kredit",
-        ];
-        const tableData = filteredTransactions.map((row, index) => [
+        const imgData = '/images/BG.png';
+
+        // Add background image
+        doc.addImage(imgData, 'JPEG', 0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height);
+
+        // Define headers for the table
+        const headers = ["No.", "Kode Akun", "Tanggal", "Keterangan", "Debit", "Kredit"];
+
+        // Prepare the table data
+        const tableData = filteredTransactions.map((trx, index) => [
             index + 1,
-            row.tanggal,
-            row.tipe,
-            row.kodeAkun,
-            row.namaAkun,
-            row.deskripsi,
-            row.debit.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-            }),
-            row.kredit.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-            }),
+            trx.kodeAkun,
+            trx.tanggal,
+            trx.keterangan,
+            parseFloat(trx.debit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+            parseFloat(trx.kredit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
         ]);
 
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("Buku Besar", 10.5, 1, { align: "center" });
+        // Set the creation date and time in the top-left corner
+        const creationDate = new Date().toLocaleString("id-ID", {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
 
+        });
+        doc.setTextColor("white");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text(`${creationDate}`, 1, 1);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor("white");
+        const topRightText = "oleh Tercode.com";  // Replace with your desired text
+        const marginRight = 1;  // 1 cm margin from the right edge
+        const rightX = doc.internal.pageSize.width - marginRight;
+        doc.text(topRightText, rightX, 1, { align: "right" });
+
+        // Set title to "BUKU BESAR {nama masjid}" and the period below
+        const mosqueName = "Nama Masjid";  // Replace this with the actual name of the mosque
+        const period = `Periode:` //${selectedMonth}/${selectedYear};  // Use selectedMonth and selectedYear
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor("white");
+        doc.setFontSize(16);
+        doc.text(`Buku Besar ${mosqueName}`, 10.5, 2, { align: "center" });
+        doc.text(period, 10.5, 2.5, { align: "center" });
+
+        // Add the table
         doc.autoTable({
             head: [headers],
             body: tableData,
-            startY: 2,
-            theme: "grid",
+            startY: 3,
+            theme: "striped",
         });
 
-        doc.save("Buku_Besar.pdf");
+        // Save the PDF with a specific file name
+        doc.save("Buku_Besar_namamasjid_periode.pdf");
+    };
+
+    const exportToCSV = () => {
+        // Define headers for the CSV
+        const headers = ["No.", "Kode Akun", "Tanggal", "Keterangan", "Debit", "Kredit"];
+
+        // Prepare the table data from filtered transactions
+        const csvRows = filteredTransactions.map((trx, index) => [
+            index + 1,
+            trx.kodeAkun,
+            trx.tanggal,
+            trx.keterangan,
+            parseFloat(trx.debit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+            parseFloat(trx.kredit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+        ]);
+
+        // Add metadata and headers
+        const metadata = [
+            ["Tanggal Dibuat:", new Date().toLocaleString("id-ID", {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            })],
+            ["Buku Besar", `Buku Besar ${"Nama Masjid"}`],  // Replace with actual mosque name
+            ["Periode", `Periode: ${selectedMonth}/${selectedYear}`],  // Replace with actual period if needed
+            []  // Add an empty row to separate metadata and table
+        ];
+
+        // Combine metadata, headers, and table data into one CSV string
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            metadata
+                .concat([headers])  // Add headers after metadata
+                .concat(csvRows)  // Add table rows
+                .map(row => row.join(","))  // Join each row into a string
+                .join("\n");  // Join all rows with a newline
+
+        // Encode the CSV content and trigger the download
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${"Buku_Besar_namamasjid_periode"}.csv`);  // Customize the file name
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up and remove the link
+        document.body.removeChild(link);
+    };
+
+    const handleAccountFilterChange = (e) => {
+        setSelectedAccount(e.target.value);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleAddTransaction = () => {
+        // Add transaction logic here, based on the formData
+        console.log(formData);
+        setIsModalOpen(false);  // Close the modal after adding
     };
 
     return (
@@ -161,16 +238,13 @@ const GeneralLedger = () => {
                                 />
                             </div>
                             <Button
-                                variant="outlined"
-                                startIcon={<PictureAsPdfIcon />}
-                                onClick={exportToPDF}
-                                style={{
-                                    color: "#008080",
-                                    borderColor: "#008080",
-                                }}
-                            >
-                                Export PDF
-                            </Button>
+                            variant="outlined"
+                            startIcon={<AiOutlineExport />}
+                            onClick={() => setExportDialogOpen(true)}
+                            style={{ color: "#008080", borderColor: "#008080" }}
+                        >
+                            Export
+                        </Button>
                             <Button
                                 variant="contained"
                                 onClick={() => setIsModalOpen(true)}
@@ -265,6 +339,15 @@ const GeneralLedger = () => {
                     </div>
                 </div>
             </div>
+            
+            {exportDialogOpen && (
+                <ExportDialog
+                    open={exportDialogOpen}
+                    onClose={() => setExportDialogOpen(false)}
+                    onExportPDF={exportToPDF}
+                    onExportCSV={exportToCSV}
+                />
+            )}
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
