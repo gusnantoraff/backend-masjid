@@ -28,7 +28,7 @@ class CoaController extends Controller
             'kode_akun' => 'required|string|max:255|unique:coa,kode_akun',
             'nama_akun' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
-            'general_ledger_id' => 'nullable|exists:general_ledgers,id',  // assuming this relationship
+            'general_ledger_id' => 'nullable|exists:general_ledger,id',  // assuming this relationship
         ]);
 
         $coa = Coa::create($validatedData);
@@ -61,13 +61,15 @@ class CoaController extends Controller
             return response()->json(['message' => 'COA not found'], 404);
         }
 
+        // Validate the request data
         $validatedData = $request->validate([
-            'kode_akun' => 'sometimes|string|max:255|unique:coa,kode_akun,'.$id,
+            'kode_akun' => 'sometimes|string|max:255',
             'nama_akun' => 'sometimes|string|max:255',
             'tipe' => 'required|string|max:255',
-            'general_ledger_id' => 'nullable|exists:general_ledgers,id',  // assuming this relationship
+            'general_ledger_id' => 'nullable|exists:general_ledger,id',  // Make sure the id exists in general_ledgers table
         ]);
 
+        // Update the COA with validated data
         $coa->update($validatedData);
 
         return response()->json(['message' => 'COA updated successfully', 'coa' => $coa]);

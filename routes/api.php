@@ -23,21 +23,20 @@ $resources = [
     'yatim-dhuafa' => \App\Http\Controllers\YatimDhuafaController::class,
 ];
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\EncryptionController;
+use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\Auth\ChangePasswordController;
-use App\Http\Controllers\EncryptionController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('encrypt', [EncryptionController::class, 'encryptLink']);
 Route::post('decrypt', [EncryptionController::class, 'decryptLink']);
 
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 Route::middleware('auth:sanctum')->post('/change-password', [ChangePasswordController::class, 'store']);
 
@@ -56,7 +55,6 @@ Route::middleware('auth:sanctum')->group(function () use ($resources) {
     Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
     Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
 });
-
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);

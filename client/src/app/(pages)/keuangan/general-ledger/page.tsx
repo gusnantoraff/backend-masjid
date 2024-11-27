@@ -15,6 +15,9 @@ const GeneralLedger = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exportDialogOpen, setExportDialogOpen] = useState(false);
+    const [coaList, setCoaList] = useState([]); // New state for COA data
+    const [selectedCoa, setSelectedCoa] = useState(""); // Track selected COA
+    const [selectedCoaDetails, setSelectedCoaDetails] = useState(null); // Store selected COA details
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,6 +32,14 @@ const GeneralLedger = () => {
                     "http://localhost:8000/api/coa/",
                 );
                 const coaData = await coaResponse.json();
+
+                // Filter COA data to only include items where general_ledger_id is null
+                const filteredCoa = coaData.filter(
+                    (coa) => coa.general_ledger_id === null,
+                );
+
+                // Set filtered COA data for dropdown
+                setCoaList(filteredCoa);
 
                 // Merge the data from both API responses
                 const allTransactions = generalLedgerData.flatMap((ledger) => {
@@ -96,13 +107,27 @@ const GeneralLedger = () => {
 
     const exportToPDF = () => {
         const doc = new jsPDF("p", "cm", "a4");
-        const imgData = '/images/BG.png';
+        const imgData = "/images/BG.png";
 
         // Add background image
-        doc.addImage(imgData, 'JPEG', 0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height);
+        doc.addImage(
+            imgData,
+            "JPEG",
+            0,
+            0,
+            doc.internal.pageSize.width,
+            doc.internal.pageSize.height,
+        );
 
         // Define headers for the table
-        const headers = ["No.", "Kode Akun", "Tanggal", "Keterangan", "Debit", "Kredit"];
+        const headers = [
+            "No.",
+            "Kode Akun",
+            "Tanggal",
+            "Keterangan",
+            "Debit",
+            "Kredit",
+        ];
 
         // Prepare the table data
         const tableData = filteredTransactions.map((trx, index) => [
@@ -110,14 +135,24 @@ const GeneralLedger = () => {
             trx.kodeAkun,
             trx.tanggal,
             trx.keterangan,
-            parseFloat(trx.debit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
-            parseFloat(trx.kredit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+            parseFloat(trx.debit).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
+            parseFloat(trx.kredit).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
         ]);
 
         // Set the creation date and time in the top-left corner
         const creationDate = new Date().toLocaleString("id-ID", {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
         });
         doc.setTextColor("white");
         doc.setFont("helvetica", "bold");
@@ -126,14 +161,14 @@ const GeneralLedger = () => {
 
         doc.setFont("helvetica", "bold");
         doc.setTextColor("white");
-        const topRightText = "oleh Tercode.com";  // Replace with your desired text
-        const marginRight = 1;  // 1 cm margin from the right edge
+        const topRightText = "oleh Tercode.com"; // Replace with your desired text
+        const marginRight = 1; // 1 cm margin from the right edge
         const rightX = doc.internal.pageSize.width - marginRight;
         doc.text(topRightText, rightX, 1, { align: "right" });
 
         // Set title to "BUKU BESAR {nama masjid}" and the period below
-        const mosqueName = "Nama Masjid";  // Replace this with the actual name of the mosque
-        const period = `Periode:` //${selectedMonth}/${selectedYear};  // Use selectedMonth and selectedYear
+        const mosqueName = "Nama Masjid"; // Replace this with the actual name of the mosque
+        const period = `Periode:`; //${selectedMonth}/${selectedYear};  // Use selectedMonth and selectedYear
 
         doc.setFont("helvetica", "bold");
         doc.setTextColor("white");
@@ -155,7 +190,14 @@ const GeneralLedger = () => {
 
     const exportToCSV = () => {
         // Define headers for the CSV
-        const headers = ["No.", "Kode Akun", "Tanggal", "Keterangan", "Debit", "Kredit"];
+        const headers = [
+            "No.",
+            "Kode Akun",
+            "Tanggal",
+            "Keterangan",
+            "Debit",
+            "Kredit",
+        ];
 
         // Prepare the table data from filtered transactions
         const csvRows = filteredTransactions.map((trx, index) => [
@@ -163,53 +205,94 @@ const GeneralLedger = () => {
             trx.kodeAkun,
             trx.tanggal,
             trx.keterangan,
-            parseFloat(trx.debit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
-            parseFloat(trx.kredit).toLocaleString("id-ID", { style: "currency", currency: "IDR" }),
+            parseFloat(trx.debit).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
+            parseFloat(trx.kredit).toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+            }),
         ]);
 
         // Add metadata and headers
         const metadata = [
-            ["Tanggal Dibuat:", new Date().toLocaleString("id-ID", {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-            })],
-            ["Buku Besar", `Buku Besar ${"Nama Masjid"}`],  // Replace with actual mosque name
-            ["Periode", `Periode: ${selectedMonth}/${selectedYear}`],  // Replace with actual period if needed
-            []  // Add an empty row to separate metadata and table
+            [
+                "Tanggal Dibuat:",
+                new Date().toLocaleString("id-ID", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                }),
+            ],
+            ["Buku Besar", `Buku Besar ${"Nama Masjid"}`], // Replace with actual mosque name
+            ["Periode", `Periode: ${selectedMonth}/${selectedYear}`], // Replace with actual period if needed
+            [], // Add an empty row to separate metadata and table
         ];
 
         // Combine metadata, headers, and table data into one CSV string
         const csvContent =
             "data:text/csv;charset=utf-8," +
             metadata
-                .concat([headers])  // Add headers after metadata
-                .concat(csvRows)  // Add table rows
-                .map(row => row.join(","))  // Join each row into a string
-                .join("\n");  // Join all rows with a newline
+                .concat([headers]) // Add headers after metadata
+                .concat(csvRows) // Add table rows
+                .map((row) => row.join(","))
+                .join("\n");
 
-        // Encode the CSV content and trigger the download
+        // Create a temporary anchor element to trigger the download
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${"Buku_Besar_namamasjid_periode"}.csv`);  // Customize the file name
+        link.setAttribute("download", "Buku_Besar_namamasjid_periode.csv");
         document.body.appendChild(link);
         link.click();
-
-        // Clean up and remove the link
-        document.body.removeChild(link);
-    };
-
-    const handleAccountFilterChange = (e) => {
-        setSelectedAccount(e.target.value);
     };
 
     const handleModalClose = () => {
         setIsModalOpen(false);
     };
 
-    const handleAddTransaction = () => {
-        // Add transaction logic here, based on the formData
-        console.log(formData);
-        setIsModalOpen(false);  // Close the modal after adding
+    const handleAddTransaction = async () => {
+        if (!selectedCoa || !selectedCoaDetails) {
+            console.error("No COA selected or COA details missing!");
+            return;
+        }
+
+        try {
+            const updatedCoa = {
+                id: selectedCoaDetails.id,
+                general_ledger_id: 1,
+                kode_akun: selectedCoaDetails.kode_akun,
+                nama_akun: selectedCoaDetails.nama_akun,
+                tipe: selectedCoaDetails.tipe,
+            };
+
+            const response = await fetch(
+                `http://localhost:8000/api/coa/${selectedCoa}`, // Use selectedCoa which is now the id
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedCoa),
+                },
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("COA updated successfully:", data);
+                setIsModalOpen(false);
+                // Optionally refresh the COA list or transactions here
+            } else {
+                const errorData = await response.json();
+                console.error("Failed to update COA:", errorData.message);
+            }
+        } catch (error) {
+            console.error("Error updating COA:", error);
+        }
     };
 
     return (
@@ -238,13 +321,16 @@ const GeneralLedger = () => {
                                 />
                             </div>
                             <Button
-                            variant="outlined"
-                            startIcon={<AiOutlineExport />}
-                            onClick={() => setExportDialogOpen(true)}
-                            style={{ color: "#008080", borderColor: "#008080" }}
-                        >
-                            Export
-                        </Button>
+                                variant="outlined"
+                                startIcon={<AiOutlineExport />}
+                                onClick={() => setExportDialogOpen(true)}
+                                style={{
+                                    color: "#008080",
+                                    borderColor: "#008080",
+                                }}
+                            >
+                                Export
+                            </Button>
                             <Button
                                 variant="contained"
                                 onClick={() => setIsModalOpen(true)}
@@ -339,7 +425,7 @@ const GeneralLedger = () => {
                     </div>
                 </div>
             </div>
-            
+
             {exportDialogOpen && (
                 <ExportDialog
                     open={exportDialogOpen}
@@ -355,7 +441,49 @@ const GeneralLedger = () => {
                         <h3 className="mb-4 text-xl font-semibold">
                             Tambah Jurnal
                         </h3>
-                        {/* Add your modal content here */}
+                        {/* COA Dropdown */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">
+                                COA (Nama Akun)
+                            </label>
+                            <select
+                                value={selectedCoa}
+                                onChange={async (e) => {
+                                    const coaId = e.target.value; // This will now be the id
+                                    setSelectedCoa(coaId);
+
+                                    // Fetch the details for the selected COA using the id
+                                    const coaDetailsResponse = await fetch(
+                                        `http://localhost:8000/api/coa/${coaId}`,
+                                    );
+                                    const coaDetailsData =
+                                        await coaDetailsResponse.json();
+
+                                    setSelectedCoaDetails(coaDetailsData);
+                                }}
+                                className="mt-2 block w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">Pilih COA</option>
+                                {coaList.map((coa) => (
+                                    <option key={coa.id} value={coa.id}>
+                                        {" "}
+                                        {/* Use coa.id here */}
+                                        {coa.nama_akun}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <Button
+                            variant="contained"
+                            onClick={handleAddTransaction}
+                            sx={{
+                                backgroundColor: "#14B8A6",
+                                color: "white",
+                            }}
+                        >
+                            Simpan
+                        </Button>
                         <Button
                             variant="contained"
                             onClick={() => setIsModalOpen(false)}
