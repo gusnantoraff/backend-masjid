@@ -7,9 +7,10 @@ import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalYatim';
 import SearchIcon from '@mui/icons-material/Search';
 import { jsPDF } from "jspdf";
-import axios from 'axios';
+import axios from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { format } from 'date-fns'; 
 
 interface YatimDhuafa {
   nama: string;
@@ -36,7 +37,7 @@ export default function YatimDhuafa() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/yatim-dhuafa');
+      const response = await axios.get('/yatim-dhuafa');
       setYatimData(response.data);
       setFilteredData(response.data);
     } catch (error) {
@@ -72,7 +73,7 @@ export default function YatimDhuafa() {
 
   const reloadData = () => {
     axios
-      .get('http://localhost:8000/api/yatim-dhuafa')
+      .get('/yatim-dhuafa')
       .then((response) => {
         setYatimData(response.data);
         setFilteredData(response.data);
@@ -105,7 +106,13 @@ export default function YatimDhuafa() {
   };
 
   const handleExport = () => {
+    const currentDate = format(new Date(), 'yyyy-MM-dd');
+
     const doc = new jsPDF("p", "cm", "a4");
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Export Date: ${currentDate}`, 1, 1); // Date at the top-left
 
     const headers = ["No", "Nama","Jenis Kelamin", "Kontak", "Tanggal Lahir", "Alamat", "Keterangan", "Status"];
     const tableData = yatimData.map((row, index) => [
@@ -115,12 +122,11 @@ export default function YatimDhuafa() {
       row.kontak,
       row.birth,
       row.alamat,
-      row.alamat,
       row.keterangan,
       row.status
     ]);
 
-    doc.setFontSize(14);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("Data Yatim & Dhuafa", 10.5, 1, { align: 'center' });
 
@@ -151,8 +157,7 @@ export default function YatimDhuafa() {
       yPosition += cellHeight;
     });
 
-    doc.save("data yatim & dhuafa.pdf");
-
+    doc.save(`${currentDate}_Data Yatim Dhuafa.pdf`);
 
   };
 
@@ -283,7 +288,7 @@ export default function YatimDhuafa() {
 
         {/* DataTable Box with gap below search bar */}
         <Box sx={{ marginTop: '20px' }}>
-          <DataTable columns={yatimColumns} data={filteredData} fetchUrl='http://localhost:8000/api/yatim-dhuafa' reloadData={reloadData} />
+          <DataTable columns={yatimColumns} data={filteredData} fetchUrl='/yatim-dhuafa' reloadData={reloadData} />
         </Box>
       </div>
       <ModalForm

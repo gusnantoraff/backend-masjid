@@ -35,19 +35,14 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetchWithAuth("http://localhost:8000/api/jamaah", {
+            const responseData = await fetchWithAuth("http://localhost:8000/api/jamaah", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(formData),
             });
-
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-
-            const responseData = await response.json();
+            
             console.log("Response from API:", responseData);
             onSubmit();
             onClose();
@@ -158,7 +153,6 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                                     name="kontak"
                                     value={formData.kontak}
                                     onChange={handleChange}
-                                    placeholder="81234567890"
                                     style={{ flex: 1 }}
                                 />
                             </div>

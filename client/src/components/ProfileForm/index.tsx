@@ -68,17 +68,13 @@ export default function ProfileForm() {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetchWithAuth(`http://localhost:8000/api/users/${user?.id}`, {
+      await fetchWithAuth(`http://localhost:8000/api/users/${user?.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update user data");
-      }
       await fetchUser();
       setIsEditing(false);
       toast.success("Profile berhasil diupdate!");
@@ -95,14 +91,11 @@ export default function ProfileForm() {
     formData.append("avatar", file);
 
     try {
-      const response = await fetchWithAuth(`http://localhost:8000/api/users/${user?.id}/avatar`, {
+      await fetchWithAuth(`http://localhost:8000/api/users/${user?.id}/avatar`, {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload avatar");
-      }
       setSelectedFile(null);
     } catch (error) {
       console.error("Error uploading avatar:", error);

@@ -10,6 +10,7 @@ import { jsPDF } from "jspdf";
 import axios from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { format } from 'date-fns'; 
 
 interface Jamaah {
   nama: string;
@@ -104,7 +105,13 @@ export default function Jamaah() {
   };
 
   const handleExport = () => {
+    const currentDate = format(new Date(), 'yyyy-MM-dd');
+
     const doc = new jsPDF("p", "cm", "a4");
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Export Date: ${currentDate}`, 1, 1); // Date at the top-left
 
     const headers = ["No", "Nama", "Jenis Kelamin", "Tanggal Lahir", "Kontak", "Email", "Alamat", "Status"];
     const tableData = jamaahData.map((row, index) => [
@@ -149,7 +156,7 @@ export default function Jamaah() {
       yPosition += cellHeight;
     });
 
-    doc.save("data jamaah.pdf");
+    doc.save(`${currentDate}_Data Jamaah.pdf`);
 
 
   };

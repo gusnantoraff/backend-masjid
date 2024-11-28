@@ -1,4 +1,4 @@
-import axios from '@/utils/axios';
+import fetchWithAuth from "@/utils/fetch";;
 import React, { useState } from 'react';
 import { BiX } from 'react-icons/bi';
 
@@ -31,17 +31,23 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await axios.post('/yatim-dhuafa', formData);
-        console.log('Response from API:', response.data);
-        onSubmit();
-        onClose();
-        onSuccess("Data Yatim berhasil ditambahkan!");
-      } catch (error) {
-        console.error('Error posting data:', error);
-        onSuccess("Data Yatim gagal ditambahkan!");
-
-      }
-    };
+        const responseData = await fetchWithAuth("http://localhost:8000/api/yatim-dhuafa", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+      });
+      
+      console.log("Response from API:", responseData);
+      onSubmit();
+      onClose();
+      onSuccess("Yatim Dhuafa berhasil ditambahkan!");
+  } catch (error) {
+      console.error("Error posting data:", error);
+      onSuccess("Yatim Dhuafa gagal ditambahkan!");
+  }
+};
 
   if (!isOpen) {
     return null;
@@ -70,23 +76,25 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="nama">Nama:</label>
+              <label htmlFor="nama">Nama: <span style={{ color: 'red' }}>*</span></label>
               <input
                 type="text"
                 id="nama"
                 name="nama"
                 value={formData.nama}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="birth">Tanggal Lahir:</label>
+              <label htmlFor="birth">Tanggal Lahir: <span style={{ color: 'red' }}>*</span></label>
               <input
                 type="date"
                 id="birth"
                 name="birth"
                 value={formData.birth}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
@@ -102,7 +110,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
               </select>
             </div>
             <div>
-              <label htmlFor="alamat">Alamat:</label>
+              <label htmlFor="alamat">Alamat: <span style={{ color: 'red' }}>*</span></label>
               <textarea
                 id="alamat"
                 name="alamat"
@@ -132,7 +140,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
               </select>
             </div>
 
-            <label htmlFor="kontak">Kontak:</label>
+            <label htmlFor="kontak">Kontak: <span style={{ color: 'red' }}>*</span></label>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{ padding: '8px', background: '#f0f0f0', border: '1px solid #ccc',borderRadius:'4px',marginRight:'2px' }}>+62</span>
               <input
@@ -141,8 +149,8 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                 name="kontak"
                 value={formData.kontak}
                 onChange={handleChange}
-                placeholder="81234567890" // Show example format after +62
                 style={{ flex: 1 }}
+                required
               />
             </div>
 
