@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from '@/utils/axios';
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Link } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Checkbox } from '@mui/material';
 import { BiTrash, BiEdit } from 'react-icons/bi';
 import AlertConfirm from "../Alerts/AlertConfirm";
 import { AiOutlineEye } from "react-icons/ai";
@@ -14,29 +14,31 @@ interface Column {
 interface DataTableProps {
     columns: Column[];
     fetchUrl: string;
-    refresh: boolean; 
+    refresh: boolean;
+    isRestore?: boolean; // Add isRestore prop to toggle restore state
+    onRestore?: (id: number, type: 'berita' | 'pengaturan-akun') => void; // Callback for restore action
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh, isRestore, onRestore }) => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<any>(null);
 
-   useEffect(() => {
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.get(fetchUrl);
-            setData(response.data);
-            setLoading(false);
-        } catch (err) {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(fetchUrl);
+                setData(response.data);
+                setLoading(false);
+            } catch (err) {
+                setLoading(false);
+            }
+        };
 
-    fetchData();
-}, [fetchUrl, refresh]);
+        fetchData();
+    }, [fetchUrl, refresh]);
 
 
     const handleDelete = async () => {
@@ -59,7 +61,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
             window.location.href = `/pengaturan-akun/${id}?edit=true`;
         }
     };
-    
+
     const handleDetail = (id: any, type: 'berita' | 'pengaturan-akun') => {
         if (type === 'berita') {
             window.location.href = `/berita/${id}`;
@@ -67,7 +69,13 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
             window.location.href = `/pengaturan-akun/${id}`;
         }
     };
-    
+
+    const handleRestore = (id: number, type: 'berita' | 'pengaturan-akun') => {
+        if (onRestore) {
+            onRestore(id, type);
+        }
+    };
+
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
         if (typeof value === 'string' && accessor !== 'email') {
@@ -78,10 +86,10 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
 
     const truncateContent = (content: string, limit: number = 20) => {
         const text = content
-        .replace(/&nbsp;/g, ' ')
-        .replace(/<\/?[^>]+(>|$)/g, "");
+            .replace(/&nbsp;/g, ' ')
+            .replace(/<\/?[^>]+(>|$)/g, "");
         return text.length > limit ? text.substring(0, limit) + '...' : text;
-      };
+    };
 
     if (loading) {
         return <p>Loading data...</p>;
@@ -128,57 +136,24 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh  }) =>
                                     {column.accessor === 'nomor'
                                         ? idxData + 1
                                         : column.accessor === 'konten' || column.accessor === 'judul'
-                                        ? truncateContent(row[column.accessor])
-                                        : capitalizeFirstLetter(row[column.accessor], column.accessor)
+                                            ? truncateContent(row[column.accessor])
+                                            : capitalizeFirstLetter(row[column.accessor], column.accessor)
                                     }
-                                    {column.accessor === '' && (
-                                        <Box>
-                                            <Button
-                                                variant="contained"
-                                                sx={{
-                                                    backgroundColor: '#2379DC',
-                                                    color: 'white',
-                                                    marginLeft: '8px',
-                                                    padding: '4px 8px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.7rem',
-                                                }}
-                                                startIcon={<AiOutlineEye />}
-                                                onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}
-                                            >
-                                                Detail
-                                            </Button>
-                                            
-                                            <Button
-                                                variant="contained"
-                                                sx={{
-                                                    backgroundColor: '#14B8A6',
-                                                    color: 'white',
-                                                    marginLeft: '8px',
-                                                    padding: '4px 8px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.7rem',
-                                                }}
-                                                startIcon={<BiEdit />}
-                                                onClick={() => handleEdit(row.id, column.type as 'berita' | 'pengaturan-akun')}
-                                            >
-                                                Edit
-                                            </Button>
-                                            <Button
-                                                variant="contained"                                      
-                                                sx={{
-                                                    backgroundColor: 'red',
-                                                    color: 'white',
-                                                    marginLeft: '8px',
-                                                    padding: '4px 8px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.7rem',
-                                                }}
-                                                startIcon={<BiTrash />}
-                                                onClick={() => promptDelete(row.id)}
-                                            >
-                                                Hapus
-                                            </Button>
+
+                                    {column.accessor === '' && isRestore && (
+                                        <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
+                                            <Checkbox
+                                                checked={row.isChecked || false}
+                                                onChange={() => handleRestore(row.id, column.type as 'berita' | 'pengaturan-akun')}
+                                            />
+                                        </Box>
+                                    )}
+
+                                    {column.accessor === '' && !isRestore && (
+                                        <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
+                                            <Button variant="contained" color="error" sx={{ padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<BiTrash />} onClick={() => promptDelete(row.id)}>Hapus</Button>
+                                            <Button variant="contained" sx={{ backgroundColor: "#14B8A6", color: "white", marginLeft: "6px", padding: "4px 7px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<BiEdit />} onClick={() => handleEdit(row.id, column.type as 'berita' | 'pengaturan-akun')}>Edit</Button>
+                                            <Button variant="contained" sx={{ backgroundColor: "#2379DC", color: "white", marginLeft: "8px", padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<AiOutlineEye />} onClick={() => handleDetail(row.id, column.type as 'berita' | 'pengaturan-akun')}>Detail</Button>
                                         </Box>
                                     )}
                                 </TableCell>
