@@ -126,6 +126,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                     <div className="flex gap-4">
                         <div className="w-1/3">
                             <label>Jenis:</label>
+                            <span className="text-red-500"> *</span>
                             <select
                                 value={jenis}
                                 onChange={(e) => setJenis(e.target.value)}
@@ -141,6 +142,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                         </div>
                         <div className="w-1/3">
                             <label>Tanggal:</label>
+                            <span className="text-red-500"> *</span>
                             <input
                                 type="date"
                                 value={tanggal}
@@ -150,6 +152,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                         </div>
                         <div className="w-1/3">
                             <label>Jumlah:</label>
+                            <span className="text-red-500"> *</span>
                             <input
                                 type="text"
                                 value={formatNumberWithDots(amount)}
@@ -162,6 +165,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                     <div className="flex gap-4">
                         <div className="w-1/2">
                             <label>Deskripsi:</label>
+                            <span className="text-red-500"> *</span>
                             <input
                                 type="text"
                                 value={description}
@@ -172,6 +176,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                         </div>
                         <div className="w-1/2">
                             <label>File:</label>
+                            <span className="text-red-500"> *</span>
                             <input
                                 type="file"
                                 onChange={(e) =>
@@ -186,8 +191,9 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <div className="w-1/2">
-                            <label>Oleh (COA):</label>
+                        <div className="w-1/3">
+                            <label>Nama Akun (COA):</label>
+                            <span className="text-red-500"> *</span>
                             <select
                                 value={oleh}
                                 onChange={(e) => setOleh(e.target.value)}
@@ -199,6 +205,39 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                                         {coa.nama_akun}
                                     </option>
                                 ))}
+                            </select>
+                        </div>
+                        <div className="w-1/3">
+                            <label>Tipe</label>
+                            <span className="text-red-500"> *</span>
+                            <select
+                                value={oleh}
+                                onChange={(e) => setOleh(e.target.value)}
+                                className="h-12 w-full rounded-lg border p-2"
+                            >
+                                <option value="">Pilih Tipe</option>
+                                {coaOptions.map((coa) => (
+                                    <option key={coa.id} value={coa.id}>
+                                        {coa.tipe}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="w-1/3">
+                            <label>Oleh</label>
+                            <span className="text-red-500"> *</span>
+                            <select
+                                value={oleh}
+                                onChange={(e) => setOleh(e.target.value)}
+                                className="h-12 w-full rounded-lg border p-2"
+                            >
+                                <option value="">Pilih Oleh</option>
+                                    <option>
+                                       Kredit
+                                    </option>
+                                    <option>
+                                        Debit
+                                    </option>
                             </select>
                         </div>
                     </div>

@@ -156,12 +156,13 @@ const GeneralLedger = () => {
         });
         doc.setTextColor("white");
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
+        doc.setFontSize(8);
         doc.text(`${creationDate}`, 1, 1);
 
+        doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setTextColor("white");
-        const topRightText = "oleh Tercode.com"; // Replace with your desired text
+        const topRightText = "by Tercode.com"; // Replace with your desired text
         const marginRight = 1; // 1 cm margin from the right edge
         const rightX = doc.internal.pageSize.width - marginRight;
         doc.text(topRightText, rightX, 1, { align: "right" });
