@@ -6,6 +6,9 @@ import { Search, Plus } from "lucide-react";
 import { AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
 import fetchWithAuth from "@/utils/fetch";
+import { FaCheck, FaEye, FaTrash } from "react-icons/fa6";
+import { FaEdit, FaTimes } from "react-icons/fa";
+import { IoIosRadioButtonOn } from "react-icons/io";
 
 const API_URL = "http://localhost:8000/api/coa";
 
@@ -77,6 +80,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title }) => {
                             onChange={(e) => setCode(e.target.value)}
                             className="h-12 w-full rounded-lg border p-2"
                             placeholder="Kode Akun"
+                            style={{ textTransform: 'uppercase' }}
                         />
                     </div>
                     <div>
@@ -87,6 +91,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title }) => {
                             onChange={(e) => setName(e.target.value)}
                             className="h-12 w-full rounded-lg border p-2"
                             placeholder="Nama Akun"
+                            style={{ textTransform: 'uppercase' }}
                         />
                     </div>
                     <div>
@@ -124,10 +129,140 @@ const Modal = ({ isOpen, onClose, onSubmit, title }) => {
     );
 };
 
+const ViewModal = ({ isOpen, onClose, account }) => {
+    const [editMode, setEditMode] = useState(false);
+
+    const handleSave = () => {
+        // Logic untuk menyimpan perubahan
+        console.log("Simpan perubahan!");
+        setEditMode(false); // Keluar dari mode edit
+    };
+
+    if (!isOpen || !account) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+                className="fixed inset-0 bg-black opacity-50"
+                onClick={onClose}
+            ></div>
+            <div className="z-10 w-4/5 max-w-md rounded-lg bg-white p-4 shadow-lg">
+                <div className="mb-4 flex items-center justify-between">
+                    <h2 className="text-lg font-bold">Detail Data</h2>
+                    <div className="flex space-x-2">
+                        {editMode ? (
+                            <>
+                                <button
+                                    onClick={handleSave}
+                                    className="text-green-500"
+                                >
+                                    <FaCheck size={20} />
+                                </button>
+                                <button
+                                    onClick={() => setEditMode(false)}
+                                    className="text-gray-500"
+                                >
+                                    <FaTimes size={20} />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => setEditMode(true)}
+                                    className="flex items-center gap-2 text-yellow-500"
+                                >
+                                    <span>Edit</span>
+                                    <FaEdit size={20} />
+                                </button>
+                                <button
+                                    onClick={onClose}
+                                    className="text-red-500"
+                                >
+                                    <FaTimes size={20} />
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+                <div>
+                    {editMode ? (
+                        <form className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Kode Akun:
+                                </label>
+                                <input
+                                    type="text"
+                                    defaultValue={account.code}
+                                    className="w-full rounded-lg border p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Nama Akun:
+                                </label>
+                                <input
+                                    type="text"
+                                    defaultValue={account.name}
+                                    className="w-full rounded-lg border p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Tipe Akun:
+                                </label>
+                                <select
+                                    defaultValue={account.type}
+                                    className="w-full rounded-lg border p-2"
+                                >
+                                    <option value="Infaq">Infaq</option>
+                                    <option value="Operasional">
+                                        Operasional
+                                    </option>
+                                    <option value="Kas">Kas</option>
+                                    <option value="Hutang">Hutang</option>
+                                </select>
+                            </div>
+                        </form>
+                    ) : (
+                        <div
+                            className="space-y-2"
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "16px",
+                            }}
+                        >
+                            <p>
+                                <strong>Kode Akun:</strong> {account.code}
+                            </p>
+                            <p>
+                                <strong>Nama Akun:</strong> {account.name}
+                            </p>
+                            <p>
+                                <strong>Tipe Akun:</strong> {account.type}
+                            </p>
+                            <p>
+                                <strong>Saldo:</strong>{" "}
+                                {account.balance.toLocaleString("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                })}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const ChartOfAccounts = () => {
     const [accounts, setAccounts] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAccount, setSelectedAccount] = useState(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -138,6 +273,7 @@ const ChartOfAccounts = () => {
                     code: account.kode_akun,
                     name: account.nama_akun,
                     type: account.tipe,
+                    status: account.status || "Aktif",
                     balance:
                         account.penerimaan_kas.reduce(
                             (sum, item) => sum + parseFloat(item.jumlah),
@@ -162,6 +298,21 @@ const ChartOfAccounts = () => {
         // Fetch updated accounts after a successful form submission
         window.location.reload();
     };
+
+    const handleStatusChange = (accountCode) => {
+        setAccounts((prevAccounts) =>
+            prevAccounts.map((account) =>
+                account.code === accountCode
+                    ? {
+                          ...account,
+                          status: account.status === "Aktif" ? "Tidak Aktif" : "Aktif",
+                      }
+                    : account
+            )
+        );
+    };
+    
+    
 
     const filteredAccounts = accounts.filter((account) =>
         account.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -221,8 +372,14 @@ const ChartOfAccounts = () => {
                                         <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                             Tipe
                                         </th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                             Saldo
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Keterangan
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Aksi
                                         </th>
                                     </tr>
                                 </thead>
@@ -233,16 +390,16 @@ const ChartOfAccounts = () => {
                                                 key={account.code}
                                                 className="hover:bg-gray-50"
                                             >
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm font-medium text-gray-900">
                                                     {account.code}
                                                 </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
                                                     {account.name}
                                                 </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
                                                     {account.type}
                                                 </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
+                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
                                                     {account.balance.toLocaleString(
                                                         "id-ID",
                                                         {
@@ -250,6 +407,55 @@ const ChartOfAccounts = () => {
                                                             currency: "IDR",
                                                         },
                                                     )}
+                                                </td>
+                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
+                                                    {account.status}
+                                                </td>
+                                                <td className="space-x-2 whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusChange(
+                                                                account.code,
+                                                                "Aktif",
+                                                            )
+                                                        }
+                                                        className={`text-sm font-medium ${
+                                                            account.status ===
+                                                            "Aktif"
+                                                                ? "text-green-500"
+                                                                : "text-red-500"
+                                                        }`}
+                                                    >
+                                                        {account.status ===
+                                                        "Aktif" ? (
+                                                            <IoIosRadioButtonOn
+                                                                size={20}
+                                                            />
+                                                        ) : (
+                                                            <IoIosRadioButtonOn
+                                                                size={20}
+                                                            />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedAccount(
+                                                                account,
+                                                            );
+                                                            setIsViewModalOpen(
+                                                                true,
+                                                            );
+                                                        }}
+                                                        className="text-blue-500"
+                                                    >
+                                                        <FaEye size={20} />
+                                                    </button>
+                                                    <button
+                                                        // onClick={{}}
+                                                        className="text-red-500"
+                                                    >
+                                                        <FaTrash size={20} />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
@@ -275,6 +481,12 @@ const ChartOfAccounts = () => {
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleNewAccountSubmit}
                 title="Tambah Akun Baru"
+            />
+
+            <ViewModal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                account={selectedAccount}
             />
         </DefaultLayout>
     );
