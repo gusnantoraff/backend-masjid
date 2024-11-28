@@ -11,6 +11,7 @@ import axios from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from 'date-fns'; 
+import { SlActionUndo } from "react-icons/sl";
 
 interface Jamaah {
   nama: string;
@@ -34,6 +35,7 @@ export default function Jamaah() {
   const [status, setStatus] = useState("");
   const [jamaahData, setJamaahData] = useState<Jamaah[]>([]);
   const [filteredData, setFilteredData] = useState<Jamaah[]>([]);
+  const [isRestore, setIsRestore] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -82,6 +84,14 @@ export default function Jamaah() {
       });
   };
 
+  const handleRestore = async (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
+    try {
+      await axios.post(`/${type}/${id}/restore`);
+      alert('Data restored successfully');
+    } catch (error) {
+      alert('Failed to restore data');
+    }
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -197,6 +207,14 @@ export default function Jamaah() {
             Data Jamaah
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button
+              variant="contained"
+              sx={{ backgroundColor: '#FFB80D', color: 'white', marginRight: '10px' }}
+              startIcon={<SlActionUndo />}
+              onClick={() => setIsRestore(!isRestore)}
+            >
+              {isRestore ? 'Cancel Restore' : 'Restore Data'}
+            </Button>
             <Button
               variant="contained"
               sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
@@ -213,6 +231,7 @@ export default function Jamaah() {
             >
               Export Data
             </Button>
+
           </Box>
         </Box>
 
@@ -284,7 +303,7 @@ export default function Jamaah() {
         </Box>
 
         <Box sx={{ marginTop: '20px' }}>
-          <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='/jamaah' reloadData={reloadData} />
+          <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='/jamaah' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestore} />
         </Box>
       </div>
       <ModalForm isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} onSuccess={(message: string) => toast.success(message)}/>

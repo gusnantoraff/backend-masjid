@@ -1,14 +1,6 @@
-import { useEffect, useState } from "react";
-import axios from '@/utils/axios';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Button,
-  Box,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import axios from "@/utils/axios";
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Checkbox } from "@mui/material";
 import { BiTrash, BiEdit } from "react-icons/bi";
 import AlertConfirm from "../Alerts/AlertConfirm";
 import { AiOutlineEye, AiOutlineWhatsApp } from "react-icons/ai";
@@ -24,9 +16,11 @@ interface DataTableProps {
   data?: any[];
   fetchUrl?: string;
   reloadData?: () => void;
+  isRestore?: boolean; // Add isRestore prop to toggle restore state
+  onRestore?: (id: number, type: 'jamaah' | 'yatim-dhuafa') => void; // Callback for restore action
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadData }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadData, isRestore, onRestore }) => {
   const [fetchedData, setFetchedData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -55,7 +49,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
     if (selectedId !== null) {
       await axios.delete(`${fetchUrl}/${selectedId}`);
       if (reloadData) {
-        reloadData(); 
+        reloadData();
       }
       setFetchedData(fetchedData.filter((item) => item.id !== selectedId));
       setShowConfirm(false);
@@ -73,15 +67,15 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
     } else if (type === 'yatim-dhuafa') {
         window.location.href = `/yatim-dhuafa/${id}?edit=true`;
     }
-};
+  };
 
-const handleDetail = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
+  const handleDetail = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
     if (type === 'jamaah') {
         window.location.href = `/jamaah/${id}`;
     } else if (type === 'yatim-dhuafa') {
         window.location.href = `/yatim-dhuafa/${id}`;
     }
-};
+  };
 
   const handleWhatsApp = (id: number) => {
     const jamaah = fetchedData.find((j) => j.id === id);
@@ -103,6 +97,12 @@ const handleDetail = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
     window.open(waLink, "_blank");
   };
 
+  const handleRestore = (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
+    if (onRestore) {
+      onRestore(id, type);
+    }
+  };
+
   const capitalizeFirstLetter = (value: any, accessor: string) => {
     if (typeof value === "string" && accessor !== "email") {
       return value.charAt(0).toUpperCase() + value.slice(1);
@@ -113,10 +113,6 @@ const handleDetail = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
   const truncateText = (text: string, maxLength: number): string => {
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
-
-if (loading) {
-    return <p>Loading data...</p>;
-}
 
   if (loading) {
     return <p>Loading data...</p>;
@@ -129,14 +125,7 @@ if (loading) {
   const rowsToRender = data || fetchedData;
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        overflowX: "auto",
-        border: "1px solid #E0E0E0",
-        borderRadius: "10px",
-      }}
-    >
+    <Box sx={{ width: "100%", overflowX: "auto", border: "1px solid #E0E0E0", borderRadius: "10px" }}>
       {showConfirm && (
         <AlertConfirm
           open={showConfirm}
@@ -149,14 +138,7 @@ if (loading) {
         <TableHead>
           <TableRow>
             {columns.map((column, idx) => (
-              <TableCell
-                key={idx}
-                sx={{
-                  fontWeight: "bold",
-                  textAlign: "left",
-                  padding: "16px",
-                }}
-              >
+              <TableCell key={idx} sx={{ fontWeight: "bold", textAlign: "left", padding: "16px" }}>
                 {capitalizeFirstLetter(column.header, column.accessor)}
               </TableCell>
             ))}
@@ -166,75 +148,31 @@ if (loading) {
           {rowsToRender.map((row, idxData) => (
             <TableRow key={idxData}>
               {columns.map((column) => (
-                <TableCell
-                  key={column.accessor}
-                  sx={{
-                    padding: "7px",
-                    borderBottom: "1px solid #E0E0E0",
-                  }}
-                >
+                <TableCell key={column.accessor} sx={{ padding: "7px", borderBottom: "1px solid #E0E0E0" }}>
                   {column.accessor === 'nomor'
-                                        ? idxData + 1
-                                        : column.accessor === 'alamat' || column.accessor === 'email'
-                                        ? truncateText(row[column.accessor], 6)
-                                        : capitalizeFirstLetter(row[column.accessor], column.accessor)
-                                    }
-                                    {column.accessor === '' && (
+                    ? idxData + 1
+                    : column.accessor === 'alamat' || column.accessor === 'email'
+                    ? truncateText(row[column.accessor], 6)
+                    : capitalizeFirstLetter(row[column.accessor], column.accessor)
+                  }
+
+                  {/* Render checkbox if isRestore is true */}
+                  {column.accessor === '' && isRestore && (
                     <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        sx={{ padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }}
-                        startIcon={<BiTrash />}
-                        onClick={() => promptDelete(row.id)}
-                      >
-                        Hapus
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#14B8A6",
-                          color: "white",
-                          marginLeft: "6px",
-                          padding: "4px 7px",
-                          minWidth: "auto",
-                          fontSize: "0.7rem",
-                        }}
-                        startIcon={<BiEdit />}
-                        onClick={() => handleEdit(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#2379DC",
-                          color: "white",
-                          marginLeft: "8px",
-                          padding: "4px 6px",
-                          minWidth: "auto",
-                          fontSize: "0.7rem",
-                        }}
-                        startIcon={<AiOutlineEye />}
-                        onClick={() => handleDetail(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}
-                      >
-                        Detail
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#25D366",
-                          color: "white",
-                          marginLeft: "8px",
-                          padding: "4px 6px",
-                          minWidth: "auto",
-                          fontSize: "0.7rem",
-                        }}
-                        startIcon={<AiOutlineWhatsApp />}
-                        onClick={() => handleWhatsApp(row.id)}
-                      >
-                        WA
-                      </Button>
+                      <Checkbox
+                        checked={row.isChecked || false}
+                        onChange={() => handleRestore(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Action Buttons for non-restore mode */}
+                  {column.accessor === '' && !isRestore && (
+                    <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
+                      <Button variant="contained" color="error" sx={{ padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<BiTrash />} onClick={() => promptDelete(row.id)}>Hapus</Button>
+                      <Button variant="contained" sx={{ backgroundColor: "#14B8A6", color: "white", marginLeft: "6px", padding: "4px 7px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<BiEdit />} onClick={() => handleEdit(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}>Edit</Button>
+                      <Button variant="contained" sx={{ backgroundColor: "#2379DC", color: "white", marginLeft: "8px", padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<AiOutlineEye />} onClick={() => handleDetail(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}>Detail</Button>
+                      <Button variant="contained" sx={{ backgroundColor: "#25D366", color: "white", marginLeft: "8px", padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<AiOutlineWhatsApp />} onClick={() => handleWhatsApp(row.id)}>WA</Button>
                     </Box>
                   )}
                 </TableCell>
