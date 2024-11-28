@@ -183,9 +183,7 @@ export default function Jurnal({
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={(e, newPage) => setPage(newPage)}
-                onRowsPerPageChange={(e) =>
-                    setRowsPerPage(parseInt(e.target.value, 10))
-                }
+                rowsPerPageOptions={[]}
             />
             <DetailJurnal
                  modalData={modalData}

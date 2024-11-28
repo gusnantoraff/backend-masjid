@@ -94,7 +94,9 @@ export default function TableContent({ rows, coaMap, onRowAction }) {
             </TableHead>
             <TableBody>
                 {rows.map((row, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={index} sx={{
+                        backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
+                    }}>
                         <TableCell>{row.name}</TableCell>
                         <TableCell>{row.date}</TableCell>
                         <TableCell
