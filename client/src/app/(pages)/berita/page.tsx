@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
 import DataTable from "@/components/DataTable/DataTabel1";
+import { SlActionUndo } from "react-icons/sl";
+import axios from '@/utils/axios';
 
 interface Column {
   header: string;
@@ -13,33 +15,43 @@ interface Column {
 }
 
 export default function Artikel() {
-    const [isFormVisible, setIsFormVisible] = useState(true);
-    const [reloadData, setReloadData] = useState(false);
+  const [isFormVisible, setIsFormVisible] = useState(true);
+  const [reloadData, setReloadData] = useState(false);
+  const [isRestore, setIsRestore] = useState(false);
 
-    const handleCancel = () => {
-        setIsFormVisible(false);
-    };
+  const handleCancel = () => {
+    setIsFormVisible(false);
+  };
 
-    const handleTambahBerita = () => {
-        setIsFormVisible(true);
-    };
+  const handleTambahBerita = () => {
+    setIsFormVisible(true);
+  };
 
-    const handleFormSubmit = () => {
-        setReloadData((prev) => !prev);
-        setIsFormVisible(false);
-    };
+  const handleFormSubmit = () => {
+    setReloadData((prev) => !prev);
+    setIsFormVisible(false);
+  };
 
-    const beritaColumns: Column[] = [
-        { header: "No", accessor: "nomor" },
-        { header: "Judul", accessor: "judul" },
-        { header: "Tanggal Publikasi", accessor: "tanggal_publikasi" },
-        { header: "Kategori", accessor: "kategori" },
-        { header: "Konten", accessor: "konten" },
-        { header: "Status", accessor: "status" },
-        { header: "Tindakan", accessor: "", type: "berita"},
-    ];
+  const handleRestore = async (id: number, type: 'berita' | 'pengaturan-akun') => {
+    try {
+      await axios.post(`/${type}/${id}/restore`);
+      alert('Data restored successfully');
+    } catch (error) {
+      alert('Failed to restore data');
+    }
+  };
 
-    const fetchUrl = "/berita";
+  const beritaColumns: Column[] = [
+    { header: "No", accessor: "nomor" },
+    { header: "Judul", accessor: "judul" },
+    { header: "Tanggal Publikasi", accessor: "tanggal_publikasi" },
+    { header: "Kategori", accessor: "kategori" },
+    { header: "Konten", accessor: "konten" },
+    { header: "Status", accessor: "status" },
+    { header: "Tindakan", accessor: "", type: "berita" },
+  ];
+
+  const fetchUrl = "/berita";
 
   return (
     <DefaultLayout>
@@ -83,10 +95,18 @@ export default function Artikel() {
               Tambah Berita
             </Button>
           )}
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: '#FFB80D', color: 'white', marginLeft: '10px' }}
+            startIcon={<SlActionUndo />}
+            onClick={() => setIsRestore(!isRestore)}
+          >
+            {isRestore ? 'Cancel Restore' : 'Restore Data'}
+          </Button>
         </Box>
       </Box>
       <div
-         style={{
+        style={{
           ...styles.formContainer,
           ...(isFormVisible ? styles.formShow : styles.formHidden)
         }}
@@ -96,25 +116,25 @@ export default function Artikel() {
             <ArticleForm onSubmit={handleFormSubmit} />
           </div>
         )}
-        </div>
-        
+      </div>
+
       <div style={{ marginTop: '20px' }}>
-        <DataTable columns={beritaColumns} fetchUrl={fetchUrl} refresh={reloadData} />
+        <DataTable columns={beritaColumns} fetchUrl={fetchUrl} refresh={reloadData} isRestore={isRestore} onRestore={handleRestore} />
       </div>
     </DefaultLayout>
   );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-    formContainer: {
-        transition: "transform 0.5s",
-    },
-    formShow: {
-        transform: "translateY(0)",
-        transitionTimingFunction: "ease-in",
-    },
-    formHidden: {
-        transform: "translateY(-100%)",
-        transitionTimingFunction: "ease-out",
-    },
+  formContainer: {
+    transition: "transform 0.5s",
+  },
+  formShow: {
+    transform: "translateY(0)",
+    transitionTimingFunction: "ease-in",
+  },
+  formHidden: {
+    transform: "translateY(-100%)",
+    transitionTimingFunction: "ease-out",
+  },
 };

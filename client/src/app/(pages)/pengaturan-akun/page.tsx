@@ -7,6 +7,8 @@ import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalAkun';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SlActionUndo } from "react-icons/sl";
+import axios from '@/utils/axios';
 
 interface Column {
   header: string;
@@ -17,6 +19,7 @@ interface Column {
 export default function YatimDhuafa() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [isRestore, setIsRestore] = useState(false);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -24,6 +27,15 @@ export default function YatimDhuafa() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleRestore = async (id: number, type: 'berita' | 'pengaturan-akun') => {
+    try {
+      await axios.post(`/${type}/${id}/restore`);
+      alert('Data restored successfully');
+    } catch (error) {
+      alert('Failed to restore data');
+    }
   };
 
 
@@ -66,6 +78,14 @@ export default function YatimDhuafa() {
          Pengaturan Akun
         </Typography>
         <Box>
+        <Button
+              variant="contained"
+              sx={{ backgroundColor: '#FFB80D', color: 'white', marginRight: '10px' }}
+              startIcon={<SlActionUndo />}
+              onClick={() => setIsRestore(!isRestore)}
+            >
+              {isRestore ? 'Cancel Restore' : 'Restore Data'}
+            </Button>
           <Button 
             variant="contained" 
             sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }} 
@@ -74,12 +94,15 @@ export default function YatimDhuafa() {
           >
             Tambah Users
           </Button>
+          
         </Box>
       </Box>
       <DataTable 
             columns={akunColumns} 
             fetchUrl={fetchUrl} 
             refresh={refresh} // Pass the refresh prop here
+            isRestore={isRestore} 
+            onRestore={handleRestore}
           />
         </div>
         <ModalForm isOpen={isModalOpen} onClose={closeModal} onSuccess={(message: string) => toast.success(message)}/>

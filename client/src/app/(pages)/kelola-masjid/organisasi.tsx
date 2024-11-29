@@ -1,174 +1,231 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
-import { AiOutlinePlus } from 'react-icons/ai';
-import Button from '@mui/material/Button';
+import { FaTrash, FaEdit, FaTimes } from "react-icons/fa";
+import { AiOutlinePlus } from "react-icons/ai";
+import Button from "@mui/material/Button";
 import fetchWithAuth from "@/utils/fetch";
-import axios from '@/utils/axios';
+import axios from "@/utils/axios";
+import { SlActionUndo } from "react-icons/sl";
+import { Checkbox } from "@mui/material";
 
 const StrukturOrganisasiMasjid = () => {
-    const [struktur, setStruktur] = useState([]);
-    const [newStruktur, setNewStruktur] = useState([]);
-    const [newJabatan, setNewJabatan] = useState("");
-    const [newNama, setNewNama] = useState("");
-    const [newKontak, setNewKontak] = useState("");
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(null);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [deleteItemId, setDeleteItemId] = useState(null);
+  const [struktur, setStruktur] = useState([]);
+  const [newStruktur, setNewStruktur] = useState([]);
+  const [newJabatan, setNewJabatan] = useState("");
+  const [newNama, setNewNama] = useState("");
+  const [newKontak, setNewKontak] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState(null);
+  const [isRestore, setIsRestore] = useState(false);
 
-    useEffect(() => {
-        fetchStrukturOrganisasi();
-    }, []);
+  useEffect(() => {
+    fetchStrukturOrganisasi();
+  }, []);
 
-    const fetchStrukturOrganisasi = async () => {
-        try {
-            const data = await fetchWithAuth(
-                "http://localhost:8000/api/struktur-organisasi",
-            );
+  const fetchStrukturOrganisasi = async () => {
+    try {
+      const data = await fetchWithAuth(
+        "http://localhost:8000/api/struktur-organisasi"
+      );
+      setStruktur(data);
+      setNewStruktur(data);
+    } catch (error) {
+      console.error("Error fetching struktur organisasi:", error);
+    }
+  };
 
-            setStruktur(data);
-            setNewStruktur(data);
-        } catch (error) {
-            console.error("Error fetching struktur organisasi:", error);
+  const addStruktur = async () => {
+    if (!newJabatan || !newNama) {
+      setErrorMessage("Jabatan and Nama are required fields.");
+      return;
+    }
+
+    const newEntry = {
+      info_masjid_id: 1,
+      jabatan: newJabatan,
+      nama: newNama,
+      kontak: newKontak,
+    };
+
+    try {
+      const data = await fetchWithAuth(
+        "http://localhost:8000/api/struktur-organisasi",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newEntry),
         }
-    };
+      );
 
-    const addStruktur = async () => {
-        if (!newJabatan || !newNama) {
-            setErrorMessage("Jabatan and Nama are required fields.");
-            return;
+      const { id, ...strukturData } = data.strukturOrganisasi;
+      setStruktur([...struktur, { id: id, ...strukturData }]);
+      setNewStruktur([...newStruktur, { id: id, ...strukturData }]);
+      setNewJabatan("");
+      setNewNama("");
+      setNewKontak("");
+      setIsModalOpen(false);
+      setErrorMessage("");
+      setSuccessMessage("Data berhasil ditambahkan.");
+    } catch (error) {
+      console.error("Error adding struktur organisasi:", error);
+      setErrorMessage("Error adding data. Please try again.");
+    }
+  };
+
+  const updateStruktur = async (id) => {
+    const updatedEntry = newStruktur.find((item) => item.id === id);
+    try {
+      const updatedData = await fetchWithAuth(
+        `http://localhost:8000/api/struktur-organisasi/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedEntry),
         }
+      );
 
-        const newEntry = {
-            info_masjid_id: 1,
-            jabatan: newJabatan,
-            nama: newNama,
-            kontak: newKontak,
-        };
+      setStruktur(
+        struktur.map((item) =>
+          item.id === id ? updatedData.strukturOrganisasi : item
+        )
+      );
+      setIsEditing(null);
+      setSuccessMessage("Data berhasil diperbarui.");
+    } catch (error) {
+      console.error("Error updating struktur organisasi:", error);
+      setErrorMessage("Error updating data. Please try again.");
+    }
+  };
 
-        try {
-            const data = await fetchWithAuth(
-                "http://localhost:8000/api/struktur-organisasi",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(newEntry),
-                },
-            );
+  const handleEditChange = (id, field, value) => {
+    setNewStruktur((prevStruktur) =>
+      prevStruktur.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
 
-            const { id, ...strukturData } = data.strukturOrganisasi;
-            setStruktur([...struktur, { id: id, ...strukturData }]);
-            setNewStruktur([...newStruktur, { id: id, ...strukturData }]);
-            setNewJabatan("");
-            setNewNama("");
-            setNewKontak("");
-            setIsModalOpen(false);
-            setErrorMessage("");
-            setSuccessMessage("Data berhasil ditambahkan.");
-        } catch (error) {
-            console.error("Error adding struktur organisasi:", error);
-            setErrorMessage("Error adding data. Please try again.");
+  const deleteStruktur = async (id) => {
+    setDeleteItemId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:8000/api/struktur-organisasi/${deleteItemId}`
+      );
+
+      const updatedStruktur = newStruktur.filter(
+        (item) => item.id !== deleteItemId
+      );
+      setNewStruktur(updatedStruktur);
+      setStruktur(updatedStruktur);
+      setSuccessMessage("Data berhasil dihapus.");
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting struktur organisasi:", error);
+    }
+  };
+
+  const cancelDelete = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const closeAlert = () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+  };
+
+  const handleRestore = async (id) => {
+    try {
+      const response = await fetchWithAuth(
+        `http://localhost:8000/api/fasilitas/${id}/restore`,
+        {
+          method: "POST",
         }
-    };
+      );
 
-    const updateStruktur = async (id) => {
-        const updatedEntry = newStruktur.find((item) => item.id === id);
-        try {
-            const updatedData = await fetchWithAuth(
-                `http://localhost:8000/api/struktur-organisasi/${id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedEntry),
-                },
-            );
+      if (response.success) {
+        // Memperbarui data lokal untuk merefleksikan data yang dipulihkan
+        const restoredItem = response.data; // Data dari server
+        setStruktur((prevStruktur) => [...prevStruktur, restoredItem]);
+        setSuccessMessage("Data berhasil dipulihkan.");
+      } else {
+        setErrorMessage("Gagal memulihkan data.");
+      }
+    } catch (error) {
+      console.error("Error restoring data:", error);
+      setErrorMessage("Terjadi kesalahan saat memulihkan data.");
+    }
+  };
 
-            setStruktur(
-                struktur.map((item) =>
-                    item.id === id ? updatedData.strukturOrganisasi : item,
-                ),
-            );
-            setIsEditing(null);
-            setSuccessMessage("Data berhasil diperbarui.");
-        } catch (error) {
-            console.error("Error updating struktur organisasi:", error);
-            setErrorMessage("Error updating data. Please try again.");
-        }
-    };
-    const handleEditChange = (id, field, value) => {
-        setNewStruktur((prevStruktur) =>
-            prevStruktur.map((item) =>
-                item.id === id ? { ...item, [field]: value } : item,
-            ),
-        );
-    };
 
-    const deleteStruktur = async (id) => {
-        setDeleteItemId(id);
-        setIsDeleteModalOpen(true);
-    };
+  return (
+    <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md dark:border-gray-dark dark:bg-gray-dark">
+      <div className="mb-4 flex justify-between">
+        <h1 className="text-heading-6 font-bold text-dark dark:text-white">
+          Struktur Organisasi Masjid
+        </h1>
+        <div className="items-right">
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#FFB80D",
+              color: "white",
+              marginRight: "10px",
+            }}
+            startIcon={<SlActionUndo />}
+            onClick={() => setIsRestore(!isRestore)}
+          >
+            {isRestore ? "Cancel Restore" : "Restore Data"}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setIsModalOpen(true)}
+            sx={{
+              backgroundColor: "#14B8A6",
+              color: "white",
+              marginRight: "10px",
+            }}
+            startIcon={<AiOutlinePlus />}
+          >
+            Tambah Data
+          </Button>
+        </div>
+      </div>
 
-    const confirmDelete = async () => {
-        try {
-            await axios.delete(
-                `http://localhost:8000/api/struktur-organisasi/${deleteItemId}`);
-
-            const updatedStruktur = newStruktur.filter(
-                (item) => item.id !== deleteItemId,
-            );
-            setNewStruktur(updatedStruktur);
-            setStruktur(updatedStruktur);
-            setSuccessMessage("Data berhasil dihapus.");
-            setIsDeleteModalOpen(false);
-        } catch (error) {
-            console.error("Error deleting struktur organisasi:", error);
-        }
-    };
-
-    const cancelDelete = () => {
-        setIsDeleteModalOpen(false);
-    };
-
-    const closeAlert = () => {
-        setErrorMessage("");
-        setSuccessMessage("");
-    };
-
-    return (
-        <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md dark:border-gray-dark dark:bg-gray-dark">
-            <div className="mb-4 flex justify-between">
-                <h1 className="text-heading-6 font-bold text-dark dark:text-white">
-                    Struktur Organisasi Masjid
-                </h1>
-                <Button
-                    variant="contained"
-                    onClick={() => setIsModalOpen(true)}
-                    sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
-                    startIcon={<AiOutlinePlus />}
-                >
-                    Tambah Data
-                </Button>
-            </div>
-
-            {errorMessage && (
-                <div className="mb-4 flex items-center justify-between rounded-lg bg-red-500 p-4 text-white">
-                    {errorMessage}
-                    <button
-                        onClick={closeAlert}
-                        className="text-white hover:text-gray-300"
-                    >
-                        <FaTimes />
-                    </button>
-                </div>
-            )}
+      {errorMessage && (
+        <div className="mb-4 flex items-center justify-between rounded-lg bg-red-500 p-4 text-white">
+          {errorMessage}
+          <button
+            onClick={closeAlert}
+            className="text-white hover:text-gray-300"
+          >
+            <FaTimes />
+          </button>
+        </div>
+      )}
+      {successMessage && (
+        <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
+          {successMessage}
+          <button
+            onClick={closeAlert}
+            className="text-white hover:text-gray-300"
+          >
+            <FaTimes />
+          </button>
+        </div>
+      )}
             {successMessage && (
                 <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
                     {successMessage}
@@ -251,36 +308,33 @@ const StrukturOrganisasiMasjid = () => {
                                     item.kontak
                                 )}
                             </td>
-                            <td className="border-b dark:border-gray-dark px-4 py-2">
+                            <td className="border-b px-4 py-2 dark:border-gray-dark">
                                 <div className="flex space-x-2">
-                                    {isEditing === item.id ? (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    updateStruktur(item.id)
-                                                }
-                                                className="text-green-500"
-                                            >
-                                                <FaCheck size={20}/>
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setIsEditing(null);
-                                                }}
-                                                className="text-gray-500"
-                                            >
-                                                <FaTimes size={20}/>
-                                            </button>
-                                        </>
+                                    {isRestore ? (
+                                        // Saat dalam mode restore, hanya tampilkan checkbox
+                                        <Checkbox
+                                            checked={
+                                                struktur[index]?.isChecked ||
+                                                false
+                                            }
+                                            onChange={() =>
+                                                handleRestore(item.id)
+                                            }
+                                            inputProps={{
+                                                "aria-label":
+                                                    "Restore Checkbox",
+                                            }}
+                                        />
                                     ) : (
+                                        // Saat tidak dalam mode restore, tampilkan tombol aksi
                                         <>
                                             <button
                                                 onClick={() =>
-                                                    setIsEditing(item.id)
+                                                    handleEditChange(index)
                                                 }
                                                 className="text-yellow-500"
                                             >
-                                                <FaEdit size={20}/>
+                                                <FaEdit size={20} />
                                             </button>
                                             <button
                                                 onClick={() =>
@@ -288,7 +342,7 @@ const StrukturOrganisasiMasjid = () => {
                                                 }
                                                 className="text-red-500"
                                             >
-                                                <FaTrash size={20}/>
+                                                <FaTrash size={20} />
                                             </button>
                                         </>
                                     )}
@@ -369,9 +423,9 @@ const StrukturOrganisasiMasjid = () => {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
-    );
-};
+                )};
+            </div> )}
+            
+        
 
 export default StrukturOrganisasiMasjid;
