@@ -100,16 +100,20 @@ class ArusKasController extends Controller
         return response()->json(['message' => 'Arus Kas soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $arusKas = ArusKas::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $arusKas) {
-            return response()->json(['message' => 'Berita not found or not soft-deleted'], 404);
+        $arusKas = ArusKas::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($arusKas->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted Arus Kas found for the given IDs'], 404);
         }
 
-        $arusKas->restore();
+        foreach ($arusKas as $record) {
+            $record->restore();
+        }
 
-        return response()->json(['message' => 'Arus Kas restored successfully']);
+        return response()->json(['message' => 'Arus records restored successfully']);
     }
 }

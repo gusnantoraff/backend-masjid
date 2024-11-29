@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () use ($resources) {
         Route::apiResource($route, $controller)->except(['show']);
         Route::get("$route/{id}", [$controller, 'show'])->where('id', '[0-9]+')->name("$route.show");
         
-        Route::patch("$route/{id}/restore", [$controller, 'restore'])->name("$route.restore");
+        Route::patch("$route/{ids}/restore", [$controller, 'restore'])->name("$route.restore");
         Route::get("$route/deleted", [$controller, 'getDeleted'])->name("$route.deleted");
     }
 

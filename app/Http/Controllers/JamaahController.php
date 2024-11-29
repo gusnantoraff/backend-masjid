@@ -23,7 +23,7 @@ class JamaahController extends Controller
     {
         $deletedData = Jamaah::onlyTrashed()->get();
         return response()->json($deletedData);
-    }    
+    }
 
     /**
      * Store a newly created jamaah in storage.
@@ -114,16 +114,20 @@ class JamaahController extends Controller
         return response()->json(['message' => 'Jamaah soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $jamaah = Jamaah::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $jamaah) {
-            return response()->json(['message' => 'jamaah not found or not soft-deleted'], 404);
+        $jamaah = Jamaah::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($jamaah->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted jamaah found for the given IDs'], 404);
         }
 
-        $jamaah->restore();
+        foreach ($jamaah as $record) {
+            $record->restore();
+        }
 
-        return response()->json(['message' => 'jamaah restored successfully']);
+        return response()->json(['message' => 'Jamaah records restored successfully']);
     }
 }

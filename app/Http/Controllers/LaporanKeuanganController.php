@@ -102,18 +102,21 @@ class LaporanKeuanganController extends Controller
         return response()->json(['message' => 'Laporan Keuangan soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $laporanKeuangan = LaporanKeuangan::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $laporanKeuangan) {
-            return response()->json(['message' => 'Laporan Keuangan not found or not soft-deleted'], 404);
+        $laporanKeuangan = LaporanKeuangan::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($laporanKeuangan->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted laporan keuangan found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $laporanKeuangan->restore();
+        foreach ($laporanKeuangan as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Laporan Keuangan restored successfully']);
+        return response()->json(['message' => 'Laporan keuangan records restored successfully']);
     }
 
     /**
@@ -184,36 +187,36 @@ class LaporanKeuanganController extends Controller
                 }
                 break;
 
-                case 'bulanan':
-                    $laporanKeuangan = LaporanKeuangan::all();
-                
-                    $laporanGrouped = $laporanKeuangan->groupBy(function ($item) {
-                        return \Carbon\Carbon::parse($item->periode)->format('F Y'); 
-                    });
-                
-                    $result = [];
-                    foreach ($laporanGrouped as $periode => $laporan) {
-                        $totalPemasukan = $laporan->sum('total_pemasukan');
-                        $totalPengeluaran = $laporan->sum('total_pengeluaran');
-                        $sisa = $totalPemasukan - $totalPengeluaran;
-                
-                        $result[$periode] = [
-                            'total_pemasukan' => $totalPemasukan,
-                            'total_pengeluaran' => $totalPengeluaran,
-                            'sisa' => $sisa
-                        ];
-                    }
-                
-                    uksort($result, function ($a, $b) {
-                        $dateA = \Carbon\Carbon::createFromFormat('F Y', $a);
-                        $dateB = \Carbon\Carbon::createFromFormat('F Y', $b);
-                
-                        return $dateA->lt($dateB) ? -1 : 1;
-                    });
-                
-                    $laporanKeuangan = $result;
-                    break;
-                
+            case 'bulanan':
+                $laporanKeuangan = LaporanKeuangan::all();
+
+                $laporanGrouped = $laporanKeuangan->groupBy(function ($item) {
+                    return \Carbon\Carbon::parse($item->periode)->format('F Y');
+                });
+
+                $result = [];
+                foreach ($laporanGrouped as $periode => $laporan) {
+                    $totalPemasukan = $laporan->sum('total_pemasukan');
+                    $totalPengeluaran = $laporan->sum('total_pengeluaran');
+                    $sisa = $totalPemasukan - $totalPengeluaran;
+
+                    $result[$periode] = [
+                        'total_pemasukan' => $totalPemasukan,
+                        'total_pengeluaran' => $totalPengeluaran,
+                        'sisa' => $sisa
+                    ];
+                }
+
+                uksort($result, function ($a, $b) {
+                    $dateA = \Carbon\Carbon::createFromFormat('F Y', $a);
+                    $dateB = \Carbon\Carbon::createFromFormat('F Y', $b);
+
+                    return $dateA->lt($dateB) ? -1 : 1;
+                });
+
+                $laporanKeuangan = $result;
+                break;
+
 
             case 'tahunan':
                 $laporanKeuangan = LaporanKeuangan::all();

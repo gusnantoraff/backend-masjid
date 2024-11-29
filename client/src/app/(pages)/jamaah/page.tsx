@@ -13,6 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from 'date-fns';
 import { SlActionUndo } from "react-icons/sl";
+import AlertConfirm from '@/components/Alerts/AlertConfirm';
 
 interface Jamaah {
   nama: string;
@@ -38,6 +39,8 @@ export default function Jamaah() {
   const [filteredData, setFilteredData] = useState<Jamaah[]>([]);
   const [isRestore, setIsRestore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedRestoreIds, setSelectedRestoreIds] = useState<number[]>([]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -92,15 +95,23 @@ export default function Jamaah() {
       });
   };
 
-  const handleRestore = async (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
+  const handleRestore = async () => {
     try {
-      await axios.patch(`/${type}/${id}/restore`);
-      alert('Data restored successfully');
+      if (selectedRestoreIds.length === 0) return;
+  
+      const type = 'jamaah';
+      await axios.patch(`/${type}/${selectedRestoreIds.join(',')}/restore`);
+  
+      toast.success('Data restored successfully');
+      setShowConfirm(false);
       fetchData();
     } catch (error) {
-      alert('Failed to restore data');
+      toast.error('Failed to restore data');
+      setShowConfirm(false);
     }
   };
+  
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -113,6 +124,11 @@ export default function Jamaah() {
   const handleModalSubmit = () => {
     fetchData();
     closeModal();
+  };
+
+  const handleRestoreSelection = (ids: number[]) => {
+    setSelectedRestoreIds(ids);
+    setShowConfirm(true);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,9 +168,8 @@ export default function Jamaah() {
     const cellHeight = 0.8;
     const columnWidths = [1, 3, 2.5, 2.5, 3, 4, 4, 3];
 
-    // Set header styles (bold text, no background)
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(0, 0, 0); // Black text color for header
+    doc.setTextColor(0, 0, 0); 
 
     doc.setFontSize(10);
     headers.forEach((header, index) => {
@@ -163,9 +178,8 @@ export default function Jamaah() {
     });
 
     yPosition += cellHeight;
-    doc.setFont("helvetica", "normal"); // Reset to normal font for data rows
+    doc.setFont("helvetica", "normal"); 
 
-    // Data row styles (plain text, no background)
     tableData.forEach((row) => {
       row.forEach((cell, index) => {
         const xPosition = columnWidths.slice(0, index).reduce((a, b) => a + b, 1);
@@ -236,7 +250,7 @@ export default function Jamaah() {
               variant="contained"
               color="warning"
               startIcon={<AiOutlineUpload />}
-              onClick={handleExport}  // Attach export function here
+              onClick={handleExport} 
             >
               Export Data
             </Button>
@@ -248,20 +262,20 @@ export default function Jamaah() {
           display: 'flex',
           alignItems: 'center',
           marginBottom: '20px',
-          maxWidth: '600px',  // Limit the width of the container
+          maxWidth: '600px',
         }}>
-          {/* Search Bar */}
+
           <Paper
             component="form"
             sx={{
               display: 'flex',
               alignItems: 'center',
-              padding: '0px 10px',  // Adjust padding for consistent height
+              padding: '0px 10px', 
               borderRadius: '10px',
               backgroundColor: '#F5F7FA',
-              boxShadow: 'none',  // Removed shadow from the search bar
-              width: '55%',  // Occupy 55% of the width
-              height: '40px',  // Set fixed height to match Select
+              boxShadow: 'none', 
+              width: '55%', 
+              height: '40px', 
             }}
           >
             <IconButton sx={{ p: '10px' }} aria-label="search">
@@ -276,10 +290,9 @@ export default function Jamaah() {
             />
           </Paper>
 
-          {/* Status Dropdown */}
           <FormControl sx={{
             minWidth: '180px',
-            marginLeft: '10px',  // Reduced space between the search and status dropdown
+            marginLeft: '10px',
           }}>
             <Select
               displayEmpty
@@ -288,15 +301,15 @@ export default function Jamaah() {
               sx={{
                 backgroundColor: '#F5F7FA',
                 borderRadius: '10px',
-                padding: '0px 10px',  // Adjust padding to match the search bar
-                height: '40px',  // Fixed height to match search bar
+                padding: '0px 10px', 
+                height: '40px', 
                 border: 'none',
                 boxShadow: 'none',
-                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove default outline
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, 
               }}
               renderValue={(selected) => {
                 if (!selected) {
-                  return <span style={{ color: '#888' }}>Status</span>; // Placeholder style
+                  return <span style={{ color: '#888' }}>Status</span>;
                 }
                 return selected;
               }}
@@ -311,19 +324,25 @@ export default function Jamaah() {
           </FormControl>
         </Box>
 
-        {/* Indikator loading */}
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Box sx={{ marginTop: '20px' }}>
-          <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='/jamaah' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestore} />
-        </Box>
-      )}
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box sx={{ marginTop: '20px' }}>
+            <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='/jamaah' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestoreSelection} />
+          </Box>
+        )}
       </div>
       <ModalForm isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} onSuccess={(message: string) => toast.success(message)} />
       <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
+
+      <AlertConfirm
+        open={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleRestore}
+        message="Apakah Anda Yakin Ingin Restore Data?"
+      />
 
     </DefaultLaout>
   );

@@ -17,7 +17,7 @@ interface DataTableProps {
   fetchUrl?: string;
   reloadData?: () => void;
   isRestore?: boolean;
-  onRestore?: (id: number, type: 'jamaah' | 'yatim-dhuafa') => void;
+  onRestore?: (ids: number[], type: "jamaah" | "yatim-dhuafa") => void;
 }
 
 const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadData, isRestore, onRestore }) => {
@@ -25,7 +25,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedId, setSelectedId] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   useEffect(() => {
     let fetchUrlWithDeleted = fetchUrl;
@@ -50,34 +50,35 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
   }, [fetchUrl, data, isRestore]);
 
   const handleDelete = async () => {
-    if (selectedId !== null) {
-      await axios.delete(`${fetchUrl}/${selectedId}`);
-      if (reloadData) {
-        reloadData();
-      }
-      setFetchedData(fetchedData.filter((item) => item.id !== selectedId));
+    if (selectedIds.length > 0) {
+      const idToDelete = selectedIds[0];
+      await axios.delete(`${fetchUrl}/${idToDelete}`);
+      if (reloadData) reloadData();
+      setFetchedData(fetchedData.filter((item) => item.id !== idToDelete));
+      setSelectedIds([]);
       setShowConfirm(false);
     }
   };
 
   const promptDelete = (id: any) => {
-    setSelectedId(id);
+    setSelectedIds([id]);
     setShowConfirm(true);
   };
 
+
   const handleEdit = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
     if (type === 'jamaah') {
-        window.location.href = `/jamaah/${id}?edit=true`;
+      window.location.href = `/jamaah/${id}?edit=true`;
     } else if (type === 'yatim-dhuafa') {
-        window.location.href = `/yatim-dhuafa/${id}?edit=true`;
+      window.location.href = `/yatim-dhuafa/${id}?edit=true`;
     }
   };
 
   const handleDetail = (id: any, type: 'jamaah' | 'yatim-dhuafa') => {
     if (type === 'jamaah') {
-        window.location.href = `/jamaah/${id}`;
+      window.location.href = `/jamaah/${id}`;
     } else if (type === 'yatim-dhuafa') {
-        window.location.href = `/yatim-dhuafa/${id}`;
+      window.location.href = `/yatim-dhuafa/${id}`;
     }
   };
 
@@ -101,9 +102,38 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
     window.open(waLink, "_blank");
   };
 
-  const handleRestore = (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
-    if (onRestore) {
-      onRestore(id, type);
+  const handleSelect = (id: number) => {
+    if (!Array.isArray(selectedIds)) {
+      setSelectedIds([]);
+    }
+
+    setSelectedIds(prevSelectedIds =>
+      prevSelectedIds.includes(id)
+        ? prevSelectedIds.filter(item => item !== id)
+        : [...prevSelectedIds, id]
+    );
+  };
+
+
+  const handleSelectAll = () => {
+    const allIds = fetchedData.map((item) => item.id);
+    if (!Array.isArray(selectedIds)) {
+      setSelectedIds(allIds);
+      return;
+    }
+
+    if (selectedIds.length === fetchedData.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(allIds);
+    }
+  };
+
+
+  const handleRestoreSubmit = () => {
+    if (onRestore && selectedIds.length > 0) {
+      onRestore(selectedIds, columns[0].type as "jamaah" | "yatim-dhuafa");
+      setSelectedIds([]);
     }
   };
 
@@ -141,42 +171,75 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
       <Table sx={{ width: "100%" }}>
         <TableHead>
           <TableRow>
-            {columns.map((column, idx) => (
-              <TableCell key={idx} sx={{ fontWeight: "bold", textAlign: "left", padding: "16px" }}>
-                {capitalizeFirstLetter(column.header, column.accessor)}
+            {columns.map((col, idx) => (
+              <TableCell key={idx} sx={{ fontWeight: "bold" }}>
+                {col.accessor === "" && isRestore ? (
+                  <Checkbox
+                    checked={selectedIds.length === fetchedData.length}
+                    onChange={handleSelectAll}
+                  />
+                ) : (
+                  col.header
+                )}
               </TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {rowsToRender.map((row, idxData) => (
-            <TableRow key={idxData}>
-              {columns.map((column) => (
-                <TableCell key={column.accessor} sx={{ padding: "7px", borderBottom: "1px solid #E0E0E0" }}>
-                  {column.accessor === 'nomor'
-                    ? idxData + 1
-                    : column.accessor === 'alamat' || column.accessor === 'email'
-                    ? truncateText(row[column.accessor], 6)
-                    : capitalizeFirstLetter(row[column.accessor], column.accessor)
-                  }
+          {rowsToRender.map((row, idx) => (
+            <TableRow key={idx}>
+              {columns.map((col) => (
+                <TableCell key={col.accessor}>
+                  {col.accessor === "nomor"
+                    ? idx + 1
+                    : col.accessor === "email" || col.accessor === "alamat"
+                      ? truncateText(row[col.accessor], 8)
+                      : capitalizeFirstLetter(row[col.accessor], col.accessor)}
 
-                  {/* Render checkbox if isRestore is true */}
-                  {column.accessor === '' && isRestore && (
-                    <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
-                      <Checkbox
-                        checked={row.isChecked || false}
-                        onChange={() => handleRestore(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}
-                      />
-                    </Box>
+                  {col.accessor === "" && isRestore && (
+                    <Checkbox
+                      checked={selectedIds.includes(row.id)}
+                      onChange={() => handleSelect(row.id)}
+                    />
                   )}
-
-                  {/* Action Buttons for non-restore mode */}
-                  {column.accessor === '' && !isRestore && (
-                    <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
-                      <Button variant="contained" color="error" sx={{ padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<BiTrash />} onClick={() => promptDelete(row.id)}>Hapus</Button>
-                      <Button variant="contained" sx={{ backgroundColor: "#14B8A6", color: "white", marginLeft: "6px", padding: "4px 7px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<BiEdit />} onClick={() => handleEdit(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}>Edit</Button>
-                      <Button variant="contained" sx={{ backgroundColor: "#2379DC", color: "white", marginLeft: "8px", padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<AiOutlineEye />} onClick={() => handleDetail(row.id, column.type as 'jamaah' | 'yatim-dhuafa')}>Detail</Button>
-                      <Button variant="contained" sx={{ backgroundColor: "#25D366", color: "white", marginLeft: "8px", padding: "4px 6px", minWidth: "auto", fontSize: "0.7rem" }} startIcon={<AiOutlineWhatsApp />} onClick={() => handleWhatsApp(row.id)}>WA</Button>
+                  {col.accessor === "" && !isRestore && (
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        startIcon={<BiTrash />}
+                        onClick={() => promptDelete(row.id)}
+                      >
+                        Hapus
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        sx={{ backgroundColor: "#14B8A6", color: "white" }}
+                        startIcon={<BiEdit />}
+                        onClick={() => handleEdit(row.id, col.type || "jamaah")}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        sx={{ backgroundColor: "#2379DC", color: "white" }}
+                        startIcon={<AiOutlineEye />}
+                        onClick={() => handleDetail(row.id, col.type || "jamaah")}
+                      >
+                        Detail
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        sx={{ backgroundColor: "#25D366", color: "white" }}
+                        startIcon={<AiOutlineWhatsApp />}
+                        onClick={() => handleWhatsApp(row.id)}
+                      >
+                        WA
+                      </Button>
                     </Box>
                   )}
                 </TableCell>
@@ -185,6 +248,18 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
           ))}
         </TableBody>
       </Table>
+      {isRestore && (
+        <Box sx={{ marginTop: 2, textAlign: "right", padding: "0 10px 10px 0" }}>
+          <Button
+            variant="contained"
+            onClick={handleRestoreSubmit}
+            disabled={selectedIds.length === 0}
+            sx={{ backgroundColor: "#14B8A6" }}
+          >
+            Restore Data
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

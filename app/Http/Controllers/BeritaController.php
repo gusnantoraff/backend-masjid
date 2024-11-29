@@ -51,7 +51,7 @@ class BeritaController extends Controller
     {
         $berita = Berita::find($id);
 
-        if (! $berita) {
+        if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 
@@ -65,7 +65,7 @@ class BeritaController extends Controller
     {
         $berita = Berita::find($id);
 
-        if (! $berita) {
+        if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 
@@ -96,7 +96,7 @@ class BeritaController extends Controller
     {
         $berita = Berita::find($id);
 
-        if (! $berita) {
+        if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 
@@ -125,7 +125,7 @@ class BeritaController extends Controller
     {
         $berita = Berita::find($id);
 
-        if (! $berita) {
+        if (!$berita) {
             return response()->json(['message' => 'Berita not found'], 404);
         }
 
@@ -134,16 +134,20 @@ class BeritaController extends Controller
         return response()->json(['message' => 'Berita soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $berita = Berita::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $berita) {
-            return response()->json(['message' => 'Berita not found or not soft-deleted'], 404);
+        $berita = Berita::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($berita->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted berita found for the given IDs'], 404);
         }
 
-        $berita->restore();
+        foreach ($berita as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Berita restored successfully']);
+        return response()->json(['message' => 'Berita records restored successfully']);
     }
 }

@@ -50,7 +50,7 @@ class GeneralLedgerController extends Controller
         // $generalLedger = GeneralLedger::with('coa.penerimaanKas', 'coa.pengeluaranKas')->find($id);
         $generalLedger = GeneralLedger::with('coas')->find($id);
 
-        if (! $generalLedger) {
+        if (!$generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
         }
 
@@ -64,7 +64,7 @@ class GeneralLedgerController extends Controller
     {
         $generalLedger = GeneralLedger::find($id);
 
-        if (! $generalLedger) {
+        if (!$generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
         }
 
@@ -93,7 +93,7 @@ class GeneralLedgerController extends Controller
     {
         $generalLedger = GeneralLedger::find($id);
 
-        if (! $generalLedger) {
+        if (!$generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
         }
 
@@ -102,17 +102,20 @@ class GeneralLedgerController extends Controller
         return response()->json(['message' => 'general ledger soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $generalLedger = GeneralLedger::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $generalLedger) {
-            return response()->json(['message' => 'general ledger not found or not soft-deleted'], 404);
+        $generalLedgers = GeneralLedger::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($generalLedgers->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted general ledger found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $generalLedger->restore();
+        foreach ($generalLedgers as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'General Ledger restored successfully']);
+        return response()->json(['message' => 'General ledger records restored successfully']);
     }
 }

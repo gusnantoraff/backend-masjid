@@ -112,17 +112,21 @@ class RekeningBankController extends Controller
         return response()->json(['message' => 'Rekening Bank deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $rekening = RekeningBank::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $rekening) {
-            return response()->json(['message' => 'Rekening bank not found or not soft-deleted'], 404);
+        $rekening = RekeningBank::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($rekening->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted penerimaan kas found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $rekening->restore();
+        foreach ($rekening as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Rekening bank restored successfully']);
+        return response()->json(['message' => 'Penerimaan kas records restored successfully']);
     }
+
 }

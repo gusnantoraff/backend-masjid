@@ -42,7 +42,7 @@ class FasilitasController extends Controller
 
         // Associate the new fasilitas with the infoMasjid
         $validatedData['info_masjid_id'] = $infoMasjid->id;
-        
+
         $fasilitas = Fasilitas::create($validatedData);
 
         return response()->json(['message' => 'Fasilitas created successfully', 'fasilitas' => $fasilitas], 201);
@@ -110,17 +110,20 @@ class FasilitasController extends Controller
         return response()->json(['message' => 'Fasilitas soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $fasilitas = Fasilitas::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $fasilitas) {
-            return response()->json(['message' => 'fasilitas not found or not soft-deleted'], 404);
+        $fasilitas = Fasilitas::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($fasilitas->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted fasilitas found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $fasilitas->restore();
+        foreach ($fasilitas as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'fasilitas restored successfully']);
+        return response()->json(['message' => 'Fasilitas records restored successfully']);
     }
 }

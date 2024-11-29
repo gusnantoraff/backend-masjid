@@ -7,8 +7,8 @@ import { AiOutlineExport, AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; // Import for autoTable support
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ExportDialog from "@/components/filter/ExportGeneralLedger";
+import fetchWithAuth from "@/utils/fetch";
 
 const GeneralLedger = () => {
     const [transactions, setTransactions] = useState([]);
@@ -23,15 +23,12 @@ const GeneralLedger = () => {
         const fetchData = async () => {
             try {
                 // Fetch both APIs
-                const generalLedgerResponse = await fetch(
+                const generalLedgerData = await fetchWithAuth(
                     "http://localhost:8000/api/general-ledger/",
                 );
-                const generalLedgerData = await generalLedgerResponse.json();
-
-                const coaResponse = await fetch(
+                const coaData = await fetchWithAuth(
                     "http://localhost:8000/api/coa/",
                 );
-                const coaData = await coaResponse.json();
 
                 // Filter COA data to only include items where general_ledger_id is null
                 const filteredCoa = coaData.filter(
@@ -454,11 +451,9 @@ const GeneralLedger = () => {
                                     setSelectedCoa(coaId);
 
                                     // Fetch the details for the selected COA using the id
-                                    const coaDetailsResponse = await fetch(
+                                    const coaDetailsData = await fetchWithAuth(
                                         `http://localhost:8000/api/coa/${coaId}`,
                                     );
-                                    const coaDetailsData =
-                                        await coaDetailsResponse.json();
 
                                     setSelectedCoaDetails(coaDetailsData);
                                 }}

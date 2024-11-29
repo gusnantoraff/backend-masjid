@@ -139,19 +139,23 @@ class ImagesController extends Controller
         return response()->json(['message' => 'Image soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $image = Images::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $image) {
-            return response()->json(['message' => 'Image not found or not soft-deleted'], 404);
+        $images = Images::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($images->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted images found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $image->restore();
+        foreach ($images as $image) {
+            $image->restore();
+        }
 
-        return response()->json(['message' => 'Image restored successfully']);
+        return response()->json(['message' => 'Images restored successfully']);
     }
+
 
     /**
      * Get the fully qualified model class name.

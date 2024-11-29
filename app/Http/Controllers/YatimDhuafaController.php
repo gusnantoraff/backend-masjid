@@ -23,7 +23,7 @@ class YatimDhuafaController extends Controller
     {
         $deletedData = YatimDhuafa::onlyTrashed()->get();
         return response()->json($deletedData);
-    }    
+    }
 
     /**
      * Store a newly created orphan in storage.
@@ -115,17 +115,21 @@ class YatimDhuafaController extends Controller
         return response()->json(['message' => 'Orphan deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $yatim = YatimDhuafa::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (!$yatim) {
-            return response()->json(['message' => 'yatim not found or not soft-deleted'], 404);
+        $yatim = YatimDhuafa::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($yatim->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted penerimaan kas found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $yatim->restore();
+        foreach ($yatim as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'yatim restored successfully']);
+        return response()->json(['message' => 'Penerimaan kas records restored successfully']);
     }
+
 }

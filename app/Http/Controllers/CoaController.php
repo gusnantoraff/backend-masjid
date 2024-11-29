@@ -43,7 +43,7 @@ class CoaController extends Controller
     {
         $coa = Coa::with(['penerimaanKas', 'pengeluaranKas', 'generalLedgers'])->find($id);
 
-        if (! $coa) {
+        if (!$coa) {
             return response()->json(['message' => 'COA not found'], 404);
         }
 
@@ -57,7 +57,7 @@ class CoaController extends Controller
     {
         $coa = Coa::find($id);
 
-        if (! $coa) {
+        if (!$coa) {
             return response()->json(['message' => 'COA not found'], 404);
         }
 
@@ -82,7 +82,7 @@ class CoaController extends Controller
     {
         $coa = Coa::find($id);
 
-        if (! $coa) {
+        if (!$coa) {
             return response()->json(['message' => 'COA not found'], 404);
         }
 
@@ -95,17 +95,20 @@ class CoaController extends Controller
     /**
      * Restore the specified COA.
      */
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $coa = Coa::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $coa || $coa->deleted_status == 0) {
-            return response()->json(['message' => 'COA not found or not soft-deleted'], 404);
+        $coas = Coa::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($coas->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted coa found for the given IDs'], 404);
         }
 
-        // Restore the COA and reset its deleted status
-        $coa->restore();
+        foreach ($coas as $coa) {
+            $coa->restore();
+        }
 
-        return response()->json(['message' => 'COA restored successfully']);
+        return response()->json(['message' => 'COA records restored successfully']);
     }
 }

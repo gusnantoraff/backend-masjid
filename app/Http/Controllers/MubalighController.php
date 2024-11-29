@@ -109,17 +109,20 @@ class MubalighController extends Controller
         return response()->json(['message' => 'Mubaligh deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $mubaligh = Mubaligh::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $mubaligh) {
-            return response()->json(['message' => 'mubaligh not found or not soft-deleted'], 404);
+        $mubaligh = Mubaligh::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($mubaligh->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted mubaligh found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $mubaligh->restore();
+        foreach ($mubaligh as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'mubaligh restored successfully']);
+        return response()->json(['message' => 'Mubaligh records restored successfully']);
     }
 }

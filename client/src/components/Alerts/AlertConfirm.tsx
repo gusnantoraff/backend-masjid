@@ -20,7 +20,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, onClose, onConfirm,
           Batal
         </Button>
         <Button onClick={onConfirm} color="error" variant="contained">
-          Hapus
+          Konfirm
         </Button>
       </DialogActions>
     </Dialog>

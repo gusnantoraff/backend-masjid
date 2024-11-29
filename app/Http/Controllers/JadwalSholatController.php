@@ -93,16 +93,20 @@ class JadwalSholatController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $jadwalSholat = JadwalSholat::find($id);
+        $idsArray = explode(',', $ids);
 
-        if (!$jadwalSholat) {
-            return response()->json(['message' => 'Jadwal Sholat not found'], 404);
+        $jadwalSholat = JadwalSholat::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($jadwalSholat->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted jadwal sholat found for the given IDs'], 404);
         }
 
-        $jadwalSholat->delete();
+        foreach ($jadwalSholat as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Jadwal Sholat deleted successfully']);
+        return response()->json(['message' => 'Jadwal sholat records restored successfully']);
     }
 }

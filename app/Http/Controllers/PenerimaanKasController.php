@@ -55,7 +55,7 @@ class PenerimaanKasController extends Controller
     {
         $penerimaanKas = PenerimaanKas::with(['coa', 'arus_kas'])->find($id);
 
-        if (! $penerimaanKas) {
+        if (!$penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
         }
 
@@ -69,7 +69,7 @@ class PenerimaanKasController extends Controller
     {
         $penerimaanKas = PenerimaanKas::find($id);
 
-        if (! $penerimaanKas) {
+        if (!$penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
         }
 
@@ -108,7 +108,7 @@ class PenerimaanKasController extends Controller
     {
         $penerimaanKas = PenerimaanKas::find($id);
 
-        if (! $penerimaanKas) {
+        if (!$penerimaanKas) {
             return response()->json(['message' => 'Penerimaan Kas not found'], 404);
         }
 
@@ -117,17 +117,20 @@ class PenerimaanKasController extends Controller
         return response()->json(['message' => 'Penerimaan Kas deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $penerimaanKas = PenerimaanKas::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $penerimaanKas) {
-            return response()->json(['message' => 'Penerimaan Kas not found or not soft-deleted'], 404);
+        $penerimaanKas = PenerimaanKas::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($penerimaanKas->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted penerimaan kas found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $penerimaanKas->restore();
+        foreach ($penerimaanKas as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Penerimaan Kas restored successfully']);
+        return response()->json(['message' => 'Penerimaan kas records restored successfully']);
     }
 }

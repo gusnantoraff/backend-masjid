@@ -98,18 +98,21 @@ class PosisiKeuanganController extends Controller
         return response()->json(['message' => 'Posisi Keuangan deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $posisi = PosisiKeuangan::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $posisi) {
-            return response()->json(['message' => 'posisi not found or not soft-deleted'], 404);
+        $posisiKeuangan = PosisiKeuangan::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($posisiKeuangan->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted posisi keuangan found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $posisi->restore();
+        foreach ($posisiKeuangan as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'posisi restored successfully']);
+        return response()->json(['message' => 'Posisi keuangan records restored successfully']);
     }
 }
 

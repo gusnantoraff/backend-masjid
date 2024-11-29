@@ -102,17 +102,20 @@ class PesanWebsiteController extends Controller
         return response()->json(['message' => 'Pesan Website deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $pesanWebsite = PesanWebsite::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $pesanWebsite) {
-            return response()->json(['message' => 'Pesan Website not found or not soft-deleted'], 404);
+        $pesanWebsite = PesanWebsite::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($pesanWebsite->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted pesan website found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $pesanWebsite->restore();
+        foreach ($pesanWebsite as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Pesan Website restored successfully']);
+        return response()->json(['message' => 'Pesan website records restored successfully']);
     }
 }

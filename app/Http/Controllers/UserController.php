@@ -28,7 +28,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (! $user) {
+        if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -84,7 +84,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (! $user) {
+        if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -92,7 +92,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'firstname' => ['sometimes', 'string', 'max:255'],
             'lastname' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$id],
+            'email' => ['sometimes', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $id],
             'password' => ['sometimes', 'confirmed', PasswordRule::defaults()],
             'phone' => ['sometimes', 'digits_between:10,13'],
             'birth' => ['sometimes', 'date'],
@@ -117,7 +117,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (! $user) {
+        if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -153,7 +153,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (! $user) {
+        if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
@@ -162,16 +162,20 @@ class UserController extends Controller
         return response()->json(['message' => 'User soft deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $user = User::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $user) {
-            return response()->json(['message' => 'User not found or not soft-deleted'], 404);
+        $users = User::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($users->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted users found for the given IDs'], 404);
         }
 
-        $user->restore();
+        foreach ($users as $user) {
+            $user->restore();
+        }
 
-        return response()->json(['message' => 'User restored successfully']);
+        return response()->json(['message' => 'User records restored successfully']);
     }
 }

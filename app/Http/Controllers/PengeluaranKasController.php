@@ -39,7 +39,7 @@ class PengeluaranKasController extends Controller
 
         if ($request->hasFile('image')) {
             // Ensure the 'pengeluaran_kas' directory exists
-            if (! Storage::disk('public')->exists('pengeluaran_kas')) {
+            if (!Storage::disk('public')->exists('pengeluaran_kas')) {
                 Storage::disk('public')->makeDirectory('pengeluaran_kas');
             }
 
@@ -60,7 +60,7 @@ class PengeluaranKasController extends Controller
     {
         $pengeluaranKas = PengeluaranKas::with(['coa', 'arus_kas'])->find($id);
 
-        if (! $pengeluaranKas) {
+        if (!$pengeluaranKas) {
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
         }
 
@@ -74,7 +74,7 @@ class PengeluaranKasController extends Controller
     {
         $pengeluaranKas = PengeluaranKas::find($id);
 
-        if (! $pengeluaranKas) {
+        if (!$pengeluaranKas) {
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
         }
 
@@ -97,7 +97,7 @@ class PengeluaranKasController extends Controller
             }
 
             // Ensure the 'pengeluaran_kas' directory exists
-            if (! Storage::disk('public')->exists('pengeluaran_kas')) {
+            if (!Storage::disk('public')->exists('pengeluaran_kas')) {
                 Storage::disk('public')->makeDirectory('pengeluaran_kas');
             }
 
@@ -118,7 +118,7 @@ class PengeluaranKasController extends Controller
     {
         $pengeluaranKas = PengeluaranKas::find($id);
 
-        if (! $pengeluaranKas) {
+        if (!$pengeluaranKas) {
             return response()->json(['message' => 'Pengeluaran Kas not found'], 404);
         }
 
@@ -127,17 +127,21 @@ class PengeluaranKasController extends Controller
         return response()->json(['message' => 'Pengeluaran Kas deleted successfully']);
     }
 
-    public function restore(int $id): JsonResponse
+    public function restore($ids): JsonResponse
     {
-        $pengeluaranKas = PengeluaranKas::onlyTrashed()->find($id);
+        $idsArray = explode(',', $ids);
 
-        if (! $pengeluaranKas) {
-            return response()->json(['message' => 'Pengeluaran Kas not found or not soft-deleted'], 404);
+        $pengeluaranKas = PengeluaranKas::onlyTrashed()->whereIn('id', $idsArray)->get();
+
+        if ($pengeluaranKas->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted pengeluaran kas found for the given IDs'], 404);
         }
 
-        // Update status deleted_status ke 0, hapus deleted_at, dan tambahkan restored_at
-        $pengeluaranKas->restore();
+        foreach ($pengeluaranKas as $item) {
+            $item->restore();
+        }
 
-        return response()->json(['message' => 'Pengeluaran Kas restored successfully']);
+        return response()->json(['message' => 'Pengeluaran kas records restored successfully']);
     }
+
 }
