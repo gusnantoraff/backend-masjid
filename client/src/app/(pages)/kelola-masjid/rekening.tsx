@@ -149,7 +149,6 @@ const updateRekening = async (id) => {
 };
 
 
-
 const cancelDelete = () => {
   setIsDeleteModalOpen(false);
 };

@@ -7,169 +7,200 @@ import fetchWithAuth from "@/utils/fetch";
 import axios from "@/utils/axios";
 import { SlActionUndo } from "react-icons/sl";
 import { Checkbox } from "@mui/material";
+import { Box } from "@mui/material";
 
 const FasilitasMasjid = () => {
     const [fasilitas, setFasilitas] = useState([]);
     const [newFasilitas, setNewFasilitas] = useState("");
+    const [newNamaFasilitas, setNewNamaFasilitas] = useState("");
     const [newDeskripsi, setNewDeskripsi] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [editIndex, setEditIndex] = useState(null);
+    const [isEditing, setIsEditing] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [isRestore, setIsRestore] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [fetchedData, setFetchedData] = useState<any[]>([]);
+
+    const fetchUrl = "/fasilitas";
 
     useEffect(() => {
         fetchFasilitasMasjid();
-    }, []);
+    }, [isRestore]);
 
     const fetchFasilitasMasjid = async () => {
         try {
-            const data = await fetchWithAuth(
-                "http://localhost:8000/api/fasilitas",
-            );
-            setFasilitas(data);
+            setLoading(true);
+            const url = isRestore ? `/fasilitas/deleted` : fetchUrl;
+            const response = await axios.get(url);
+            setFasilitas(response.data);
         } catch (error) {
-            console.error("Error fetching fasilitas masjid:", error);
+            setErrorMessage(
+                error.response?.data?.message ||
+                    "Error fetching data. Please try again.",
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
     const addFasilitas = async () => {
-        if (!newFasilitas || !newDeskripsi) {
+        if (!newNamaFasilitas || !newDeskripsi) {
             setErrorMessage("Nama Fasilitas dan Deskripsi wajib diisi.");
             setShowAlert(true);
             return;
         }
-
+    
         const newEntry = {
-            info_masjid_id: 1,
-            nama_fasilitas: newFasilitas,
+            info_masjid_id: 1,  // Pastikan info_masjid_id diisi sesuai dengan kebutuhan
+            nama_fasilitas: newNamaFasilitas,
             deskripsi: newDeskripsi,
         };
-
+    
         try {
-            const data = await fetchWithAuth(
-                "http://localhost:8000/api/fasilitas",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(newEntry),
-                },
-            );
-
-            setFasilitas([...fasilitas, data.fasilitas]);
-            setNewFasilitas("");
+            setLoading(true); // Tampilkan indikator loading saat proses
+            const response = await axios.post("/fasilitas", newEntry); // Kirim data baru yang benar
+          
+            // Menambahkan data baru ke state fasilitas
+            setFasilitas((prevFasilitas) => [
+                ...prevFasilitas,
+                response.data.fasilitas, // Pastikan format respons sesuai
+            ]);
+    
+            // Reset form input setelah sukses menambahkan
+            setNewNamaFasilitas("");
             setNewDeskripsi("");
-            setIsModalOpen(false);
-            setShowAlert(false);
+            setIsModalOpen(false); // Menutup modal
+            setShowAlert(false); // Menutup alert
             setSuccessMessage("Data berhasil ditambahkan.");
         } catch (error) {
             console.error("Error adding fasilitas:", error);
-            setErrorMessage("Terjadi kesalahan saat menambahkan data.");
+            setErrorMessage(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat menambahkan data."
+            );
             setShowAlert(true);
+        } finally {
+            setLoading(false); // Matikan indikator loading
+        }
+    };
+    
+
+      const restoreFasilitas = async (id) => {
+        try {
+            await axios.patch(`${fetchUrl}/${id}/restore`);
+            fetchFasilitasMasjid();
+            setSuccessMessage("Data berhasil dipulihkan.");
+        } catch (error) {
+            setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
         }
     };
 
-    const updateFasilitas = async () => {
-        const updatedFasilitas = {
-            ...fasilitas[editIndex],
-            deskripsi: newDeskripsi,
-        };
+    const handleDelete = async () => {
+        if (selectedId !== null) {
+            try {
+                await axios.delete(`/fasilitas/${selectedId}`); // API delete
+                setFasilitas(fasilitas.filter((item) => item.id !== selectedId)); // Perbarui tabel
+                setSelectedId(null); // Reset ID setelah dihapus
+                setSuccessMessage("Data berhasil dihapus.");
+            } catch (error) {
+                console.error("Error deleting data:", error);
+                setErrorMessage("Gagal menghapus data. Silakan coba lagi.");
+            }
+        }
+      };
 
+      const updateFasilitas = async (id) => {
+        const updatedItem = fasilitas.find((item) => item.id === id);
+    
+        if (!updatedItem) return; // Pastikan item ditemukan
+    
         try {
-            const data = await fetchWithAuth(
-                `http://localhost:8000/api/fasilitas/${updatedFasilitas.id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedFasilitas),
-                },
+            setLoading(true); // Tampilkan indikator loading saat proses
+    
+            const response = await axios.put(`/fasilitas/${id}`, {
+                nama_fasilitas: updatedItem.nama_fasilitas,
+                deskripsi: updatedItem.deskripsi,
+            });
+    
+            // Setelah update sukses, perbarui state fasilitas
+            setFasilitas((prevFasilitas) =>
+                prevFasilitas.map((item) =>
+                    item.id === id ? { ...item, ...response.data.fasilitas } : item
+                )
             );
-            const updatedFasilitasArray = [...fasilitas];
-            updatedFasilitasArray[editIndex] = data.fasilitas;
-            setFasilitas(updatedFasilitasArray);
-            setIsEditMode(false);
-            setEditIndex(null);
-            setShowAlert(false);
+    
+            // Reset state editing setelah update
+            setIsEditing(null);
             setSuccessMessage("Data berhasil diperbarui.");
         } catch (error) {
-            console.error("Error updating fasilitas:", error);
-            setErrorMessage("Terjadi kesalahan saat memperbarui data.");
-            setShowAlert(true);
+            console.error("Error updating data:", error);
+            setErrorMessage("Gagal memperbarui data. Silakan coba lagi.");
+        } finally {
+            setLoading(false); // Matikan indikator loading
         }
     };
+    
 
-    const deleteFasilitas = async (id) => {
-        setDeleteId(id);
-        setShowAlert(true);
+      const handleEditChange = (id, field, value) => {
+        setFasilitas((prevFasilitas) =>
+            prevFasilitas.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            )
+        );
     };
+    
 
-    const confirmDelete = async () => {
-        try {
-            await axios.delete(
-                `http://localhost:8000/api/fasilitas/${deleteId}`,
-            );
-
-            setFasilitas(fasilitas.filter((item) => item.id !== deleteId));
-            setShowAlert(false);
-            setSuccessMessage("Data berhasil dihapus.");
-        } catch (error) {
-            console.error("Error deleting fasilitas:", error);
-            setErrorMessage("Terjadi kesalahan saat menghapus data.");
-            setShowAlert(true);
-        }
-    };
-
-    const cancelDelete = () => {
-        setShowAlert(false);
-    };
-
-    const closeAlert = () => {
+      const cancelDelete = () => {
+        setIsDeleteModalOpen(false);
+      };
+      
+      const closeAlert = () => {
         setErrorMessage("");
         setSuccessMessage("");
-        setShowAlert(false);
-    };
-
-    const handleEditClick = (index) => {
-        setEditIndex(index);
-        setNewDeskripsi(fasilitas[index].deskripsi);
-        setIsEditMode(true);
-    };
-
-    const handleRestore = async (id) => {
-        try {
-            const response = await fetchWithAuth(
-                `http://localhost:8000/api/fasilitas/${id}/restore`,
-                {
-                    method: "POST",
-                },
-            );
-
-            if (response.success) {
-                // Memperbarui data lokal untuk merefleksikan data yang dipulihkan
-                const restoredItem = response.data; // Data dari server
-                setFasilitas((prevFasilitas) => [
-                    ...prevFasilitas,
-                    restoredItem,
-                ]);
-                setSuccessMessage("Data berhasil dipulihkan.");
-                setShowAlert(false);
-            } else {
-                setErrorMessage("Gagal memulihkan data.");
-                setShowAlert(true);
-            }
-        } catch (error) {
-            console.error("Error restoring data:", error);
-            setErrorMessage("Terjadi kesalahan saat memulihkan data.");
-            setShowAlert(true);
+      };
+      
+      const handleSelect = (id) => {
+        if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter((item) => item !== id));
+        } else {
+            setSelectedIds([...selectedIds, id]);
         }
-    };
+      };
+      
+      const handleSelectAll = () => {
+        const allIds = struktur.map((item) => item.id); // Gunakan struktur untuk ID yang tampil di tabel
+        if (selectedIds.length === allIds.length) {
+            setSelectedIds([]); // Kosongkan jika semua sudah dipilih
+        } else {
+            setSelectedIds(allIds); // Pilih semua ID
+        }
+      };
+
+      const handleRestoreSubmit = async () => {
+        if (selectedIds.length === 0) {
+            setErrorMessage("Tidak ada data yang dipilih untuk di-restore.");
+            return;
+        }
+        try {
+            await Promise.all(
+                selectedIds.map((id) =>
+                    axios.patch(`${fetchUrl}/${id}/restore`),
+                ),
+            );
+            setSelectedIds([]);
+            setIsRestore(false);
+            fetchFasilitasMasjid();
+            setSuccessMessage("Data yang dipilih berhasil dipulihkan.");
+        } catch (error) {
+            setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
+        }
+      };
 
     return (
         <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md dark:border-gray-dark dark:bg-gray-dark">
@@ -205,7 +236,7 @@ const FasilitasMasjid = () => {
                 </div>
             </div>
 
-            {showAlert && (
+            {errorMessage && (
                 <div className="mb-4 flex items-center justify-between rounded-lg bg-red-500 p-4 text-white">
                     {errorMessage}
                     <button
@@ -216,7 +247,6 @@ const FasilitasMasjid = () => {
                     </button>
                 </div>
             )}
-
             {successMessage && (
                 <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
                     {successMessage}
@@ -242,7 +272,22 @@ const FasilitasMasjid = () => {
                             Deskripsi
                         </th>
                         <th className="border-b px-4 py-2 text-left dark:border-gray-dark">
-                            Aksi
+                        {isRestore ? (
+                                <Checkbox
+                                    checked={
+                                        selectedIds.length ===
+                                            fasilitas.length &&
+                                        fasilitas.length > 0
+                                    }
+                                    indeterminate={
+                                        selectedIds.length > 0 &&
+                                        selectedIds.length < fasilitas.length
+                                    }
+                                    onChange={handleSelectAll}
+                                />
+                            ) : (
+                                "Aksi"
+                            )}
                         </th>
                     </tr>
                 </thead>
@@ -258,15 +303,34 @@ const FasilitasMasjid = () => {
                                 {index + 1}
                             </td>
                             <td className="border-b px-4 py-2 dark:border-gray-dark">
-                                {item.nama_fasilitas}
-                            </td>
-                            <td className="border-b px-4 py-2 dark:border-gray-dark">
-                                {isEditMode && editIndex === index ? (
+                            {isEditing === item.id ? (
                                     <input
                                         type="text"
-                                        value={newDeskripsi}
+                                        value={item.nama_fasilitas}
                                         onChange={(e) =>
-                                            setNewDeskripsi(e.target.value)
+                                            handleEditChange(
+                                                item.id,
+                                                "nama_fasilitas",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.nama_fasilitas
+                                )}
+                            </td>
+                            <td className="border-b px-4 py-2 dark:border-gray-dark">
+                            {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.deskripsi}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "deskripsi",
+                                                e.target.value,
+                                            )
                                         }
                                         className="w-full rounded border px-2 py-1"
                                     />
@@ -275,114 +339,138 @@ const FasilitasMasjid = () => {
                                 )}
                             </td>
                             <td className="border-b px-4 py-2 dark:border-gray-dark">
-                                <div className="flex space-x-2">
+                            <div className="flex justify-start gap-2">
                                     {isRestore ? (
-                                        // Saat dalam mode restore, hanya tampilkan checkbox
                                         <Checkbox
-                                            checked={
-                                                fasilitas[index]?.isChecked ||
-                                                false
-                                            }
+                                            checked={selectedIds.includes(
+                                                item.id,
+                                            )}
                                             onChange={() =>
-                                                handleRestore(item.id)
+                                                handleSelect(item.id)
                                             }
-                                            inputProps={{
-                                                "aria-label":
-                                                    "Restore Checkbox",
-                                            }}
                                         />
                                     ) : (
-                                        // Saat tidak dalam mode restore, tampilkan tombol aksi
+                                        <>
+                                            {isEditing === item.id ? (
                                         <>
                                             <button
                                                 onClick={() =>
-                                                    handleEditClick(index)
+                                                    updateFasilitas(item.id)
                                                 }
-                                                className="text-yellow-500"
+                                                className="text-green-500"
                                             >
-                                                <FaEdit size={20} />
+                                                <FaCheck size={20}/>
                                             </button>
                                             <button
-                                                onClick={() =>
-                                                    deleteFasilitas(item.id)
-                                                }
-                                                className="text-red-500"
+                                                onClick={() => {
+                                                    setIsEditing(null);
+                                                }}
+                                                className="text-gray-500"
                                             >
-                                                <FaTrash size={20} />
+                                                <FaTimes size={20}/>
                                             </button>
+                                        </>
+                                    ) : (
+
+                                        <>
+                                                    <button
+                                                        className="flex items-center text-yellow-500"
+                                                        onClick={() =>
+                                                            setIsEditing(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                    >
+                                                        <FaEdit size={20} />
+                                                    </button>
+                                                    <button
+                                                        className="flex items-center text-red-500"
+                                                        onClick={() => {
+                                                            setSelectedId(
+                                                                item.id,
+                                                            ); // Pilih ID item
+                                                            setIsDeleteModalOpen(
+                                                                true,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FaTrash size={20} />
+                                                    </button>
+                                                </>
+                                            )}
                                         </>
                                     )}
                                 </div>
-                            </td>
-                        </tr>
-                    ))}
+              </td>
+            </tr>
+          ))}
                 </tbody>
             </table>
-
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
-                    <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
-                        <h2 className="mb-4 text-xl font-bold">
-                            Tambah Fasilitas
-                        </h2>
-                        <input
-                            type="text"
-                            placeholder="Nama Fasilitas"
-                            value={newFasilitas}
-                            onChange={(e) => setNewFasilitas(e.target.value)}
-                            className="mb-4 w-full rounded-md border p-2"
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Deskripsi Fasilitas"
-                            value={newDeskripsi}
-                            onChange={(e) => setNewDeskripsi(e.target.value)}
-                            className="mb-4 w-full rounded-md border p-2"
-                            required
-                        />
-                        <div className="flex justify-end space-x-2">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="rounded-lg bg-gray-500 px-4 py-2 text-white"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={addFasilitas}
-                                className="rounded-lg bg-blue-500 px-4 py-2 text-white"
-                            >
-                                Tambah
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {isRestore && (
+              <Box sx={{ marginTop: 2, textAlign: "right", padding: "0 10px 10px 0" }}>
+                <Button
+                    variant="contained"
+                    onClick={handleRestoreSubmit}
+                    disabled={selectedIds.length === 0}
+                    sx={{ backgroundColor: "#14B8A6", marginTop: "10px" }}
+                >
+                    Restore Pilihan
+                </Button>
+                </Box>
             )}
 
-            {showAlert && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
-                    <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
-                        <h2 className="mb-4 text-xl font-bold">
-                            Konfirmasi Penghapusan
-                        </h2>
-                        <p>Apakah Anda yakin ingin menghapus data ini?</p>
-                        <div className="mt-4 flex justify-end space-x-2">
+{isDeleteModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="rounded-lg bg-white p-6">
+                        <h3 className="text-lg font-bold">
+                            Are you sure you want to delete this item?
+                        </h3>
+                        <div className="mt-4">
+                            <button
+                                onClick={handleDelete}
+                                className="mr-2 rounded bg-red-500 px-4 py-2 text-white"
+                            >
+                                Yes
+                            </button>
                             <button
                                 onClick={cancelDelete}
-                                className="rounded-lg bg-gray-500 px-4 py-2 text-white"
+                                className="rounded bg-gray-300 px-4 py-2"
                             >
-                                Batal
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                className="rounded-lg bg-red-500 px-4 py-2 text-white"
-                            >
-                                Hapus
+                                No
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+            <h2 className="mb-4 text-xl font-bold">Tambah Rekening</h2>
+            <input
+              type="text"
+              placeholder="Nama Fasilitas"
+              value={newNamaFasilitas}
+              onChange={(e) => setNewNamaFasilitas(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Deskripsi"
+              value={newDeskripsi}
+              onChange={(e) => setNewDeskripsi(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <div className="flex justify-end space-x-2">
+              <button onClick={() => setIsModalOpen(false)} className="rounded-lg bg-gray-500 px-4 py-2 text-white">Batal</button>
+              <button
+                onClick={addFasilitas} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
+            </div>
+          </div>
+        </div>
+      )}
         </div>
     );
 };

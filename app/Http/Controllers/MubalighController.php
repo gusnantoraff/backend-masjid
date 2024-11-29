@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fasilitas;
 use App\Models\Mubaligh;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +19,12 @@ class MubalighController extends Controller
     {
         $mubaligh = Mubaligh::with('infoMasjid')->get();
         return response()->json($mubaligh);
+    }
+
+    public function getDeleted()
+    {
+        $deletedData = Fasilitas::onlyTrashed()->get();
+        return response()->json($deletedData);
     }
 
     /**

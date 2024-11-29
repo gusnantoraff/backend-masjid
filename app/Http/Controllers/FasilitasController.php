@@ -20,6 +20,12 @@ class FasilitasController extends Controller
         return response()->json($fasilitas);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = Fasilitas::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created fasilitas in storage.
      *
