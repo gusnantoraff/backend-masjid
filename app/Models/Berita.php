@@ -23,7 +23,8 @@ class Berita extends Model
         'tanggal_publikasi',
         'kategori',
         'status',
-        'foto'
+        'foto',
+        'deleted_status'
     ];
 
     protected $dates = [

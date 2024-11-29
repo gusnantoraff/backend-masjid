@@ -20,6 +20,7 @@ class PengeluaranKas extends Model
         'jumlah',
         'deskripsi',
         'image',
+        'deleted_status'
     ];
 
     protected $dates = [

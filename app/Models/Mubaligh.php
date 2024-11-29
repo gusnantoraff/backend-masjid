@@ -17,6 +17,7 @@ class Mubaligh extends Model
         'nama',
         'kontak',
         'alamat',
+        'deleted_status'
     ];
 
     protected $dates = [

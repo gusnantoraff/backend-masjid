@@ -17,6 +17,7 @@ class GeneralLedger extends Model
         'tanggal_total',
         'debit_total',
         'kredit',
+        'deleted_status'
         // 'keterangan',
     ];
 

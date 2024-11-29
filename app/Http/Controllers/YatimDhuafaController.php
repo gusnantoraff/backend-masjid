@@ -19,6 +19,12 @@ class YatimDhuafaController extends Controller
         return response()->json($orphans);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = YatimDhuafa::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }    
+
     /**
      * Store a newly created orphan in storage.
      *
@@ -35,7 +41,7 @@ class YatimDhuafaController extends Controller
             'keterangan' => 'required|in:yatim,piatu,yatim piatu,dhuafa',
             'kontak' => 'required|string|max:255',
             'status' => 'required|in:aktif,pindah,wafat',
-            
+
         ]);
 
         $orphan = YatimDhuafa::create($validatedData);
@@ -113,7 +119,7 @@ class YatimDhuafaController extends Controller
     {
         $yatim = YatimDhuafa::onlyTrashed()->find($id);
 
-        if (! $yatim) {
+        if (!$yatim) {
             return response()->json(['message' => 'yatim not found or not soft-deleted'], 404);
         }
 

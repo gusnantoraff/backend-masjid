@@ -15,6 +15,7 @@ class Images extends Model
         'keterangan',
         'kategori',
         'imageable_id',
+        'deleted_status'
     ];
 
     protected $dates = [

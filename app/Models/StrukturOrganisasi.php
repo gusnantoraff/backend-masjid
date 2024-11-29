@@ -17,6 +17,7 @@ class StrukturOrganisasi extends Model
         'jabatan',
         'nama',
         'kontak',
+        'deleted_status'
     ];
 
     protected $dates = [

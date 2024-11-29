@@ -17,6 +17,7 @@ class TemplateSurat extends Model
         'isi_surat',
         'tanda_tangan',
         'stempel',
+        'deleted_status'
     ];
 
     protected $dates = [

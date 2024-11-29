@@ -19,6 +19,7 @@ class ArusKas extends Model
         'pemasukan_total',
         'pengeluaran_total',
         'sisa_kas_total',
+        'deleted_status'
     ];
 
     protected $dates = [

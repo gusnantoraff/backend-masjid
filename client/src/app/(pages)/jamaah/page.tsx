@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useState, useEffect } from 'react';
 import DefaultLaout from "@/components/Layouts/DefaultLayout";
 import DataTable from '@/components/DataTable/DataTabel3';
-import { Button, Box, Typography, Paper, InputBase, IconButton, Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
+import { Button, Box, Typography, Paper, InputBase, IconButton, Select, MenuItem, FormControl, SelectChangeEvent, CircularProgress } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import SearchIcon from '@mui/icons-material/Search';
 import ModalForm from '@/components/Modal/ModalJamaah';
@@ -10,7 +11,7 @@ import { jsPDF } from "jspdf";
 import axios from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { format } from 'date-fns'; 
+import { format } from 'date-fns';
 import { SlActionUndo } from "react-icons/sl";
 
 interface Jamaah {
@@ -36,20 +37,26 @@ export default function Jamaah() {
   const [jamaahData, setJamaahData] = useState<Jamaah[]>([]);
   const [filteredData, setFilteredData] = useState<Jamaah[]>([]);
   const [isRestore, setIsRestore] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get('/jamaah');
+      const url = isRestore ? '/jamaah/deleted' : '/jamaah';
+      const response = await axios.get(url);
       setJamaahData(response.data);
       setFilteredData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
-    }
+    } finally {
+      setLoading(false);
+    };
   };
+
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isRestore]);
 
   useEffect(() => {
     let filtered = jamaahData;
@@ -73,8 +80,9 @@ export default function Jamaah() {
   }, [status, searchTerm, jamaahData]);
 
   const reloadData = () => {
+    const url = isRestore ? '/jamaah/deleted' : '/jamaah';
     axios
-      .get('/jamaah')
+      .get(url)
       .then((response) => {
         setJamaahData(response.data);
         setFilteredData(response.data);
@@ -86,8 +94,9 @@ export default function Jamaah() {
 
   const handleRestore = async (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
     try {
-      await axios.post(`/${type}/${id}/restore`);
+      await axios.patch(`/${type}/${id}/restore`);
       alert('Data restored successfully');
+      fetchData();
     } catch (error) {
       alert('Failed to restore data');
     }
@@ -207,7 +216,7 @@ export default function Jamaah() {
             Data Jamaah
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Button
+            <Button
               variant="contained"
               sx={{ backgroundColor: '#FFB80D', color: 'white', marginRight: '10px' }}
               startIcon={<SlActionUndo />}
@@ -302,11 +311,18 @@ export default function Jamaah() {
           </FormControl>
         </Box>
 
+        {/* Indikator loading */}
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
         <Box sx={{ marginTop: '20px' }}>
           <DataTable columns={JamaahColumns} data={filteredData} fetchUrl='/jamaah' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestore} />
         </Box>
+      )}
       </div>
-      <ModalForm isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} onSuccess={(message: string) => toast.success(message)}/>
+      <ModalForm isOpen={isModalOpen} onClose={closeModal} onSubmit={handleModalSubmit} onSuccess={(message: string) => toast.success(message)} />
       <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
 
     </DefaultLaout>

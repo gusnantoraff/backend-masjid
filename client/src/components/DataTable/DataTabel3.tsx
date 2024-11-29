@@ -16,8 +16,8 @@ interface DataTableProps {
   data?: any[];
   fetchUrl?: string;
   reloadData?: () => void;
-  isRestore?: boolean; // Add isRestore prop to toggle restore state
-  onRestore?: (id: number, type: 'jamaah' | 'yatim-dhuafa') => void; // Callback for restore action
+  isRestore?: boolean;
+  onRestore?: (id: number, type: 'jamaah' | 'yatim-dhuafa') => void;
 }
 
 const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadData, isRestore, onRestore }) => {
@@ -28,9 +28,13 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
   const [selectedId, setSelectedId] = useState<any>(null);
 
   useEffect(() => {
-    if (!data && fetchUrl) {
+    let fetchUrlWithDeleted = fetchUrl;
+    if (isRestore) {
+      fetchUrlWithDeleted = `${fetchUrl}/deleted`;
+    }
+    if (!data && fetchUrlWithDeleted) {
       axios
-        .get(fetchUrl)
+        .get(fetchUrlWithDeleted)
         .then((response) => {
           setFetchedData(response.data);
           setLoading(false);
@@ -43,7 +47,7 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, fetchUrl, reloadDa
       setFetchedData(data || []);
       setLoading(false);
     }
-  }, [fetchUrl, data]);
+  }, [fetchUrl, data, isRestore]);
 
   const handleDelete = async () => {
     if (selectedId !== null) {

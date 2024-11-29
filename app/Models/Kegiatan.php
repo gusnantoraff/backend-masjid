@@ -23,7 +23,8 @@ class Kegiatan extends Model
         'tanggal',
         'lokasi',
         'kategori',
-        'keterangan'
+        'keterangan',
+        'deleted_status'
     ];
 
     protected $dates = [

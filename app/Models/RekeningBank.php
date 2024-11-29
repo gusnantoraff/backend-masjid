@@ -18,6 +18,7 @@ class RekeningBank extends Model
         'nomor_rekening',
         'atas_nama',
         'image_transfer',
+        'deleted_status'
     ];
 
     protected $dates = [

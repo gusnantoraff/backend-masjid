@@ -24,7 +24,8 @@ class YatimDhuafa extends Model
         'alamat',
         'keterangan',
         'kontak',
-        'status'
+        'status',
+        'deleted_status'
     ];
 
     protected $dates = [

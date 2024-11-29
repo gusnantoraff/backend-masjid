@@ -16,6 +16,7 @@ class Fasilitas extends Model
         'info_masjid_id',
         'nama_fasilitas',
         'deskripsi',
+        'deleted_status'
     ];
 
     protected $dates = [

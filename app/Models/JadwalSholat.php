@@ -18,5 +18,6 @@ class JadwalSholat extends Model
         'ashar',
         'maghrib',
         'isya',
+        'deleted_status'
     ];
 }

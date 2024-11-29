@@ -16,6 +16,7 @@ class LaporanKeuangan extends Model
         'periode',
         'total_pemasukan',
         'total_pengeluaran',
+        'deleted_status'
     ];
 
     protected $dates = [

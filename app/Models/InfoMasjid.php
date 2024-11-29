@@ -18,6 +18,7 @@ class InfoMasjid extends Model
         'kontak',
         'deskripsi',
         'ad-art',
+        'deleted_status'
     ];
 
     protected $dates = [

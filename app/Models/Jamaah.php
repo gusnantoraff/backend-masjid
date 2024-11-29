@@ -20,6 +20,7 @@ class Jamaah extends Model
         'kontak',
         'alamat',
         'keterangan',
+        'deleted_status'
     ];
 
     protected $dates = [

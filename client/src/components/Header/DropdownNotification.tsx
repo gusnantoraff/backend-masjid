@@ -33,8 +33,6 @@ const DropdownNotification = () => {
     fetchNotifications();
   }, []);
 
-  console.log('notif',notifications);
-
   const truncateMessage = (message: string, maxWords: number = 5) => {
     const words = message.split(" ");
     return words.length > maxWords ? words.slice(0, maxWords).join(" ") + "..." : message;

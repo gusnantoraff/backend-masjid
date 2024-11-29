@@ -15,6 +15,7 @@ class PosisiKeuangan extends Model
     protected $fillable = [
         'aktiva',
         'pasiva',
+        'deleted_status'
     ];
 
     protected $dates = [

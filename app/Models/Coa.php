@@ -17,6 +17,7 @@ class Coa extends Model
         'kode_akun',
         'nama_akun',
         'tipe',
+        'deleted_status'
     ];
 
     protected $dates = [

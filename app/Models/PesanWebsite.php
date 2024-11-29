@@ -17,6 +17,7 @@ class PesanWebsite extends Model
         'email',
         'pesan',
         'tanggal',
+        'deleted_status'
     ];
 
     protected $dates = [

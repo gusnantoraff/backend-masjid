@@ -45,8 +45,11 @@ Route::middleware('auth.cookie')->get('/me', [AuthenticatedSessionController::cl
 Route::middleware('auth:sanctum')->group(function () use ($resources) {
 
     foreach ($resources as $route => $controller) {
-        Route::apiResource($route, $controller);
+        Route::apiResource($route, $controller)->except(['show']);
+        Route::get("$route/{id}", [$controller, 'show'])->where('id', '[0-9]+')->name("$route.show");
+        
         Route::patch("$route/{id}/restore", [$controller, 'restore'])->name("$route.restore");
+        Route::get("$route/deleted", [$controller, 'getDeleted'])->name("$route.deleted");
     }
 
     Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode']);

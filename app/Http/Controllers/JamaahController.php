@@ -19,6 +19,12 @@ class JamaahController extends Controller
         return response()->json($jamaah);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = Jamaah::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }    
+
     /**
      * Store a newly created jamaah in storage.
      *
