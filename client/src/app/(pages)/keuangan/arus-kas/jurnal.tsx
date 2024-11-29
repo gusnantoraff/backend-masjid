@@ -10,6 +10,8 @@ import TableContent from "@/components/DataTable/TableJurnal";
 import ExportJurnal from "@/components/filter/ExportJurnal";
 import DetailJurnal from "@/components/DetailModal/DetailJurnal";
 import fetchWithAuth from "@/utils/fetch";
+import { SlActionUndo } from "react-icons/sl";
+import { Button } from "@mui/material";
 
 export default function Jurnal({
     isLaporanPage,
@@ -28,6 +30,8 @@ export default function Jurnal({
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [modalData, setModalData] = useState({ open: false, row: null });
+    const [isRestore, setIsRestore] = useState(false); // Mengelola mode restore
+    const [restoreItems, setRestoreItems] = useState<any[]>([]);
 
     const pageTitle = isLaporanPage
         ? "Laporan Keuangan"
@@ -108,6 +112,18 @@ export default function Jurnal({
         fetchData();
     }, []);
 
+    const onRestoreToggle = (id: any) => {
+        setRestoreItems((prevItems) =>
+            prevItems.includes(id)
+                ? prevItems.filter((item) => item !== id)
+                : [...prevItems, id]
+        );
+    };
+
+    const toggleRestore = () => {
+        setIsRestore((prev) => !prev);
+    };
+
     const handleFilterChange = (newFilters) => setFilters(newFilters);
 
     const filteredRows = rows.filter((row) => {
@@ -145,6 +161,8 @@ export default function Jurnal({
                 }}
             >
                 <Filters
+                    isRestore={isRestore}  // Kirimkan isRestore ke Filter
+                    onRestoreToggle={toggleRestore}  // Kirimkan fungsi toggle ke Filter
                     filters={filters}
                     onFilterChange={setFilters}
                     isLaporanPage={isLaporanPage}
@@ -166,6 +184,9 @@ export default function Jurnal({
                     <TableContent
                         rows={displayedRows}
                         coaMap={coaMap}
+                        isRestore={isRestore}
+                        restoreItems={restoreItems}
+                        onRestoreToggle={onRestoreToggle}
                         onRowAction={(action, row) => {
                             if (action === "view") {
                                 setModalData({ open: true, row });
@@ -177,7 +198,7 @@ export default function Jurnal({
                     />
                 </Table>
             </TableContainer>
-            <TablePagination
+                <TablePagination
                 component="div"
                 count={filteredRows.length}
                 rowsPerPage={rowsPerPage}

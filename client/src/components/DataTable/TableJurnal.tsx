@@ -6,8 +6,26 @@ import TableHead from "@mui/material/TableHead";
 import { FaEye, FaTrash } from "react-icons/fa6";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { FaEdit } from "react-icons/fa";
+import { Checkbox } from "@mui/material";
 
-export default function TableContent({ rows, coaMap, onRowAction }) {
+type TableContentProps = {
+    rows: any[];
+    coaMap: any;
+    isRestore: boolean;
+    restoreItems: any[];
+    onRestoreToggle: (id: any) => void;
+    onRowAction: (action: string, row: any) => void;
+};
+
+export default function TableContent({
+    rows,
+    coaMap,
+    isRestore,
+    restoreItems,
+    onRestoreToggle,
+    onRowAction,
+}: TableContentProps) {
     return (
         <>
             {/* Table Header */}
@@ -40,11 +58,15 @@ export default function TableContent({ rows, coaMap, onRowAction }) {
                     >
                         Jumlah
                     </TableCell>
-                    <TableCell sx={{
+                    <TableCell
+                        sx={{
                             fontFamily: "Satoshi",
                             fontWeight: "bold",
                             fontSize: "16px",
-                        }}>Tipe</TableCell>
+                        }}
+                    >
+                        Tipe
+                    </TableCell>
                     <TableCell
                         sx={{
                             fontFamily: "Satoshi",
@@ -94,9 +116,13 @@ export default function TableContent({ rows, coaMap, onRowAction }) {
             </TableHead>
             <TableBody>
                 {rows.map((row, index) => (
-                    <TableRow key={index} sx={{
-                        backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
-                    }}>
+                    <TableRow
+                        key={index}
+                        sx={{
+                            backgroundColor:
+                                index % 2 === 0 ? "#f5f5f5" : "#ffffff",
+                        }}
+                    >
                         <TableCell>{row.name}</TableCell>
                         <TableCell>{row.date}</TableCell>
                         <TableCell
@@ -148,18 +174,34 @@ export default function TableContent({ rows, coaMap, onRowAction }) {
                             )}
                         </TableCell>
                         <TableCell className="space-x-2">
-                            <button
-                                onClick={() => onRowAction("view", row)}
-                                className="text-blue-500"
-                            >
-                                <FaEye size={20} />
-                            </button>
-                            <button
-                                onClick={() => onRowAction("delete", row)}
-                                className="text-red-500"
-                            >
-                                <FaTrash size={20} />
-                            </button>
+                            {isRestore ? (
+                                // Saat dalam mode restore, hanya tampilkan checkbox
+                                <Checkbox
+                                    checked={restoreItems.includes(row.id)}
+                                    onChange={() => onRestoreToggle(row.id)}
+                                    inputProps={{
+                                        "aria-label": "Restore Checkbox",
+                                    }}
+                                />
+                            ) : (
+                                // Saat tidak dalam mode restore, tampilkan tombol aksi
+                                <>
+                                    <button
+                                        onClick={() => onRowAction("view", row)}
+                                        className="text-blue-500"
+                                    >
+                                        <FaEye size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            onRowAction("delete", row)
+                                        }
+                                        className="text-red-500"
+                                    >
+                                        <FaTrash size={20} />
+                                    </button>
+                                </>
+                            )}
                         </TableCell>
                     </TableRow>
                 ))}
