@@ -5,6 +5,8 @@ import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 import { AiOutlinePlus } from 'react-icons/ai';
 import Button from '@mui/material/Button';
 import fetchWithAuth from "@/utils/fetch";
+import { SlActionUndo } from "react-icons/sl";
+import { Checkbox } from "@mui/material";
 
 const MubalighMasjid = () => {
   const [mubalighData, setMubalighData] = useState([]);
@@ -19,7 +21,8 @@ const MubalighMasjid = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // New state for delete confirmation modal
-  const [deleteId, setDeleteId] = useState(null); // ID of the item to delete
+  const [deleteId, setDeleteId] = useState(null);
+  const [isRestore, setIsRestore] = useState(false);
 
   useEffect(() => {
     fetchMubalighData();
@@ -160,19 +163,68 @@ const MubalighMasjid = () => {
     setShowAlert(false);
   };
 
+  const handleRestore = async (id) => {
+    try {
+        const response = await fetchWithAuth(
+            `http://localhost:8000/api/mubaligh/${id}/restore`,
+            {
+                method: "POST",
+            },
+        );
+
+        if (response.success) {
+            // Memperbarui data lokal untuk merefleksikan data yang dipulihkan
+            const restoredItem = response.data; // Data dari server
+            setMubalighData((prevData) => [
+                ...prevData,
+                restoredItem,
+            ]);
+            setSuccessMessage("Data berhasil dipulihkan.");
+            setShowAlert(false);
+        } else {
+            setErrorMessage("Gagal memulihkan data.");
+            setShowAlert(true);
+        }
+    } catch (error) {
+        console.error("Error restoring data:", error);
+        setErrorMessage("Terjadi kesalahan saat memulihkan data.");
+        setShowAlert(true);
+    }
+};
+
   return (
     <div className="border-grey-500 mb-4 mt-4 rounded-lg border p-4 shadow-md dark:border-gray-dark dark:bg-gray-dark">
       <div className="mb-4 flex justify-between">
-        <h1 className="text-heading-6 font-bold text-dark dark:text-white">Mubaligh Masjid</h1>
-        <Button
+                <h1 className="text-heading-6 font-bold text-dark dark:text-white">
+                    Mubaligh Masjid
+                </h1>
+                <div className="items-right">
+                <Button
                     variant="contained"
-                    onClick={toggleModal}
-                    sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
+                    sx={{
+                        backgroundColor: "#FFB80D",
+                        color: "white",
+                        marginRight: "10px",
+                    }}
+                    startIcon={<SlActionUndo />}
+                    onClick={() => setIsRestore(!isRestore)}
+                >
+                    {isRestore ? "Cancel Restore" : "Restore Data"}
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => setIsModalOpen(true)}
+                    sx={{
+                        backgroundColor: "#14B8A6",
+                        color: "white",
+                        marginRight: "10px",
+                    }}
                     startIcon={<AiOutlinePlus />}
                 >
                     Tambah Data
                 </Button>
-      </div>
+                </div>
+                </div>
 
       {showAlert && (
         <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
@@ -202,14 +254,44 @@ const MubalighMasjid = () => {
               <td className="border-b dark:border-gray-dark px-4 py-2">{item.nama}</td>
               <td className="border-b dark:border-gray-dark px-4 py-2">{item.kontak}</td>
               <td className="border-b dark:border-gray-dark px-4 py-2">
-                <div className="flex space-x-2">
-                  <button onClick={() => handleEditClick(index)} className="text-yellow-500">
-                    <FaEdit size={20}/>
-                  </button>
-                  <button onClick={() => showDeleteConfirmation(item.id)} className="text-red-500">
-                    <FaTrash size={20}/>
-                  </button>
-                </div>
+              <div className="flex space-x-2">
+                                    {isRestore ? (
+                                        // Saat dalam mode restore, hanya tampilkan checkbox
+                                        <Checkbox
+                                            checked={
+                                                mubalighData[index]?.isChecked ||
+                                                false
+                                            }
+                                            onChange={() =>
+                                                handleRestore(item.id)
+                                            }
+                                            inputProps={{
+                                                "aria-label":
+                                                    "Restore Checkbox",
+                                            }}
+                                        />
+                                    ) : (
+                                        // Saat tidak dalam mode restore, tampilkan tombol aksi
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    handleEditClick(index)
+                                                }
+                                                className="text-yellow-500"
+                                            >
+                                                <FaEdit size={20} />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    showDeleteConfirmation(item.id)
+                                                }
+                                                className="text-red-500"
+                                            >
+                                                <FaTrash size={20} />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
               </td>
             </tr>
           ))}

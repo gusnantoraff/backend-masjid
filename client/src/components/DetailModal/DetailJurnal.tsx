@@ -25,30 +25,39 @@ export default function DetailJurnal({
 
     const handleSave = async () => {
         try {
-            // Kirim permintaan PUT ke server dengan data rowData
+            // Perhitungan ulang sisa kas total
+            const updatedSisaKas = rowData.pemasukan_total - rowData.pengeluaran_total;
+    
+            // Kirim permintaan PUT untuk memperbarui data arus kas
             const response = await fetchWithAuth(
-                `http://localhost:8000/api/arus-kas/${rowData.id}`, // Endpoint dengan ID data
+                `http://localhost:8000/api/arus-kas/${rowData.id}`,
                 {
-                    method: "PUT", // Gunakan PUT atau PATCH sesuai kebutuhan
+                    method: "PUT",
                     headers: {
-                        "Content-Type": "application/json", // Pastikan konten dalam JSON
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(rowData), // Kirim data rowData
+                    body: JSON.stringify({
+                        pemasukan_total: rowData.pemasukan_total,
+                        pengeluaran_total: rowData.pengeluaran_total,
+                        sisa_kas_total: updatedSisaKas,  // Menghitung ulang sisa kas
+                        updated_at: new Date().toISOString(),  // Mengupdate waktu terakhir diperbarui
+                    }),
                 }
             );
     
             if (response.ok) {
-                const updatedRow = await response.json(); // Ambil data yang diperbarui dari respon
-                onSave(updatedRow); // Panggil fungsi onSave untuk memperbarui data di parent
-                setEditMode(false); // Keluar dari mode edit
-                onClose(); // Tutup modal
+                const updatedRow = await response.json();  // Mendapatkan data yang diperbarui dari respons
+                onSave(updatedRow);  // Memperbarui data di parent
+                setEditMode(false);  // Keluar dari mode edit
+                onClose();  // Menutup modal
             } else {
-                console.error("Failed to update data:", await response.json());
-                alert("Gagal memperbarui data. Periksa kembali data yang dikirim.");
+                const errorData = await response.json();
+                console.error("Failed to update data:", errorData);
+                alert(`Gagal memperbarui data: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error("Error updating data:", error);
-            alert("Terjadi kesalahan saat memperbarui data.");
+            alert(`Terjadi kesalahan saat memperbarui data: ${error.message}`);
         }
     };
     
