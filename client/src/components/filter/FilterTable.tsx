@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { SlActionUndo } from "react-icons/sl";
 
 const months = [
     { value: "01", label: "Januari" },
@@ -20,9 +21,27 @@ const months = [
     { value: "12", label: "Desember" },
 ];
 
+type FilterProps = {
+    filters: {
+        startDate: string;
+        endDate: string;
+        selectedMonth: string;
+        status: string;
+    };
+    onFilterChange: (filters: any) => void;
+    isRestore: boolean;
+    onRestoreToggle: () => void;
+    isLaporanPage: boolean;
+    isPenerimaanPage: boolean;
+    isPengeluaranPage: boolean;
+    isArusKasPage: boolean;
+};
+
 export default function Filters({
     filters,
     onFilterChange,
+    isRestore,
+    onRestoreToggle,
     isLaporanPage,
     isPenerimaanPage,
     isPengeluaranPage,
@@ -146,6 +165,19 @@ export default function Filters({
             >
                 Reset Filter
             </Button>
+            <Button
+                variant="contained"
+                sx={{
+                    backgroundColor: "#FFB80D",
+                    color: "white",
+                }}
+                startIcon={<SlActionUndo style={{ fontSize: "15px" }} />}
+                onClick={() => onRestoreToggle()}
+                style={{ alignSelf: "center" }}
+            >
+                {isRestore ? "Cancel Restore" : "Restore Data"}
+            </Button>
+            
         </div>
     );
 }
