@@ -20,6 +20,12 @@ class RekeningBankController extends Controller
         return response()->json($rekeningBank);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = RekeningBank::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created rekening_bank in storage.
      *

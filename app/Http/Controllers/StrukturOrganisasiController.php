@@ -21,6 +21,12 @@ class StrukturOrganisasiController extends Controller
         return response()->json($strukturOrganisasi);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = StrukturOrganisasi::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created struktur_organisasi in storage.
      *
