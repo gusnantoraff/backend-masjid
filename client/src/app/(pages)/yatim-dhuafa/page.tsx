@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import DefaultLaout from "@/components/Layouts/DefaultLayout";
 import DataTable from '@/components/DataTable/DataTabel3';
-import { Button, Box, Typography, Paper, InputBase, IconButton, Select, MenuItem, FormControl, SelectChangeEvent } from '@mui/material';
+import { Button, Box, Typography, Paper, InputBase, IconButton, Select, MenuItem, FormControl, SelectChangeEvent, CircularProgress } from '@mui/material';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalYatim';
 import SearchIcon from '@mui/icons-material/Search';
@@ -36,20 +36,26 @@ export default function YatimDhuafa() {
   const [yatimData, setYatimData] = useState<YatimDhuafa[]>([]);
   const [filteredData, setFilteredData] = useState<YatimDhuafa[]>([]);
   const [isRestore, setIsRestore] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
+   setLoading(true);
     try {
-      const response = await axios.get('/yatim-dhuafa');
+      const url = isRestore ? '/yatim-dhuafa/deleted' : '/yatim-dhuafa';
+      const response = await axios.get(url);
       setYatimData(response.data);
       setFilteredData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
-    }
+    } finally {
+      setLoading(false);
+    };
   };
+
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isRestore]);
 
   useEffect(() => {
     let filtered = yatimData;
@@ -74,8 +80,9 @@ export default function YatimDhuafa() {
   }, [status, searchTerm, yatimData]);
 
   const reloadData = () => {
+    const url = isRestore ? '/yatim-dhuafa/deleted' : '/yatim-dhuafa';
     axios
-      .get('/yatim-dhuafa')
+      .get(url)
       .then((response) => {
         setYatimData(response.data);
         setFilteredData(response.data);
@@ -87,8 +94,9 @@ export default function YatimDhuafa() {
 
   const handleRestore = async (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
     try {
-      await axios.post(`/${type}/${id}/restore`);
+      await axios.patch(`/${type}/${id}/restore`);
       alert('Data restored successfully');
+      fetchData();
     } catch (error) {
       alert('Failed to restore data');
     }
@@ -304,10 +312,15 @@ export default function YatimDhuafa() {
           </FormControl>
         </Box>
 
-        {/* DataTable Box with gap below search bar */}
+        {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
         <Box sx={{ marginTop: '20px' }}>
           <DataTable columns={yatimColumns} data={filteredData} fetchUrl='/yatim-dhuafa' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestore}/>
         </Box>
+        )}
       </div>
       <ModalForm
         isOpen={isModalOpen}
