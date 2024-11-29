@@ -80,23 +80,25 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                 <div className="modal-body">
                     <form onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="nama">Nama:</label>
+                            <label htmlFor="nama">Nama:<span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="text"
                                 id="nama"
                                 name="nama"
                                 value={formData.nama}
                                 onChange={handleChange}
+                                required
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="gender">Jenis Kelamin:</label>
+                            <label htmlFor="gender">Jenis Kelamin:<span style={{ color: 'red' }}>*</span></label>
                             <select
                                 id="gender"
                                 name="gender"
                                 value={formData.gender}
                                 onChange={handleChange}
+                                required
                             >
                                 <option value="pria">Pria</option>
                                 <option value="wanita">Wanita</option>
@@ -104,23 +106,25 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                         </div>
 
                         <div>
-                            <label htmlFor="birth">Tanggal Lahir:</label>
+                            <label htmlFor="birth">Tanggal Lahir:<span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="date"
                                 id="birth"
                                 name="birth"
                                 value={formData.birth}
                                 onChange={handleChange}
+                                required
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="keterangan">Status:</label>
+                            <label htmlFor="keterangan">Status:<span style={{ color: 'red' }}>*</span></label>
                             <select
                                 id="keterangan"
                                 name="keterangan"
                                 value={formData.keterangan}
                                 onChange={handleChange}
+                                required
                             >
                                 <option value="aktif">Aktif</option>
                                 <option value="pindah">Pindah</option>
@@ -129,7 +133,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                         </div>
 
                         <div>
-                            <label htmlFor="kontak">Kontak:</label>
+                            <label htmlFor="kontak">Kontak:<span style={{ color: 'red' }}>*</span></label>
                             <div
                                 style={{
                                     display: "flex",
@@ -154,12 +158,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                                     value={formData.kontak}
                                     onChange={handleChange}
                                     style={{ flex: 1 }}
+                                    required
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label htmlFor="email">Email:</label>
+                            <label htmlFor="email">Email:<span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="email"
                                 id="email"
@@ -167,12 +172,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
                                 placeholder="yourname@gmail.com"
                                 value={formData.email}
                                 onChange={handleChange}
+                                required
                             />
                         </div>
 
                         {/* Form Alamat (Textarea) Mengambil Kolom Penuh */}
                         <div style={{ gridColumn: "span 2" }}>
-                            <label htmlFor="alamat">Alamat:</label>
+                            <label htmlFor="alamat">Alamat:<span style={{ color: 'red' }}>*</span></label>
                             <textarea
                                 id="alamat"
                                 name="alamat"

@@ -109,8 +109,6 @@ export default function Jamaah() {
       setShowConfirm(false);
     }
   };
-  
-
 
   const openModal = () => {
     setIsModalOpen(true);

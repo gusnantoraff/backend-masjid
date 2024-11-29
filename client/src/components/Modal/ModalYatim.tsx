@@ -98,12 +98,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
               />
             </div>
             <div>
-              <label htmlFor="gender">Jenis Kelamin:</label>
+              <label htmlFor="gender">Jenis Kelamin:<span style={{ color: 'red' }}>*</span></label>
               <select
                 id="gender"
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
+                required
               >
                 <option value="pria">Pria</option>
                 <option value="wanita">Wanita</option>
@@ -126,12 +127,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
             </div>
 
             <div>
-              <label htmlFor="keterangan">Keterangan:</label>
+              <label htmlFor="keterangan">Keterangan:<span style={{ color: 'red' }}>*</span></label>
               <select
                 id="keterangan"
                 name="keterangan"
                 value={formData.keterangan}
                 onChange={handleChange}
+                required
               >
                 <option value="yatim">Yatim</option>
                 <option value="piatu">Piatu</option>
@@ -155,12 +157,13 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
             </div>
 
             <div>
-              <label htmlFor="status">Status:</label>
+              <label htmlFor="status">Status:<span style={{ color: 'red' }}>*</span></label>
               <select
                 id="status"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
+                required
               >
                 <option value="aktif">Aktif</option>
                 <option value="pindah">Pindah</option>

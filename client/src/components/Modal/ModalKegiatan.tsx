@@ -112,42 +112,46 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="nama_kegiatan">Nama Kegiatan:</label>
+              <label htmlFor="nama_kegiatan">Nama Kegiatan:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="text"
                 id="nama_kegiatan"
                 name="nama_kegiatan"
                 value={formData.nama_kegiatan}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="tanggal">Tanggal:</label>
+              <label htmlFor="tanggal">Tanggal:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="datetime-local"
                 id="tanggal"
                 name="tanggal"
                 value={formData.tanggal}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="lokasi">Lokasi:</label>
+              <label htmlFor="lokasi">Lokasi:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="text"
                 id="lokasi"
                 name="lokasi"
                 value={formData.lokasi}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="kategori">Kategori:</label>
+              <label htmlFor="kategori">Kategori:<span style={{ color: 'red' }}>*</span></label>
               <select
                 id="kategori"
                 name="kategori"
                 value={formData.kategori}
                 onChange={handleChange}
+                required
               >
                 <option value="khatib">Khatib</option>
                 <option value="muazin">Muazin</option>
@@ -157,13 +161,14 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSucc
               </select>
             </div>
             <div>
-              <label htmlFor="keterangan">Keterangan:</label>
+              <label htmlFor="keterangan">Keterangan:<span style={{ color: 'red' }}>*</span></label>
               <textarea
                 id="keterangan"
                 name="keterangan"
                 value={formData.keterangan}
                 onChange={handleChange}
                 rows={4}
+                required
               />
             </div>
             <div>

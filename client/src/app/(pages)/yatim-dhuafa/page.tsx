@@ -12,6 +12,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { format } from 'date-fns'; 
 import { SlActionUndo } from "react-icons/sl";
+import AlertConfirm from '@/components/Alerts/AlertConfirm';
 
 interface YatimDhuafa {
   nama: string;
@@ -37,6 +38,8 @@ export default function YatimDhuafa() {
   const [filteredData, setFilteredData] = useState<YatimDhuafa[]>([]);
   const [isRestore, setIsRestore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedRestoreIds, setSelectedRestoreIds] = useState<number[]>([]);
 
   const fetchData = async () => {
    setLoading(true);
@@ -92,13 +95,19 @@ export default function YatimDhuafa() {
       });
   };
 
-  const handleRestore = async (id: number, type: 'jamaah' | 'yatim-dhuafa') => {
+  const handleRestore = async () => {
     try {
-      await axios.patch(`/${type}/${id}/restore`);
-      alert('Data restored successfully');
+      if (selectedRestoreIds.length === 0) return;
+  
+      const type = 'yatim-dhuafa';
+      await axios.patch(`/${type}/${selectedRestoreIds.join(',')}/restore`);
+  
+      toast.success('Data restored successfully');
+      setShowConfirm(false);
       fetchData();
     } catch (error) {
-      alert('Failed to restore data');
+      toast.error('Failed to restore data');
+      setShowConfirm(false);
     }
   };
 
@@ -113,6 +122,11 @@ export default function YatimDhuafa() {
   const handleModalSubmit = () => {
     fetchData();
     closeModal();
+  };
+
+  const handleRestoreSelection = (ids: number[]) => {
+    setSelectedRestoreIds(ids);
+    setShowConfirm(true);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,7 +332,7 @@ export default function YatimDhuafa() {
         </Box>
       ) : (
         <Box sx={{ marginTop: '20px' }}>
-          <DataTable columns={yatimColumns} data={filteredData} fetchUrl='/yatim-dhuafa' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestore}/>
+          <DataTable columns={yatimColumns} data={filteredData} fetchUrl='/yatim-dhuafa' reloadData={reloadData} isRestore={isRestore} onRestore={handleRestoreSelection}/>
         </Box>
         )}
       </div>
@@ -329,6 +343,13 @@ export default function YatimDhuafa() {
         onSuccess={(message: string) => toast.success(message)}
       />
       <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
+
+      <AlertConfirm
+        open={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleRestore}
+        message="Apakah Anda Yakin Ingin Restore Data?"
+      />
     </DefaultLaout>
   );
 };

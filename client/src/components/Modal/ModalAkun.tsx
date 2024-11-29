@@ -71,53 +71,58 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSuccess }) => 
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="firstname">First Name:</label>
+              <label htmlFor="firstname">First Name:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="text"
                 id="firstname"
                 name="firstname"
                 value={formData.firstname}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="lastname">Last Name:</label>
+              <label htmlFor="lastname">Last Name:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="text"
                 id="lastname"
                 name="lastname"
                 value={formData.lastname}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="email">Email:</label>
+              <label htmlFor="email">Email:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="phone">Kontak:</label>
+              <label htmlFor="phone">Kontak:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="number"
                 id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <label htmlFor="birth">Tanggal Lahir:</label>
+              <label htmlFor="birth">Tanggal Lahir:<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="date"
                 id="birth"
                 name="birth"
                 value={formData.birth}
                 onChange={handleChange}
+                required
               />
             </div>
             <div>
@@ -141,24 +146,26 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSuccess }) => 
               />
             </div>
             <div>
-              <label htmlFor="gender">Gender:</label>
+              <label htmlFor="gender">Gender:<span style={{ color: 'red' }}>*</span></label>
               <select
                 id="gender"
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
+                required
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
             </div>
             <div>
-              <label htmlFor="role">Role:</label>
+              <label htmlFor="role">Role:<span style={{ color: 'red' }}>*</span></label>
               <select
                 id="role"
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
+                required
               >
                 <option value="ADMIN">Admin</option>
                 <option value="PENGURUS_MASJID">Pengurus Masjid</option>
