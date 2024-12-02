@@ -21,6 +21,12 @@ class UserController extends Controller
         return response()->json($users);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = User::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Show a specific user by ID.
      */
