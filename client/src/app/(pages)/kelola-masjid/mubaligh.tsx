@@ -13,6 +13,7 @@ const MubalighMasjid = () => {
   const [mubalighData, setMubalighData] = useState([]);
   const [newNamaMubaligh, setNewNamaMubaligh] = useState('')
   const [newKontakMubaligh, setNewKontakMubaligh] = useState('')
+  const [newAlamatMubaligh, setNewAlamatMubaligh] = useState('')
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +59,8 @@ const MubalighMasjid = () => {
     const newMubalighData = {
       info_masjid_id: 1,
       nama: newNamaMubaligh,
-      kontak: newKontakMubaligh
+      kontak: newKontakMubaligh,
+      alamat: newAlamatMubaligh
     }
 
     try {
@@ -71,6 +73,7 @@ const MubalighMasjid = () => {
 
       setNewNamaMubaligh("");
       setNewKontakMubaligh("");
+      setNewAlamatMubaligh("");
       setIsModalOpen(false);
       setErrorMessage("");
       setShowAlert(false);
@@ -250,6 +253,7 @@ const handleRestoreSubmit = async () => {
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">No</th>
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">Nama Mubaligh</th>
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">Kontak</th>
+            <th className="border-b dark:border-gray-dark px-4 py-2 text-left">Alamat</th>
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">{isRestore ? (
                                 <Checkbox
                                     checked={
@@ -305,6 +309,21 @@ const handleRestoreSubmit = async () => {
                                     />
                                 ) : (
                                     item.kontak)}</td>
+              <td className="border-b dark:border-gray-dark px-4 py-2">{isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.alamat}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "alamat",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.alamat)}</td>
               <td className="border-b dark:border-gray-dark px-4 py-2">
               <div className="flex space-x-2">
               {isRestore ? (
@@ -387,7 +406,7 @@ const handleRestoreSubmit = async () => {
             )}
 
 {isDeleteModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
                     <div className="rounded-lg bg-white p-6">
                         <h3 className="text-lg font-bold">
                             Are you sure you want to delete this item?
@@ -411,7 +430,7 @@ const handleRestoreSubmit = async () => {
             )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
             <h2 className="mb-4 text-xl font-bold">Tambah Mubaligh</h2>
             <input
@@ -427,6 +446,14 @@ const handleRestoreSubmit = async () => {
               placeholder="Kontak Mubaligh"
               value={newKontakMubaligh}
               onChange={(e) => setNewKontakMubaligh(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Alamat Mubaligh"
+              value={newAlamatMubaligh}
+              onChange={(e) => setNewAlamatMubaligh(e.target.value)}
               className="mb-4 w-full rounded-md border p-2"
               required
             />

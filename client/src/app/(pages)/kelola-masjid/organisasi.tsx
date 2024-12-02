@@ -89,13 +89,12 @@ const StrukturOrganisasiMasjid = () => {
     };
 
     const handleEditChange = (id, field, value) => {
-      setStruktur((prevStruktur) =>
-          prevStruktur.map((item) =>
-              item.id === id ? { ...item, [field]: value } : item
-          )
-      );
-  };
-  
+        setStruktur((prevStruktur) =>
+            prevStruktur.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item,
+            ),
+        );
+    };
 
     const handleDelete = async () => {
         if (selectedId !== null) {
@@ -338,27 +337,28 @@ const StrukturOrganisasiMasjid = () => {
                                     ) : (
                                         <>
                                             {isEditing === item.id ? (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    updateStruktur(item.id)
-                                                }
-                                                className="text-green-500"
-                                            >
-                                                <FaCheck size={20}/>
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setIsEditing(null);
-                                                }}
-                                                className="text-gray-500"
-                                            >
-                                                <FaTimes size={20}/>
-                                            </button>
-                                        </>
-                                    ) : (
-
-                                        <>
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            updateStruktur(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                        className="text-green-500"
+                                                    >
+                                                        <FaCheck size={20} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsEditing(null);
+                                                        }}
+                                                        className="text-gray-500"
+                                                    >
+                                                        <FaTimes size={20} />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
                                                     <button
                                                         className="flex items-center text-yellow-500"
                                                         onClick={() =>
@@ -393,20 +393,26 @@ const StrukturOrganisasiMasjid = () => {
                 </tbody>
             </table>
             {isRestore && (
-              <Box sx={{ marginTop: 2, textAlign: "right", padding: "0 10px 10px 0" }}>
-                <Button
-                    variant="contained"
-                    onClick={handleRestoreSubmit}
-                    disabled={selectedIds.length === 0}
-                    sx={{ backgroundColor: "#14B8A6", marginTop: "10px" }}
+                <Box
+                    sx={{
+                        marginTop: 2,
+                        textAlign: "right",
+                        padding: "0 10px 10px 0",
+                    }}
                 >
-                    Restore Pilihan
-                </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleRestoreSubmit}
+                        disabled={selectedIds.length === 0}
+                        sx={{ backgroundColor: "#14B8A6", marginTop: "10px" }}
+                    >
+                        Restore Pilihan
+                    </Button>
                 </Box>
             )}
             {/* Modal Delete */}
             {isDeleteModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
                     <div className="rounded-lg bg-white p-6">
                         <h3 className="text-lg font-bold">
                             Are you sure you want to delete this item?
@@ -430,45 +436,40 @@ const StrukturOrganisasiMasjid = () => {
             )}
             {/* Add Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="rounded-lg bg-white p-6">
-                        <h3 className="text-lg font-bold">Add New Struktur</h3>
-                        <div className="mt-4">
-                            <label>Jabatan</label>
-                            <input
-                                type="text"
-                                value={newJabatan}
-                                onChange={(e) => setNewJabatan(e.target.value)}
-                                className="mb-4 w-full rounded border px-2 py-1"
-                            />
-                            <label>Nama</label>
-                            <input
-                                type="text"
-                                value={newNama}
-                                onChange={(e) => setNewNama(e.target.value)}
-                                className="mb-4 w-full rounded border px-2 py-1"
-                            />
-                            <label>Kontak</label>
-                            <input
-                                type="text"
-                                value={newKontak}
-                                onChange={(e) => setNewKontak(e.target.value)}
-                                className="mb-4 w-full rounded border px-2 py-1"
-                            />
-                            <div className="mt-4">
-                                <button
-                                    onClick={addStruktur}
-                                    className="mr-2 rounded bg-blue-500 px-4 py-2 text-white"
-                                >
-                                    Add
-                                </button>
-                                <button
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="rounded bg-gray-300 px-4 py-2"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+                        <h2 className="mb-4 text-xl font-bold">
+                            Tambah Struktur Organisasi
+                        </h2>
+                        <input
+                            type="text"
+                            placeholder="Jabatan"
+                            value={newJabatan}
+                            onChange={(e) => setNewJabatan(e.target.value)}
+                            className="mb-4 w-full rounded-md border p-2"
+                            required
+                        />
+                        <input
+                            type="text"
+                            placeholder="Nama"
+                            value={newNama}
+                            onChange={(e) => setNewNama(e.target.value)}
+                            className="mb-4 w-full rounded-md border p-2"
+                            required
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="rounded-lg bg-gray-500 px-4 py-2 text-white"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={addStruktur}
+                                className="rounded-lg bg-blue-500 px-4 py-2 text-white"
+                            >
+                                Tambah
+                            </button>
                         </div>
                     </div>
                 </div>

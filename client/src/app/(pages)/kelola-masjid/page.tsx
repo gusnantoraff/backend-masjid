@@ -1,4 +1,4 @@
-import DefaultLayout from '@/components/Layouts/DefaultLayout'
+import DefaultLaout from "@/components/Layouts/DefaultLayout";
 import React from 'react'
 import ProfilMasjid from './profilmasjid'
 import FasilitasMasjid from './fasilitas'
@@ -9,7 +9,7 @@ import StrukturOrganisasiMasjid from './organisasi'
 
 const InformasiMasjid = () => {
   return (
-    <DefaultLayout>
+    <DefaultLaout>
         <div>
         <div>
           <ProfilMasjid/>  
@@ -20,7 +20,7 @@ const InformasiMasjid = () => {
           <MubalighMasjid/>  
         </div>
         </div>
-    </DefaultLayout>
+    </DefaultLaout>
   )
 }
 

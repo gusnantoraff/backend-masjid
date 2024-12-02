@@ -433,7 +433,7 @@ const handleRestoreSubmit = async () => {
             )}
 
 {isDeleteModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
                     <div className="rounded-lg bg-white p-6">
                         <h3 className="text-lg font-bold">
                             Are you sure you want to delete this item?
@@ -457,7 +457,7 @@ const handleRestoreSubmit = async () => {
             )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
             <h2 className="mb-4 text-xl font-bold">Tambah Rekening</h2>
             <input
