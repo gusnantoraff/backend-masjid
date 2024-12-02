@@ -4,192 +4,187 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 import { AiOutlinePlus } from 'react-icons/ai';
 import Button from '@mui/material/Button';
-import fetchWithAuth from "@/utils/fetch";
+import axios from "@/utils/axios";
 import { SlActionUndo } from "react-icons/sl";
 import { Checkbox } from "@mui/material";
+import { Box } from "@mui/material";
 
 const MubalighMasjid = () => {
   const [mubalighData, setMubalighData] = useState([]);
-  const [formData, setFormData] = useState({
-    namaMubaligh: "",
-    kontakMubaligh: "",
-  });
+  const [newNamaMubaligh, setNewNamaMubaligh] = useState('')
+  const [newKontakMubaligh, setNewKontakMubaligh] = useState('')
   const [isEditing, setIsEditing] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // New state for delete confirmation modal
   const [deleteId, setDeleteId] = useState(null);
   const [isRestore, setIsRestore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [fetchedData, setFetchedData] = useState<any[]>([]);
+
+  const fetchUrl = "/mubaligh"
 
   useEffect(() => {
     fetchMubalighData();
-  }, []);
+  }, [isRestore]);
 
   const fetchMubalighData = async () => {
     try {
-      const data = await fetchWithAuth("http://localhost:8000/api/mubaligh");
-      setMubalighData(data);
+        setLoading(true);
+        const url = isRestore ? `/mubaligh/deleted` : fetchUrl;
+        const response = await axios.get(url);
+        setMubalighData(response.data);
     } catch (error) {
-      console.error("Error fetching mubaligh data:", error);
-      setErrorMessage("Gagal mengambil data dari server.");
-      setShowAlert(true);
+        setErrorMessage(
+            error.response?.data?.message ||
+                "Error fetching data. Please try again.",
+        );
+    } finally {
+        setLoading(false);
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-    setFormData({ namaMubaligh: "", kontakMubaligh: "" });
-    setIsEditing(false);
-    setEditIndex(null);
-  };
+};
 
   const addMubaligh = async () => {
-    if (!formData.namaMubaligh || !formData.kontakMubaligh) {
+    if (!newNamaMubaligh || !newKontakMubaligh) {
       setErrorMessage("Semua field wajib diisi.");
       setShowAlert(true);
       return;
     }
 
-    try {
-      const newMubaligh = await fetchWithAuth("http://localhost:8000/api/mubaligh", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nama: formData.namaMubaligh,
-          kontak: formData.kontakMubaligh,
-          info_masjid_id: 1,
-        }),
-      });
-      setMubalighData((prevData) => [...prevData, newMubaligh]);
-      setFormData({ namaMubaligh: "", kontakMubaligh: "" });
-      setIsModalOpen(false);
-      setSuccessMessage("Data mubaligh berhasil ditambahkan.");
-      setShowAlert(true);
-    } catch (error) {
-      console.error("Error adding mubaligh data:", error);
-      setErrorMessage("Terjadi kesalahan saat menambahkan data.");
-      setShowAlert(true);
+    const newMubalighData = {
+      info_masjid_id: 1,
+      nama: newNamaMubaligh,
+      kontak: newKontakMubaligh
     }
-  };
-
-  const handleEditClick = (index) => {
-    setEditIndex(index);
-    setFormData({
-      namaMubaligh: mubalighData[index].nama,
-      kontakMubaligh: mubalighData[index].kontak,
-    });
-    setIsEditing(true);
-    setIsModalOpen(true);
-  };
-
-  const updateMubaligh = async () => {
-    const updatedMubaligh = {
-      ...mubalighData[editIndex],
-      nama: formData.namaMubaligh,
-      kontak: formData.kontakMubaligh,
-    };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/mubaligh/${updatedMubaligh.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedMubaligh),
-      });
+      setLoading(true); // Tampilkan indikator loading saat proses
+      const response = await axios.post("/mubaligh", newMubalighData);
+      setMubalighData((prevMubaligh) => [
+        ...prevMubaligh,
+        response.data.mubaligh, // Sesuaikan format dengan respons API
+    ]);
 
-      if (!response.ok) {
-        throw new Error("Failed to update mubaligh data");
-      }
-
-      setMubalighData((prevData) =>
-        prevData.map((item, i) => (i === editIndex ? updatedMubaligh : item))
+      setNewNamaMubaligh("");
+      setNewKontakMubaligh("");
+      setIsModalOpen(false);
+      setErrorMessage("");
+      setShowAlert(false);
+      setSuccessMessage("Data berhasil ditambahkan.");
+  } catch (error) {
+      console.error("Error adding mubaligh:", error);
+      setErrorMessage(
+          error.response?.data?.message ||
+              "Terjadi kesalahan saat menambahkan data."
       );
-      setIsEditing(false);
-      setEditIndex(null);
-      setIsModalOpen(false);
-      setSuccessMessage("Data mubaligh berhasil diperbarui.");
       setShowAlert(true);
-    } catch (error) {
-      console.error("Error updating mubaligh data:", error);
-      setErrorMessage("Terjadi kesalahan saat memperbarui data.");
-      setShowAlert(true);
-    }
-  };
+  } finally {
+      setLoading(false); // Matikan indikator loading
+  }
+};
 
-  const showDeleteConfirmation = (id) => {
-    setDeleteId(id);
-    setShowDeleteConfirm(true);
-  };
-
-  const confirmDelete = async () => {
+  const restoreMubaligh = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/mubaligh/${deleteId}`, {
-        method: "DELETE",
-      });
+        await axios.patch(`${fetchUrl}/${id}/restore`);
+        fetchMubalighData();
+        setSuccessMessage("Data berhasil dipulihkan.");
+    } catch (error) {
+        setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
+    }
+};
 
-      if (!response.ok) {
-        throw new Error("Failed to delete mubaligh data");
+const handleDelete = async () => {
+  if (selectedId !== null) {
+      try {
+          await axios.delete(`/mubaligh/${selectedId}`); // API delete
+          setMubalighData(mubalighData.filter((item) => item.id !== selectedId)); // Perbarui tabel
+          setSelectedId(null); // Reset ID setelah dihapus
+          setSuccessMessage("Data berhasil dihapus.");
+      } catch (error) {
+          console.error("Error deleting data:", error);
+          setErrorMessage("Gagal menghapus data. Silakan coba lagi.");
       }
+  }
+};
 
-      setMubalighData((prevData) => prevData.filter((item) => item.id !== deleteId));
-      setShowDeleteConfirm(false);
-      setDeleteId(null);
-      setSuccessMessage("Data mubaligh berhasil dihapus.");
-      setShowAlert(true);
-    } catch (error) {
-      console.error("Error deleting mubaligh data:", error);
-      setErrorMessage("Terjadi kesalahan saat menghapus data.");
-      setShowAlert(true);
-    }
-  };
+const handleEditChange = (id, field, value) => {
+  setMubalighData((prevMubaligh) =>
+      prevMubaligh.map((item) =>
+          item.id === id ? { ...item, [field]: value } : item
+      )
+  );
+};
 
-  const closeAlert = () => {
-    setErrorMessage("");
-    setSuccessMessage("");
-    setShowAlert(false);
-  };
+const updateMubaligh = async (id) => {
+  const updatedItem = mubalighData.find((item) => item.id === id);
 
-  const handleRestore = async (id) => {
-    try {
-        const response = await fetchWithAuth(
-            `http://localhost:8000/api/mubaligh/${id}/restore`,
-            {
-                method: "POST",
-            },
-        );
+  try {
+    const response = await axios.put(`/mubaligh/${id}`, updatedItem);
 
-        if (response.success) {
-            // Memperbarui data lokal untuk merefleksikan data yang dipulihkan
-            const restoredItem = response.data; // Data dari server
-            setMubalighData((prevData) => [
-                ...prevData,
-                restoredItem,
-            ]);
-            setSuccessMessage("Data berhasil dipulihkan.");
-            setShowAlert(false);
-        } else {
-            setErrorMessage("Gagal memulihkan data.");
-            setShowAlert(true);
-        }
-    } catch (error) {
-        console.error("Error restoring data:", error);
-        setErrorMessage("Terjadi kesalahan saat memulihkan data.");
-        setShowAlert(true);
-    }
+    // Pastikan update data setelah berhasil merespon API
+    setMubalighData((prevMubaligh) =>
+      prevMubaligh.map((item) =>
+        item.id === id ? { ...item, ...response.data.updatedMubaligh } : item
+      )
+    );
+
+    setIsEditing(null);
+    setSuccessMessage("Data berhasil diperbarui.");
+  } catch (error) {
+    console.error("Error updating data:", error);
+    setErrorMessage("Gagal memperbarui data. Silakan coba lagi.");
+  }
+};
+
+
+const cancelDelete = () => {
+  setIsDeleteModalOpen(false);
+};
+
+const closeAlert = () => {
+  setErrorMessage("");
+  setSuccessMessage("");
+};
+
+const handleSelect = (id) => {
+  if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((item) => item !== id));
+  } else {
+      setSelectedIds([...selectedIds, id]);
+  }
+};
+
+const handleSelectAll = () => {
+  const allIds = struktur.map((item) => item.id); // Gunakan struktur untuk ID yang tampil di tabel
+  if (selectedIds.length === allIds.length) {
+      setSelectedIds([]); // Kosongkan jika semua sudah dipilih
+  } else {
+      setSelectedIds(allIds); // Pilih semua ID
+  }
+};
+
+const handleRestoreSubmit = async () => {
+  if (selectedIds.length === 0) {
+      setErrorMessage("Tidak ada data yang dipilih untuk di-restore.");
+      return;
+  }
+  try {
+      await Promise.all(
+          selectedIds.map((id) =>
+              axios.patch(`${fetchUrl}/${id}/restore`),
+          ),
+      );
+      setSelectedIds([]);
+      setIsRestore(false);
+      fetchMubalighData();
+      setSuccessMessage("Data yang dipilih berhasil dipulihkan.");
+  } catch (error) {
+      setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
+  }
 };
 
   return (
@@ -226,14 +221,28 @@ const MubalighMasjid = () => {
                 </div>
                 </div>
 
-      {showAlert && (
-        <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
-          {errorMessage || successMessage}
-          <button onClick={closeAlert} className="text-white hover:text-gray-300">
-            <FaTimes size={20}/>
-          </button>
-        </div>
-      )}
+                {errorMessage && (
+                <div className="mb-4 flex items-center justify-between rounded-lg bg-red-500 p-4 text-white">
+                    {errorMessage}
+                    <button
+                        onClick={closeAlert}
+                        className="text-white hover:text-gray-300"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
+            {successMessage && (
+                <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
+                    {successMessage}
+                    <button
+                        onClick={closeAlert}
+                        className="text-white hover:text-gray-300"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
 
       <table className="border-grey-200 min-w-full border bg-white dark:bg-dark-2 dark:text-slate-200">
         <thead>
@@ -241,7 +250,22 @@ const MubalighMasjid = () => {
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">No</th>
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">Nama Mubaligh</th>
             <th className="border-b dark:border-gray-dark px-4 py-2 text-left">Kontak</th>
-            <th className="border-b dark:border-gray-dark px-4 py-2 text-left">Aksi</th>
+            <th className="border-b dark:border-gray-dark px-4 py-2 text-left">{isRestore ? (
+                                <Checkbox
+                                    checked={
+                                        selectedIds.length ===
+                                            mubalighData.length &&
+                                        mubalighData.length > 0
+                                    }
+                                    indeterminate={
+                                        selectedIds.length > 0 &&
+                                        selectedIds.length < mubalighData.length
+                                    }
+                                    onChange={handleSelectAll}
+                                />
+                            ) : (
+                                "Aksi"
+                            )}</th>
           </tr>
         </thead>
         <tbody>
@@ -251,44 +275,96 @@ const MubalighMasjid = () => {
               index % 2 === 0 ? "bg-gray-100" : "bg-white"
             } dark:bg-dark-3 dark:odd:bg-dark-2`}>
               <td className="border-b dark:border-gray-dark px-4 py-2">{index + 1}</td>
-              <td className="border-b dark:border-gray-dark px-4 py-2">{item.nama}</td>
-              <td className="border-b dark:border-gray-dark px-4 py-2">{item.kontak}</td>
+              <td className="border-b dark:border-gray-dark px-4 py-2">{isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.nama}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "nama",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.nama)}</td>
+              <td className="border-b dark:border-gray-dark px-4 py-2">{isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.kontak}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "kontak",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.kontak)}</td>
               <td className="border-b dark:border-gray-dark px-4 py-2">
               <div className="flex space-x-2">
-                                    {isRestore ? (
-                                        // Saat dalam mode restore, hanya tampilkan checkbox
+              {isRestore ? (
                                         <Checkbox
-                                            checked={
-                                                mubalighData[index]?.isChecked ||
-                                                false
-                                            }
+                                            checked={selectedIds.includes(
+                                                item.id,
+                                            )}
                                             onChange={() =>
-                                                handleRestore(item.id)
+                                                handleSelect(item.id)
                                             }
-                                            inputProps={{
-                                                "aria-label":
-                                                    "Restore Checkbox",
-                                            }}
                                         />
                                     ) : (
-                                        // Saat tidak dalam mode restore, tampilkan tombol aksi
+                                        <>
+                                            {isEditing === item.id ? (
                                         <>
                                             <button
                                                 onClick={() =>
-                                                    handleEditClick(index)
+                                                    updateMubaligh(item.id)
                                                 }
-                                                className="text-yellow-500"
+                                                className="text-green-500"
                                             >
-                                                <FaEdit size={20} />
+                                                <FaCheck size={20}/>
                                             </button>
                                             <button
-                                                onClick={() =>
-                                                    showDeleteConfirmation(item.id)
-                                                }
-                                                className="text-red-500"
+                                                onClick={() => {
+                                                    setIsEditing(null);
+                                                }}
+                                                className="text-gray-500"
                                             >
-                                                <FaTrash size={20} />
+                                                <FaTimes size={20}/>
                                             </button>
+                                        </>
+                                    ) : (
+
+                                        <>
+                                                    <button
+                                                        className="flex items-center text-yellow-500"
+                                                        onClick={() =>
+                                                            setIsEditing(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                    >
+                                                        <FaEdit size={20} />
+                                                    </button>
+                                                    <button
+                                                        className="flex items-center text-red-500"
+                                                        onClick={() => {
+                                                            setSelectedId(
+                                                                item.id,
+                                                            ); // Pilih ID item
+                                                            setIsDeleteModalOpen(
+                                                                true,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FaTrash size={20} />
+                                                    </button>
+                                                </>
+                                            )}
                                         </>
                                     )}
                                 </div>
@@ -297,60 +373,72 @@ const MubalighMasjid = () => {
           ))}
         </tbody>
       </table>
+      {isRestore && (
+              <Box sx={{ marginTop: 2, textAlign: "right", padding: "0 10px 10px 0" }}>
+                <Button
+                    variant="contained"
+                    onClick={handleRestoreSubmit}
+                    disabled={selectedIds.length === 0}
+                    sx={{ backgroundColor: "#14B8A6", marginTop: "10px" }}
+                >
+                    Restore Pilihan
+                </Button>
+                </Box>
+            )}
+
+{isDeleteModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="rounded-lg bg-white p-6">
+                        <h3 className="text-lg font-bold">
+                            Are you sure you want to delete this item?
+                        </h3>
+                        <div className="mt-4">
+                            <button
+                                onClick={handleDelete}
+                                className="mr-2 rounded bg-red-500 px-4 py-2 text-white"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                onClick={cancelDelete}
+                                className="rounded bg-gray-300 px-4 py-2"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
-            <h2 className="mb-4 text-xl font-bold">{isEditing ? "Edit Mubaligh" : "Tambah Mubaligh"}</h2>
+            <h2 className="mb-4 text-xl font-bold">Tambah Mubaligh</h2>
             <input
               type="text"
-              name="namaMubaligh"
               placeholder="Nama Mubaligh"
-              value={formData.namaMubaligh}
-              onChange={handleInputChange}
+              value={newNamaMubaligh}
+              onChange={(e) => setNewNamaMubaligh(e.target.value)}
               className="mb-4 w-full rounded-md border p-2"
               required
             />
             <input
               type="text"
-              name="kontakMubaligh"
               placeholder="Kontak Mubaligh"
-              value={formData.kontakMubaligh}
-              onChange={handleInputChange}
+              value={newKontakMubaligh}
+              onChange={(e) => setNewKontakMubaligh(e.target.value)}
               className="mb-4 w-full rounded-md border p-2"
               required
             />
             <div className="flex justify-end space-x-2">
-              <button onClick={toggleModal} className="rounded-lg bg-gray-500 px-4 py-2 text-white">
-                 Batal
-              </button>
+              <button onClick={() => setIsModalOpen(false)} className="rounded-lg bg-gray-500 px-4 py-2 text-white">Batal</button>
               <button
-                onClick={isEditing ? updateMubaligh : addMubaligh}
-                className="rounded-lg bg-blue-500 px-4 py-2 text-white"
-              >
-                 {isEditing ? "Simpan" : "Tambah"}
-              </button>
+                onClick={addMubaligh} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
+            </div>
             </div>
           </div>
-        </div>
       )}
 
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
-          <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
-            <h2 className="mb-4 text-xl font-bold">Konfirmasi Penghapusan</h2>
-            <p>Apakah Anda yakin ingin menghapus data ini?</p>
-            <div className="mt-4 flex justify-end space-x-2">
-              <button onClick={() => setShowDeleteConfirm(false)} className="rounded-lg bg-gray-500 px-4 py-2 text-white">
-                 Batal
-              </button>
-              <button onClick={confirmDelete} className="rounded-lg bg-red-500 px-4 py-2 text-white">
-                 Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

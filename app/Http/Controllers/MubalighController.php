@@ -23,7 +23,7 @@ class MubalighController extends Controller
 
     public function getDeleted()
     {
-        $deletedData = Fasilitas::onlyTrashed()->get();
+        $deletedData = Mubaligh::onlyTrashed()->get();
         return response()->json($deletedData);
     }
 
