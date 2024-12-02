@@ -170,7 +170,7 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                                 type="text"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className="h-12 w-full rounded-lg border p-2"
+                                className="h-20 w-full rounded-lg border p-2"
                                 placeholder="Deskripsi"
                             />
                         </div>
@@ -191,22 +191,6 @@ const Modal = ({ isOpen, onClose, onSubmit, title, targetUrl }) => {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <div className="w-1/3">
-                            <label>Nama Akun (COA):</label>
-                            <span className="text-red-500"> *</span>
-                            <select
-                                value={oleh}
-                                onChange={(e) => setOleh(e.target.value)}
-                                className="h-12 w-full rounded-lg border p-2"
-                            >
-                                <option value="">Pilih COA</option>
-                                {coaOptions.map((coa) => (
-                                    <option key={coa.id} value={coa.id}>
-                                        {coa.nama_akun}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
                         <div className="w-1/3">
                             <label>Tipe</label>
                             <span className="text-red-500"> *</span>

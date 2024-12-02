@@ -278,6 +278,27 @@ const Akun = ({ params }: { params: { id: string } }) => {
 
           <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
 
+          {/* Birthdate (Tanggal Lahir) */}
+          <Grid item xs={12} sm={4}>
+            <Typography variant="body1" fontWeight="bold" color="#333">Tanggal Lahir</Typography>
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="birth"
+                type="date"
+                value={formData?.birth || ""}
+                onChange={handleChange}
+                InputLabelProps={{ shrink: true }} // Ensures the label shrinks when there's a value
+              />
+            ) : (
+              <Typography variant="body1" color="#4a4a4a">: {akun?.birth}</Typography>
+            )}
+          </Grid>
+
+          <Divider sx={{ width: "100%", marginY: "10px", backgroundColor: "#e0e0e0" }} />
+
           {/* Gender */}
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontWeight="bold" color="#333">Gender</Typography>
@@ -307,12 +328,16 @@ const Akun = ({ params }: { params: { id: string } }) => {
           </Grid>
           <Grid item xs={12} sm={8}>
             {isEditing ? (
-              <TextField
-                fullWidth
+              <FormControl fullWidth>
+              <Select
                 name="role"
                 value={formData?.role || ""}
-                onChange={handleChange}
-              />
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="ADMIN">Admin</MenuItem>
+                <MenuItem value="PENGURUS_MASJID">Pengurus Masjid</MenuItem>
+              </Select>
+            </FormControl>
             ) : (
               <Typography variant="body1" color="#4a4a4a">: {akun?.role}</Typography>
             )}
