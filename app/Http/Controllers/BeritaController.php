@@ -19,11 +19,6 @@ class BeritaController extends Controller
         return response()->json($berita);
     }
 
-    public function getDeleted()
-    {
-        $deletedData = Berita::onlyTrashed()->get();
-        return response()->json($deletedData);
-    }
     /**
      * Store a newly created berita in storage.
      */
