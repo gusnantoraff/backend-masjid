@@ -11,13 +11,37 @@ class CoaController extends Controller
     /**
      * Display a listing of the COA.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $coa = Coa::with(['penerimaanKas', 'pengeluaranKas'])->get();
-        // $coa = Coa::all();
-
+        $status = $request->query('status');
+        $penerimaanKasStatus = $request->query('penerimaan_kas_status');
+        $pengeluaranKasStatus = $request->query('pengeluaran_kas_status');
+    
+        $coaQuery = Coa::query();
+    
+        if ($status) {
+            $coaQuery->where('status', $status);
+        }
+    
+        $coa = $coaQuery->with(['generalLedgers'])->get();
+    
+        $coa->each(function ($item) use ($penerimaanKasStatus, $pengeluaranKasStatus) {
+            if ($penerimaanKasStatus) {
+                $item->penerimaan_kas = $item->penerimaanKas()
+                    ->where('status', $penerimaanKasStatus)
+                    ->get();
+            }
+    
+            if ($pengeluaranKasStatus) {
+                $item->pengeluaran_kas = $item->pengeluaranKas()
+                    ->where('status', $pengeluaranKasStatus)
+                    ->get();
+            }
+        });
+    
         return response()->json($coa);
     }
+    
 
     /**
      * Store a newly created COA in storage.
@@ -28,8 +52,10 @@ class CoaController extends Controller
             'kode_akun' => 'required|string|max:255|unique:coa,kode_akun',
             'nama_akun' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
-            'general_ledger_id' => 'nullable|exists:general_ledger,id',  // assuming this relationship
+            'general_ledger_id' => 'nullable|exists:general_ledger,id',
         ]);
+
+        $validatedData['status'] = 'antri';
 
         $coa = Coa::create($validatedData);
 
@@ -66,7 +92,7 @@ class CoaController extends Controller
             'kode_akun' => 'sometimes|string|max:255',
             'nama_akun' => 'sometimes|string|max:255',
             'tipe' => 'required|string|max:255',
-            'general_ledger_id' => 'nullable|exists:general_ledger,id',  // Make sure the id exists in general_ledgers table
+            'general_ledger_id' => 'nullable|exists:general_ledger,id',
         ]);
 
         // Update the COA with validated data

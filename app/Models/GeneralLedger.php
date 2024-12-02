@@ -13,17 +13,17 @@ class GeneralLedger extends Model
     protected $table = 'general_ledger';
 
     protected $fillable = [
-        // 'coa_id',
-        'tanggal_total',
+        'coa_id',
+        'tanggal',
         'debit_total',
-        'kredit',
+        'kredit_total',
+        'status',
         'deleted_status'
-        // 'keterangan',
     ];
 
     public function coa()
     {
-        return $this->hasMany(Coa::class); // Include timestamps if you want
+        return $this->belongsTo(Coa::class);
     }
 
     protected $dates = [
@@ -46,5 +46,21 @@ class GeneralLedger extends Model
             $model->restored_at = now();
             $model->save();
         });
+
+        static::saving(function ($model) {
+            $model->calculateTotals();
+        });
+    }
+
+    public function calculateTotals()
+    {
+        $coa = $this->coa;
+
+        $debitTotal = $coa->penerimaanKas->sum('jumlah');
+
+        $kreditTotal = $coa->pengeluaranKas->sum('jumlah');
+
+        $this->debit_total = $debitTotal;
+        $this->kredit_total = $kreditTotal;
     }
 }

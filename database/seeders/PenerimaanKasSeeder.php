@@ -16,17 +16,17 @@ class PenerimaanKasSeeder extends Seeder
                 'tanggal' => '2024-10-10',
                 'jumlah' => 1000000.00,
                 'deskripsi' => 'Sumbangan dari Hamba Allah',
-                'jenis' => 'Donasi', // Added 'jenis' attribute
+                'jenis' => 'Donasi Tunai',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'coa_id' => 2,
+                'coa_id' => 1,
                 'arus_kas_id' => 1,
                 'tanggal' => '2024-10-11',
-                'jumlah' => 500000.00,
+                'jumlah' => 5000000.00,
                 'deskripsi' => 'Sumbangan Jumat',
-                'jenis' => 'Infaq', // Added 'jenis' attribute
+                'jenis' => 'Donasi Uang Digital',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

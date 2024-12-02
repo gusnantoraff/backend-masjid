@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PengeluaranKas;
+use App\Models\GeneralLedger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,8 +15,7 @@ class PengeluaranKasController extends Controller
      */
     public function index(): JsonResponse
     {
-        // $pengeluaranKas = PengeluaranKas::with(['coa', 'arus_kas'])->get();
-        $pengeluaranKas = PengeluaranKas::with('coa')->get();
+        $pengeluaranKas = PengeluaranKas::with(['coa', 'arus_kas']) ->get();
 
         return response()->json($pengeluaranKas);
     }
@@ -31,22 +31,20 @@ class PengeluaranKasController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
             'deskripsi' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
-            'jenis' => 'nullable|string', // Added 'jenis' attribute
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'jenis' => 'nullable|string',
         ]);
 
-        $validatedData['arus_kas_id'] = 1; // Set default value
-
         if ($request->hasFile('image')) {
-            // Ensure the 'pengeluaran_kas' directory exists
             if (!Storage::disk('public')->exists('pengeluaran_kas')) {
                 Storage::disk('public')->makeDirectory('pengeluaran_kas');
             }
 
-            // Store the image in the 'public/storage/pengeluaran_kas' directory
             $imagePath = $request->file('image')->store('pengeluaran_kas', 'public');
             $validatedData['image'] = $imagePath;
         }
+
+        $validatedData['status'] = 'antri';
 
         $pengeluaranKas = PengeluaranKas::create($validatedData);
 
@@ -79,16 +77,14 @@ class PengeluaranKasController extends Controller
         }
 
         $validatedData = $request->validate([
-            'coa_id' => 'sometimes|exists:coa,id',
+            'coa_id' => 'required|exists:coa,id',
             'arus_kas_id' => 'sometimes|exists:arus_kas,id',
-            'tanggal' => 'sometimes|date',
-            'jumlah' => 'sometimes|numeric',
+            'tanggal' => 'required|date',
+            'jumlah' => 'required|numeric',
             'deskripsi' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
-            'jenis' => 'nullable|string', // Added 'jenis' attribute
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'jenis' => 'nullable|string',
         ]);
-
-        $validatedData['arus_kas_id'] = 1; // Set default value
 
         if ($request->hasFile('image')) {
             // Delete the old image if it exists

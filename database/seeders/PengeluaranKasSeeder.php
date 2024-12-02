@@ -11,12 +11,12 @@ class PengeluaranKasSeeder extends Seeder
     {
         DB::table('pengeluaran_kas')->insert([
             [
-                'coa_id' => 1,
+                'coa_id' => 2,
                 'arus_kas_id' => 1,
                 'tanggal' => '2024-10-12',
-                'jumlah' => 200000.00,
-                'deskripsi' => 'Biaya Operasional',
-                'jenis' => 'Operasional', // Added 'jenis' attribute
+                'jumlah' => 2000000.00,
+                'deskripsi' => 'Biaya Pembelian Speaker',
+                'jenis' => 'Pengeluaran Operasional', 
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -24,9 +24,9 @@ class PengeluaranKasSeeder extends Seeder
                 'coa_id' => 2,
                 'arus_kas_id' => 1,
                 'tanggal' => '2024-10-13',
-                'jumlah' => 300000.00,
-                'deskripsi' => 'Pembelian Al-Qur\'an',
-                'jenis' => 'Listrik', // Added 'jenis' attribute
+                'jumlah' => 400000.00,
+                'deskripsi' => 'Untuk Jumat Berkah',
+                'jenis' => 'Pengeluaran Sosial',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

@@ -30,7 +30,7 @@ export default function Jurnal({
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [modalData, setModalData] = useState({ open: false, row: null });
-    const [isRestore, setIsRestore] = useState(false); // Mengelola mode restore
+    const [isRestore, setIsRestore] = useState(false);
     const [restoreItems, setRestoreItems] = useState<any[]>([]);
 
     const pageTitle = isLaporanPage

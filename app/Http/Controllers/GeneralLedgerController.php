@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\GeneralLedger;
+use App\Models\Coa;
+use App\Models\PenerimaanKas;
+use App\Models\PengeluaranKas;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,34 +16,77 @@ class GeneralLedgerController extends Controller
      */
     public function index(): JsonResponse
     {
-        // Fetch all general ledger entries with calculated debit and kredit
         $generalLedger = GeneralLedger::with('coa')->get();
-
         return response()->json($generalLedger);
     }
 
     /**
      * Store a newly created general ledger entry in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
-        // Validate the incoming request data
-        $validatedData = $request->validate([
-            // 'tanggal' => 'required|date',
-            'debit_total' => 'nullable|numeric',
-            'kredit_total' => 'nullable|numeric',
-            // 'keterangan' => 'nullable|string',
+        $validated = $request->validate([
+            'coa_id' => 'required|exists:coa,id',
+            'tanggal' => 'required|date',
         ]);
 
-        // Create the new general ledger entry
-        $generalLedger = GeneralLedger::create($validatedData);
+        $coa = Coa::find($validated['coa_id']);
+        if (!$coa) {
+            return response()->json(['message' => 'COA tidak ditemukan'], 404);
+        }
 
-        // Return a success response
-        return response()->json([
-            'message' => 'General Ledger entry created successfully',
-            'generalLedger' => $generalLedger,
-        ], 201);
+        $generalLedger = GeneralLedger::create([
+            'coa_id' => $validated['coa_id'],
+            'tanggal' => $validated['tanggal'],
+            'status' => 'created',
+        ]);
+
+        if ($coa->tipe === 'Aset') {
+            $this->processPenerimaanKas($coa->id);
+        } elseif ($coa->tipe === 'Kewajiban') {
+            $this->processPengeluaranKas($coa->id);
+        }
+
+        $this->processQueue();
+
+        return response()->json(['message' => 'General Ledger berhasil dibuat dan COA diproses.', 'data' => $generalLedger]);
     }
+
+
+    public function processQueue(): JsonResponse
+    {
+        $generalLedgerExists = GeneralLedger::where('status', 'created')->exists();
+        if (!$generalLedgerExists) {
+            return response()->json(['message' => 'Please create a General Ledger first'], 400);
+        }
+
+        $coaToProcess = Coa::where('status', 'antri')->get();
+
+        if ($coaToProcess->isNotEmpty()) {
+            foreach ($coaToProcess as $item) {
+                $item->update(['status' => 'terproses']);
+            }
+        }
+
+        return response()->json(['message' => 'COA, Penerimaan Kas, and Pengeluaran Kas entries processed successfully']);
+    }
+
+    private function processPenerimaanKas(int $coaId)
+    {
+        $penerimaanKasToProcess = PenerimaanKas::where('coa_id', $coaId)->where('status', 'antri')->get();
+        foreach ($penerimaanKasToProcess as $item) {
+            $item->update(['status' => 'terproses']);
+        }
+    }
+
+    private function processPengeluaranKas(int $coaId)
+    {
+        $pengeluaranKasToProcess = PengeluaranKas::where('coa_id', $coaId)->where('status', 'antri')->get();
+        foreach ($pengeluaranKasToProcess as $item) {
+            $item->update(['status' => 'terproses']);
+        }
+    }
+
 
     /**
      * Display the specified general ledger entry.
@@ -48,7 +94,7 @@ class GeneralLedgerController extends Controller
     public function show(int $id): JsonResponse
     {
         // $generalLedger = GeneralLedger::with('coa.penerimaanKas', 'coa.pengeluaranKas')->find($id);
-        $generalLedger = GeneralLedger::with('coas')->find($id);
+        $generalLedger = GeneralLedger::with('coa')->find($id);
 
         if (!$generalLedger) {
             return response()->json(['message' => 'General Ledger entry not found'], 404);
@@ -69,10 +115,10 @@ class GeneralLedgerController extends Controller
         }
 
         $validatedData = $request->validate([
-            // 'tanggal' => 'required|date',
+            'coa_id' => 'required|exists:coa,id',
+            'tanggal' => 'required|date',
             'debit_total' => 'nullable|numeric',
             'kredit_total' => 'nullable|numeric',
-            // 'keterangan' => 'nullable|string',
         ]);
 
         $generalLedger->update($validatedData);

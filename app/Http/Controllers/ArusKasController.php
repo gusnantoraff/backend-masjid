@@ -14,7 +14,16 @@ class ArusKasController extends Controller
     public function index(): JsonResponse
     {
         // Fetch all ArusKas and update totals
-        $arusKas = ArusKas::with(['penerimaanKas', 'pengeluaranKas'])->get();
+        $arusKas = ArusKas::with(
+            [
+                'penerimaanKas',
+                'pengeluaranKas',
+                'penerimaanKas.coa',
+                'pengeluaranKas.coa',
+                'penerimaanKas.coa.generalLedgers',
+                'pengeluaranKas.coa.generalLedgers',
+            ]
+        )->get();
 
         // Update totals for each ArusKas record
         foreach ($arusKas as $item) {
@@ -29,14 +38,20 @@ class ArusKasController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $existingArusKas = ArusKas::first();
+
+        if ($existingArusKas) {
+            return response()->json(['message' => 'Arus Kas already exists. You can only update the existing record.'], 400);
+        }
+
         $validatedData = $request->validate([
-            'pemasukan' => 'nullable|numeric',
-            'pengeluaran' => 'nullable|numeric',
+            'pemasukan_total' => 'nullable|numeric',
+            'pengeluaran_total' => 'nullable|numeric',
+            'sisa_kas_total' => 'nullable|numeric',
         ]);
 
         $arusKas = ArusKas::create($validatedData);
 
-        // Update totals after creation
         $arusKas->updateTotals();
 
         return response()->json(['message' => 'Arus Kas created successfully', 'arusKas' => $arusKas], 201);
@@ -48,9 +63,16 @@ class ArusKasController extends Controller
     public function show(int $id): JsonResponse
     {
         // Fetch the specific ArusKas record along with related penerimaanKas and pengeluaranKas
-        $arusKas = ArusKas::with(['penerimaanKas', 'pengeluaranKas'])->find($id);
+        $arusKas = ArusKas::with([
+            'penerimaanKas',
+            'pengeluaranKas',
+            'penerimaanKas.coa',
+            'pengeluaranKas.coa',
+            'penerimaanKas.coa.generalLedgers',
+            'pengeluaranKas.coa.generalLedgers',
+        ])->find($id);
 
-        if (! $arusKas) {
+        if (!$arusKas) {
             return response()->json(['message' => 'Arus Kas not found'], 404);
         }
 
@@ -63,22 +85,22 @@ class ArusKasController extends Controller
     /**
      * Update the specified arus_kas in storage.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id = null): JsonResponse
     {
-        $arusKas = ArusKas::find($id);
+        $arusKas = ArusKas::first();
 
-        if (! $arusKas) {
-            return response()->json(['message' => 'Arus Kas not found'], 404);
+        if (!$arusKas) {
+            return response()->json(['message' => 'No Arus Kas found to update.'], 404);
         }
 
         $validatedData = $request->validate([
-            'pemasukan' => 'nullable|numeric',
-            'pengeluaran' => 'nullable|numeric',
+            'pemasukan_total' => 'nullable|numeric',
+            'pengeluaran_total' => 'nullable|numeric',
+            'sisa_kas_total' => 'nullable|numeric',
         ]);
 
         $arusKas->update($validatedData);
 
-        // Update totals after updating
         $arusKas->updateTotals();
 
         return response()->json(['message' => 'Arus Kas updated successfully', 'arusKas' => $arusKas]);
@@ -91,7 +113,7 @@ class ArusKasController extends Controller
     {
         $arusKas = ArusKas::find($id);
 
-        if (! $arusKas) {
+        if (!$arusKas) {
             return response()->json(['message' => 'Arus Kas not found'], 404);
         }
 

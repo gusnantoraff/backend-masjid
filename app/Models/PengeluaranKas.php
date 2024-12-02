@@ -20,6 +20,7 @@ class PengeluaranKas extends Model
         'jumlah',
         'deskripsi',
         'image',
+        'status',
         'deleted_status'
     ];
 
@@ -37,7 +38,7 @@ class PengeluaranKas extends Model
 
     public function arus_kas()
     {
-        return $this->belongsTo(Coa::class, 'arus_kas_id');
+        return $this->belongsTo(ArusKas::class);
     }
 
     protected static function boot()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PenerimaanKas;
+use App\Models\GeneralLedger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,8 +15,7 @@ class PenerimaanKasController extends Controller
      */
     public function index(): JsonResponse
     {
-        // $penerimaanKas = PenerimaanKas::with(['coa', 'arus_kas'])->get();
-        $penerimaanKas = PenerimaanKas::with('coa')->get();
+        $penerimaanKas = PenerimaanKas::with(['coa', 'arus_kas'])->get();
 
         return response()->json($penerimaanKas);
     }
@@ -31,17 +31,17 @@ class PenerimaanKasController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
             'deskripsi' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
-            'jenis' => 'nullable|string', // Added 'jenis' attribute
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'jenis' => 'nullable|string',
         ]);
 
-        $validatedData['arus_kas_id'] = 1; // Set default value
 
         if ($request->hasFile('image')) {
-            // Store the image in the 'public/storage/penerimaan_kas' folder
             $imagePath = $request->file('image')->store('penerimaan_kas', 'public');
             $validatedData['image'] = $imagePath;
         }
+
+        $validatedData['status'] = 'antri';
 
         $penerimaanKas = PenerimaanKas::create($validatedData);
 

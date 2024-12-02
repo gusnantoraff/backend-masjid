@@ -10,16 +10,13 @@ class CreateCoaTable extends Migration
     {
         Schema::create('coa', function (Blueprint $table) {
             $table->id();
-            // Make general_ledger_id nullable
-            $table->unsignedBigInteger('general_ledger_id')->nullable();
-            $table->foreign('general_ledger_id')->references('id')->on('general_ledger')->onDelete('cascade');
             $table->string('kode_akun');
             $table->string('nama_akun');
             $table->string('tipe')->nullable();
+            $table->string('status')->default('antri');
             $table->timestamps();
             $table->softDeletes();
 
-            // Set the character set and collation
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
@@ -30,3 +27,4 @@ class CreateCoaTable extends Migration
         Schema::dropIfExists('coa');
     }
 }
+

@@ -1,112 +1,175 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-
 import React, { useState, useEffect } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search } from "lucide-react";
 import { AiOutlineExport, AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable"; // Import for autoTable support
+import "jspdf-autotable";
 import ExportDialog from "@/components/filter/ExportGeneralLedger";
-import fetchWithAuth from "@/utils/fetch";
+import axios from "@/utils/axios";
+
+interface Coa {
+    id: number;
+    kode_akun: string;
+    nama_akun: string;
+    tipe: string;
+    penerimaan_kas: Array<{
+        id: number;
+        coa_id: number;
+        arus_kas_id: number;
+        jenis: string;
+        tanggal: string;
+        jumlah: string;
+        deskripsi: string;
+    }>;
+    pengeluaran_kas: Array<{
+        id: number;
+        coa_id: number;
+        arus_kas_id: number;
+        jenis: string;
+        tanggal: string;
+        jumlah: string;
+        deskripsi: string;
+    }>;
+    general_ledgers: GeneralLedger[];
+}
+
+interface GeneralLedger {
+    id: number;
+    coa_id: number;
+    tanggal: string;
+    debit_total: string;
+    kredit_total: string;
+    created_at: string;
+    updated_at: string;
+    coa: Coa;
+}
 
 const GeneralLedger = () => {
-    const [transactions, setTransactions] = useState([]);
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [totalDebit, setTotalDebit] = useState(0);
+    const [totalKredit, setTotalKredit] = useState(0);
+    const [totalNominal, setTotalNominal] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [exportDialogOpen, setExportDialogOpen] = useState(false);
-    const [coaList, setCoaList] = useState([]); // New state for COA data
-    const [selectedCoa, setSelectedCoa] = useState(""); // Track selected COA
-    const [selectedCoaDetails, setSelectedCoaDetails] = useState(null); // Store selected COA details
+    const [selectedCoa, setSelectedCoa] = useState<number | string>(sessionStorage.getItem("selectedCoa") || "");
+    const [dataDropdown, setDataDropdown] = useState<any[]>([]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
+    const fetchData = async () => {
+        if (!selectedCoa) return;
+
+        try {
+            const response = await axios.get(`/coa?status=terproses&penerimaan_kas_status=terproses&pengeluaran_kas_status=terproses`);
+            const data: Coa[] = response.data;
+
+            const mappedTransactions = data.flatMap((coa) => {
+                const penerimaanTransactions = (coa.penerimaan_kas || []).map((penerimaan) => ({
+                    tanggal: penerimaan.tanggal,
+                    tipe: coa.tipe,
+                    kodeAkun: coa.kode_akun,
+                    namaAkun: coa.nama_akun,
+                    deskripsi: penerimaan.deskripsi,
+                    debit: parseFloat(penerimaan.jumlah),
+                    kredit: 0,
+                }));
+
+                const pengeluaranTransactions = (coa.pengeluaran_kas || []).map((pengeluaran) => ({
+                    tanggal: pengeluaran.tanggal,
+                    tipe: coa.tipe,
+                    kodeAkun: coa.kode_akun,
+                    namaAkun: coa.nama_akun,
+                    deskripsi: pengeluaran.deskripsi,
+                    debit: 0,
+                    kredit: parseFloat(pengeluaran.jumlah),
+                }));
+
+                return [...penerimaanTransactions, ...pengeluaranTransactions];
+            });
+
+            const sortedTransactions = mappedTransactions.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
+
+            const totalDebit = sortedTransactions.reduce((sum, trx) => sum + trx.debit, 0);
+            const totalKredit = sortedTransactions.reduce((sum, trx) => sum + trx.kredit, 0);
+            const totalNominal = totalDebit - totalKredit;
+
+            setTransactions(sortedTransactions);
+            setTotalDebit(totalDebit);
+            setTotalKredit(totalKredit);
+            setTotalNominal(totalNominal);
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
+        if (selectedCoa) {
+            fetchData();
+        }
+    }, [selectedCoa, isSubmitted]);
+
+    useEffect(() => {
+        const fetchNewData = async () => {
             try {
-                // Fetch both APIs
-                const generalLedgerData = await fetchWithAuth(
-                    "http://localhost:8000/api/general-ledger/",
-                );
-                const coaData = await fetchWithAuth(
-                    "http://localhost:8000/api/coa/",
-                );
-
-                // Filter COA data to only include items where general_ledger_id is null
-                const filteredCoa = coaData.filter(
-                    (coa) => coa.general_ledger_id === null,
-                );
-
-                // Set filtered COA data for dropdown
-                setCoaList(filteredCoa);
-
-                // Merge the data from both API responses
-                const allTransactions = generalLedgerData.flatMap((ledger) => {
-                    return ledger.coa.flatMap((coa) => {
-                        // Find the corresponding COA details from the second API
-                        const coaDetails = coaData.find(
-                            (item) => item.kode_akun === coa.kode_akun,
-                        );
-
-                        if (coaDetails) {
-                            const penerimaanKas = coaDetails.penerimaan_kas.map(
-                                (item) => ({
-                                    tanggal: item.tanggal,
-                                    tipe: coa.tipe,
-                                    kodeAkun: coa.kode_akun,
-                                    namaAkun: coa.nama_akun,
-                                    deskripsi: item.deskripsi,
-                                    debit: parseFloat(item.jumlah),
-                                    kredit: 0,
-                                }),
-                            );
-
-                            const pengeluaranKas =
-                                coaDetails.pengeluaran_kas.map((item) => ({
-                                    tanggal: item.tanggal,
-                                    tipe: coa.tipe,
-                                    kodeAkun: coa.kode_akun,
-                                    namaAkun: coa.nama_akun,
-                                    deskripsi: item.deskripsi,
-                                    debit: 0,
-                                    kredit: parseFloat(item.jumlah),
-                                }));
-
-                            // Return the combined transactions for both penerimaan_kas and pengeluaran_kas
-                            return [...penerimaanKas, ...pengeluaranKas];
-                        }
-
-                        return [];
-                    });
-                });
-
-                setTransactions(allTransactions);
+                const response = await axios.get("/coa");
+                setDataDropdown(response.data);
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error("Error fetching new data:", error);
             }
         };
 
-        fetchData();
+        fetchNewData();
     }, []);
 
     const filteredTransactions = transactions.filter((trx) =>
         trx.namaAkun.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    // Calculate totals
-    const totalDebit = filteredTransactions.reduce(
-        (sum, trx) => sum + (trx.debit || 0),
-        0,
-    );
-    const totalKredit = filteredTransactions.reduce(
-        (sum, trx) => sum + (trx.kredit || 0),
-        0,
-    );
-    const totalNominal = totalDebit - totalKredit;
+    const handleModalClose = () => {
+        setSelectedCoa("");
+        setSelectedDate("");
+        setIsModalOpen(false);
+    };
+
+    const handleCoaChange = (coaId: string) => {
+        setSelectedCoa(Number(coaId));
+        sessionStorage.setItem("selectedCoa", coaId);
+    };
+
+    const handleAddTransaction = async () => {
+        if (!selectedCoa || !selectedDate) {
+            alert("COA dan Tanggal wajib diisi.");
+            return;
+        }
+
+        try {
+            const response = await axios.post("/general-ledger", {
+                coa_id: selectedCoa,
+                tanggal: selectedDate,
+            });
+
+            if (response.status === 200) {
+                alert("General Ledger berhasil ditambahkan!");
+                setSelectedCoa("");
+                setSelectedDate("");
+                setIsModalOpen(false);
+                setIsSubmitted(true);
+            }
+        } catch (error) {
+            console.error("Error adding General Ledger:", error);
+            alert("Terjadi kesalahan saat menambahkan jurnal.");
+        }
+    };
+
 
     const exportToPDF = () => {
         const doc = new jsPDF("p", "cm", "a4");
         const imgData = "/images/BG.png";
 
-        // Add background image
         doc.addImage(
             imgData,
             "JPEG",
@@ -116,7 +179,6 @@ const GeneralLedger = () => {
             doc.internal.pageSize.height,
         );
 
-        // Define headers for the table
         const headers = [
             "No.",
             "Kode Akun",
@@ -126,7 +188,6 @@ const GeneralLedger = () => {
             "Kredit",
         ];
 
-        // Prepare the table data
         const tableData = filteredTransactions.map((trx, index) => [
             index + 1,
             trx.kodeAkun,
@@ -142,7 +203,6 @@ const GeneralLedger = () => {
             }),
         ]);
 
-        // Set the creation date and time in the top-left corner
         const creationDate = new Date().toLocaleString("id-ID", {
             weekday: "long",
             year: "numeric",
@@ -159,14 +219,13 @@ const GeneralLedger = () => {
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setTextColor("white");
-        const topRightText = "by Tercode.com"; // Replace with your desired text
-        const marginRight = 1; // 1 cm margin from the right edge
+        const topRightText = "by Tercode.com";
+        const marginRight = 1;
         const rightX = doc.internal.pageSize.width - marginRight;
         doc.text(topRightText, rightX, 1, { align: "right" });
 
-        // Set title to "BUKU BESAR {nama masjid}" and the period below
-        const mosqueName = "Nama Masjid"; // Replace this with the actual name of the mosque
-        const period = `Periode:`; //${selectedMonth}/${selectedYear};  // Use selectedMonth and selectedYear
+        const mosqueName = "Nama Masjid";
+        const period = `Periode:`;
 
         doc.setFont("helvetica", "bold");
         doc.setTextColor("white");
@@ -174,7 +233,6 @@ const GeneralLedger = () => {
         doc.text(`Buku Besar ${mosqueName}`, 10.5, 2, { align: "center" });
         doc.text(period, 10.5, 2.5, { align: "center" });
 
-        // Add the table
         doc.autoTable({
             head: [headers],
             body: tableData,
@@ -182,12 +240,10 @@ const GeneralLedger = () => {
             theme: "striped",
         });
 
-        // Save the PDF with a specific file name
         doc.save("Buku_Besar_namamasjid_periode.pdf");
     };
 
     const exportToCSV = () => {
-        // Define headers for the CSV
         const headers = [
             "No.",
             "Kode Akun",
@@ -197,7 +253,6 @@ const GeneralLedger = () => {
             "Kredit",
         ];
 
-        // Prepare the table data from filtered transactions
         const csvRows = filteredTransactions.map((trx, index) => [
             index + 1,
             trx.kodeAkun,
@@ -213,7 +268,6 @@ const GeneralLedger = () => {
             }),
         ]);
 
-        // Add metadata and headers
         const metadata = [
             [
                 "Tanggal Dibuat:",
@@ -226,71 +280,25 @@ const GeneralLedger = () => {
                     minute: "2-digit",
                 }),
             ],
-            ["Buku Besar", `Buku Besar ${"Nama Masjid"}`], // Replace with actual mosque name
-            ["Periode", `Periode: ${selectedMonth}/${selectedYear}`], // Replace with actual period if needed
-            [], // Add an empty row to separate metadata and table
+            ["Buku Besar", `Buku Besar ${"Nama Masjid"}`],
+            ["Periode", `Periode:`],
+            [],
         ];
 
-        // Combine metadata, headers, and table data into one CSV string
         const csvContent =
             "data:text/csv;charset=utf-8," +
             metadata
-                .concat([headers]) // Add headers after metadata
-                .concat(csvRows) // Add table rows
+                .concat([headers])
+                .concat(csvRows)
                 .map((row) => row.join(","))
                 .join("\n");
 
-        // Create a temporary anchor element to trigger the download
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", "Buku_Besar_namamasjid_periode.csv");
         document.body.appendChild(link);
         link.click();
-    };
-
-    const handleModalClose = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleAddTransaction = async () => {
-        if (!selectedCoa || !selectedCoaDetails) {
-            console.error("No COA selected or COA details missing!");
-            return;
-        }
-
-        try {
-            const updatedCoa = {
-                id: selectedCoaDetails.id,
-                general_ledger_id: 1,
-                kode_akun: selectedCoaDetails.kode_akun,
-                nama_akun: selectedCoaDetails.nama_akun,
-                tipe: selectedCoaDetails.tipe,
-            };
-
-            const response = await fetch(
-                `http://localhost:8000/api/coa/${selectedCoa}`, // Use selectedCoa which is now the id
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedCoa),
-                },
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log("COA updated successfully:", data);
-                setIsModalOpen(false);
-                // Optionally refresh the COA list or transactions here
-            } else {
-                const errorData = await response.json();
-                console.error("Failed to update COA:", errorData.message);
-            }
-        } catch (error) {
-            console.error("Error updating COA:", error);
-        }
     };
 
     return (
@@ -312,9 +320,7 @@ const GeneralLedger = () => {
                                     type="text"
                                     placeholder="Cari transaksi..."
                                     value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     className="rounded-md border py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -361,10 +367,7 @@ const GeneralLedger = () => {
                             </thead>
                             <tbody>
                                 {filteredTransactions.map((trx, index) => (
-                                    <tr
-                                        key={index}
-                                        className="border-b hover:bg-gray-50"
-                                    >
+                                    <tr key={index} className="border-b hover:bg-gray-50">
                                         <td>{trx.tanggal}</td>
                                         <td>{trx.tipe}</td>
                                         <td>{trx.kodeAkun}</td>
@@ -377,13 +380,10 @@ const GeneralLedger = () => {
                                             })}
                                         </td>
                                         <td>
-                                            {trx.kredit.toLocaleString(
-                                                "id-ID",
-                                                {
-                                                    style: "currency",
-                                                    currency: "IDR",
-                                                },
-                                            )}
+                                            {trx.kredit.toLocaleString("id-ID", {
+                                                style: "currency",
+                                                currency: "IDR",
+                                            })}
                                         </td>
                                         <td>
                                             {(
@@ -442,53 +442,47 @@ const GeneralLedger = () => {
                         {/* COA Dropdown */}
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">
-                                COA (Nama Akun)
+                                Tipe COA
                             </label>
                             <select
                                 value={selectedCoa}
-                                onChange={async (e) => {
-                                    const coaId = e.target.value; // This will now be the id
-                                    setSelectedCoa(coaId);
-
-                                    // Fetch the details for the selected COA using the id
-                                    const coaDetailsData = await fetchWithAuth(
-                                        `http://localhost:8000/api/coa/${coaId}`,
-                                    );
-
-                                    setSelectedCoaDetails(coaDetailsData);
-                                }}
+                                onChange={(e) => handleCoaChange(e.target.value)}
                                 className="mt-2 block w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">Pilih COA</option>
-                                {coaList.map((coa) => (
+                                <option value="">Pilih Tipe COA</option>
+                                {dataDropdown.map((coa) => (
                                     <option key={coa.id} value={coa.id}>
-                                        {" "}
-                                        {/* Use coa.id here */}
-                                        {coa.nama_akun}
+                                        {coa.tipe}
                                     </option>
                                 ))}
                             </select>
                         </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Tanggal
+                            </label>
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                className="mt-2 block w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
 
                         <Button
                             variant="contained"
+                            color="primary"
                             onClick={handleAddTransaction}
-                            sx={{
-                                backgroundColor: "#14B8A6",
-                                color: "white",
-                            }}
+                            sx={{ marginRight: "5px" }}
                         >
                             Simpan
                         </Button>
                         <Button
                             variant="contained"
-                            onClick={() => setIsModalOpen(false)}
-                            sx={{
-                                backgroundColor: "#FF0000",
-                                color: "white",
-                            }}
+                            color="error"
+                            onClick={handleModalClose}
                         >
-                            Tutup
+                            Batal
                         </Button>
                     </div>
                 </div>

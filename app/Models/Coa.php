@@ -13,10 +13,10 @@ class Coa extends Model
     protected $table = 'coa';
 
     protected $fillable = [
-        'general_ledger_id',
         'kode_akun',
         'nama_akun',
         'tipe',
+        'status',
         'deleted_status'
     ];
 
@@ -40,10 +40,9 @@ class Coa extends Model
         return $this->hasMany(PengeluaranKas::class);
     }
 
-    // Many-to-many relationship with GeneralLedger
     public function generalLedgers()
     {
-        return $this->belongsTo(GeneralLedger::class, 'general_ledger_id');
+        return $this->hasMany(GeneralLedger::class);
     }
 
     protected static function boot()
