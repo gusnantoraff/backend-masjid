@@ -57,8 +57,7 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
 
     const fetchArticleData = () => {
         setLoading(true);
-        fetchWithAuth(`http://localhost:8000/api/berita/${id}`)
-            .then((response) => response.json())
+        fetchWithAuth(`http://localhost:8000/api/berita/${id}`)   
             .then((data) => {
                 if (!data) {
                     notFound();
@@ -77,6 +76,7 @@ const ArticleDetailPage = ({ params }: { params: { id: string } }) => {
                 setFotoUrl(getFotoUrl);
             })
             .catch((err) => {
+                console.error('Error loading article:', err); 
                 setError("Failed to load article.");
                 setLoading(false);
             });

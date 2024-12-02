@@ -13,44 +13,56 @@ interface Column {
 
 interface DataTableProps {
     columns: Column[];
+    data?: any[];
     fetchUrl: string;
-    refresh: boolean;
-    isRestore?: boolean; // Add isRestore prop to toggle restore state
-    onRestore?: (id: number, type: 'berita' | 'pengaturan-akun') => void; // Callback for restore action
+    reloadData?: () => void;
+    isRestore?: boolean;
+    onRestore?: (id: number[], type: "berita" | "pengaturan-akun") => void;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh, isRestore, onRestore }) => {
-    const [data, setData] = useState<any[]>([]);
+const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, data, reloadData, isRestore, onRestore }) => {
+    const [fetchedData, setFetchedData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
     const [showConfirm, setShowConfirm] = useState(false);
-    const [selectedId, setSelectedId] = useState<any>(null);
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(fetchUrl);
-                setData(response.data);
-                setLoading(false);
-            } catch (err) {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [fetchUrl, refresh]);
+        let fetchUrlWithDeleted = fetchUrl;
+        if (isRestore) {
+            fetchUrlWithDeleted = `${fetchUrl}/deleted`;
+        }
+        if (!data && fetchUrlWithDeleted) {
+            axios
+                .get(fetchUrlWithDeleted)
+                .then((response) => {
+                    setFetchedData(response.data);
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    setError(err);
+                    setLoading(false);
+                });
+        } else {
+            setFetchedData(data || []);
+            setLoading(false);
+        }
+    }, [fetchUrl, data, isRestore]);
 
 
     const handleDelete = async () => {
-        if (selectedId !== null) {
-            await axios.delete(`${fetchUrl}/${selectedId}`);
-            setData(data.filter((item) => item.id !== selectedId));
+        if (selectedIds.length > 0) {
+            const idToDelete = selectedIds[0];
+            await axios.delete(`${fetchUrl}/${idToDelete}`);
+            if (reloadData) reloadData();
+            setFetchedData(fetchedData.filter((item) => item.id !== idToDelete));
+            setSelectedIds([]);
             setShowConfirm(false);
         }
     };
 
     const promptDelete = (id: any) => {
-        setSelectedId(id);
+        setSelectedIds([id]);
         setShowConfirm(true);
     };
 
@@ -70,12 +82,38 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh, isRes
         }
     };
 
-    const handleRestore = (id: number, type: 'berita' | 'pengaturan-akun') => {
-        if (onRestore) {
-            onRestore(id, type);
+    const handleSelect = (id: number) => {
+        if (!Array.isArray(selectedIds)) {
+            setSelectedIds([]);
+        }
+
+        setSelectedIds(prevSelectedIds =>
+            prevSelectedIds.includes(id)
+                ? prevSelectedIds.filter(item => item !== id)
+                : [...prevSelectedIds, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        const allIds = fetchedData.map((item) => item.id);
+        if (!Array.isArray(selectedIds)) {
+            setSelectedIds(allIds);
+            return;
+        }
+
+        if (selectedIds.length === fetchedData.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(allIds);
         }
     };
 
+    const handleRestoreSubmit = () => {
+        if (onRestore && selectedIds.length > 0) {
+            onRestore(selectedIds, columns[0].type as "berita" | "pengaturan-akun");
+            setSelectedIds([]);
+        }
+    };
 
     const capitalizeFirstLetter = (value: any, accessor: string) => {
         if (typeof value === 'string' && accessor !== 'email') {
@@ -117,13 +155,20 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh, isRes
                                     padding: '16px',
                                 }}
                             >
-                                {capitalizeFirstLetter(column.header, column.accessor)}
+                                {column.accessor === "" && isRestore ? (
+                                    <Checkbox
+                                        checked={selectedIds.length === fetchedData.length}
+                                        onChange={handleSelectAll}
+                                    />
+                                ) : (
+                                    column.header
+                                )}
                             </TableCell>
                         ))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row, idxData) => (
+                    {(data || []).map((row, idxData) => (
                         <TableRow key={idxData}>
                             {columns.map((column) => (
                                 <TableCell
@@ -140,13 +185,11 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh, isRes
                                             : capitalizeFirstLetter(row[column.accessor], column.accessor)
                                     }
 
-                                    {column.accessor === '' && isRestore && (
-                                        <Box sx={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
-                                            <Checkbox
-                                                checked={row.isChecked || false}
-                                                onChange={() => handleRestore(row.id, column.type as 'berita' | 'pengaturan-akun')}
-                                            />
-                                        </Box>
+                                    {column.accessor === "" && isRestore && (
+                                        <Checkbox
+                                            checked={selectedIds.includes(row.id)}
+                                            onChange={() => handleSelect(row.id)}
+                                        />
                                     )}
 
                                     {column.accessor === '' && !isRestore && (
@@ -162,6 +205,18 @@ const DataTable: React.FC<DataTableProps> = ({ columns, fetchUrl, refresh, isRes
                     ))}
                 </TableBody>
             </Table>
+            {isRestore && (
+                <Box sx={{ marginTop: 2, textAlign: "right", padding: "0 10px 10px 0" }}>
+                    <Button
+                        variant="contained"
+                        onClick={handleRestoreSubmit}
+                        disabled={selectedIds.length === 0}
+                        sx={{ backgroundColor: "#14B8A6" }}
+                    >
+                        Restore Data
+                    </Button>
+                </Box>
+            )}
         </Box>
     );
 };

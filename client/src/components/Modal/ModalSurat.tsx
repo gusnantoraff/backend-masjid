@@ -88,90 +88,132 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formBody}>
-          {/* Left Column */}
-          <div style={styles.leftColumn}>
-            <div style={styles.formGroup}>
-              <label htmlFor="judul_surat" style={styles.label}>
-                Judul Surat
-              </label>
-              <textarea
-                id="judul_surat"
-                name="judul_surat"
-                placeholder="Masukan Judul"
-                value={formData.judul_surat}
-                onChange={handleChange}
-                rows={2}
-                style={styles.textarea}
-              />
-            </div>
-
-            {/* Content Editor */}
-            <div style={styles.formGroup}>
-              <label htmlFor="isi_surat" style={styles.label}>
-                Isi Surat
-              </label>
-              <JoditEditor
-                ref={editor}
-                value={content}
-                onBlur={(newContent) => setContent(newContent)}
-                onChange={(newContent) => setContent(newContent)}
-              />
-            </div>
+      <div style={styles.modalBackdrop}>
+        <div style={styles.modal}>
+          <div style={styles.modalHeader}>
+            <h2>Tambah Surat</h2>
+            <button onClick={onClose} style={styles.closeButton}>
+              X
+            </button>
           </div>
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <div style={styles.formBody}>
+              {/* Left Column */}
+              <div style={styles.leftColumn}>
+                <div style={styles.formGroup}>
+                  <label htmlFor="judul_surat" style={styles.label}>
+                    Judul Surat
+                  </label>
+                  <input
+                    type="text"
+                    id="judul_surat"
+                    name="judul_surat"
+                    value={formData.judul_surat}
+                    onChange={handleChange}
+                    style={styles.input}
+                    required
+                  />
+                </div>
 
-          {/* Right Column */}
-          <div style={styles.rightColumn}>
-            <div style={styles.formGroup}>
-              <label htmlFor="stempel" style={styles.label}>
-                Stempel
-              </label>
-              <input
-                type="file"
-                id="stempel"
-                name="stempel"
-                onChange={handleFileChange}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label htmlFor="tanda_tangan" style={styles.label}>
-                Tanda Tangan
-              </label>
-              <input
-                type="file"
-                id="tanda_tangan"
-                name="tanda_tangan"
-                onChange={handleFileChange}
-                style={styles.input}
-              />
-            </div>
-          </div>
-        </div>
+                {/* Content Editor (Jodit) */}
+                <div style={styles.joditEditor}>
+                  <JoditEditor
+                    ref={editor}
+                    value={content}
+                    onBlur={(newContent) => setContent(newContent)}
+                    onChange={(newContent) => setContent(newContent)}
+                  />
+                </div>
 
-        {/* Footer */}
-        <div style={styles.footer}>
-          <button type="submit" style={styles.saveButton}>
-            {loading ? "Loading..." : "Simpan"}
-          </button>
-          <button type="button" onClick={onClose} style={styles.cancelButton}>
-            Batal
-          </button>
+              </div>
+
+              {/* Right Column */}
+              <div style={styles.rightColumn}>
+                <div style={styles.formGroup}>
+                  <label htmlFor="stempel" style={styles.label}>
+                    Stempel
+                  </label>
+                  <input
+                    type="file"
+                    id="stempel"
+                    name="stempel"
+                    onChange={handleFileChange}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.formGroup}>
+                  <label htmlFor="tanda_tangan" style={styles.label}>
+                    Tanda Tangan
+                  </label>
+                  <input
+                    type="file"
+                    id="tanda_tangan"
+                    name="tanda_tangan"
+                    onChange={handleFileChange}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={styles.footer}>
+              <button type="submit" style={styles.saveButton}>
+                {loading ? "Loading..." : "Simpan"}
+              </button>
+              <button type="button" onClick={onClose} style={styles.cancelButton}>
+                Batal
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "20px",
-    border: "1px solid #ddd",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    zIndex: 9999,
+  },
+  modalBackdrop: {
+    background: "rgba(0, 0, 0, 0.5)",
+    width: "100vw",
+    height: "100vh",
+    position: "absolute",
+  },
+  modal: {
+    background: "#fff",
     borderRadius: "10px",
-    backgroundColor: "#fff",
+    width: "80%",
+    maxWidth: "1000px",
+    padding: "20px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+    position: "relative",
+    margin: "auto",
+    marginTop: "5%",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  closeButton: {
+    backgroundColor: "#d50000",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    padding: "4px 8px",
+    cursor: "pointer",
   },
   form: {
     display: "flex",
@@ -207,13 +249,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid #ccc",
     borderRadius: "5px",
   },
-  textarea: {
+  joditEditor: {
     width: "100%",
-    padding: "10px",
     border: "1px solid #ccc",
     borderRadius: "5px",
-    fontSize: "16px",
-    resize: "vertical",
   },
   saveButton: {
     backgroundColor: "#14B8A6",
