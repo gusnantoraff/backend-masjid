@@ -9,9 +9,7 @@ import Filters from "@/components/filter/FilterTable";
 import TableContent from "@/components/DataTable/TableJurnal";
 import ExportJurnal from "@/components/filter/ExportJurnal";
 import DetailJurnal from "@/components/DetailModal/DetailJurnal";
-import fetchWithAuth from "@/utils/fetch";
-import { SlActionUndo } from "react-icons/sl";
-import { Button } from "@mui/material";
+import axios from "@/utils/axios";
 
 export default function Jurnal({
     isLaporanPage,
@@ -29,9 +27,13 @@ export default function Jurnal({
     });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [loading, setLoading] = useState(false);
     const [modalData, setModalData] = useState({ open: false, row: null });
     const [isRestore, setIsRestore] = useState(false);
     const [restoreItems, setRestoreItems] = useState<any[]>([]);
+
+    const COAUrl = "/coa";
+    const ArusKasUrl = "/arus-kas";
 
     const pageTitle = isLaporanPage
         ? "Laporan Keuangan"
@@ -41,76 +43,88 @@ export default function Jurnal({
             ? "Pengeluaran"
             : "Jurnal Arus Kas";
 
-    useEffect(() => {
-        const fetchCoaData = async () => {
-            try {
-                const result = await fetchWithAuth("http://localhost:8000/api/coa");
-                const coaMapping = {};
-                result.forEach((coa) => {
-                    coaMapping[coa.id] = coa.nama_akun;
-                });
-                setCoaMap(coaMapping);
-            } catch (error) {
-                console.error("Error fetching COA data:", error);
-            }
-        };
-
-        const fetchData = async () => {
-            try {
-                const result = await fetchWithAuth(
-                    "http://localhost:8000/api/arus-kas",
-                );
-                
-                const formattedRows = [];
-                if (isLaporanPage) {
-                    result.forEach((item) => {
-                        formattedRows.push({
-                            name: item.jenis,
-                            date: item.tanggal,
-                            amount: parseFloat(item.jumlah),
-                            description: item.deskripsi,
-                            file: item.image || "No File",
-                            oleh: item.coa_id,
-                            status: item.status || "N/A",
+            useEffect(() => {
+                const fetchCoaData = async () => {
+                    try {
+                        setLoading(true);
+                        const coaurl = isRestore ? `/coa/deleted` : COAUrl;
+                        const response = await axios.get(coaurl);
+                        const coaMapping = {};
+                        response.data.forEach((coa) => {
+                            coaMapping[coa.id] = { nama: coa.nama_akun, tipe: coa.tipe };
                         });
-                    });
-                } else {
-                    result.forEach((item) => {
-                        item.penerimaan_kas.forEach((pemasukan) => {
-                            formattedRows.push({
-                                name: pemasukan.jenis,
-                                date: pemasukan.tanggal,
-                                amount: parseFloat(pemasukan.jumlah),
-                                description: pemasukan.deskripsi,
-                                file: pemasukan.image || "No File",
-                                oleh: pemasukan.coa_id,
-                                status: "Pemasukan",
+                        setCoaMap(coaMapping);
+                    } catch (error) {
+                        console.error("Error fetching COA data:", error);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+        
+                const fetchData = async () => {
+                    try {
+                        setLoading(true);
+                        const aruskasurl = isRestore ? `/arus-kas/deleted` : ArusKasUrl;
+                        const response = await axios.get(aruskasurl);
+        
+                        const formattedRows = [];
+                        if (isLaporanPage) {
+                            response.data.forEach((item) => {
+                                formattedRows.push({
+                                    id: item.id,
+                                    name: item.jenis,
+                                    date: item.tanggal,
+                                    amount: parseFloat(item.jumlah),
+                                    tipe: coaMap[item.coa_id]?.tipe || "N/A",
+                                    description: item.deskripsi,
+                                    file: item.image || "No File",
+                                    oleh: coaMap[item.coa_id]?.nama || "Unknown",
+                                    status: item.status || "N/A",
+                                });
                             });
-                        });
-
-                        item.pengeluaran_kas.forEach((pengeluaran) => {
-                            formattedRows.push({
-                                name: pengeluaran.jenis,
-                                date: pengeluaran.tanggal,
-                                amount: -parseFloat(pengeluaran.jumlah),
-                                description: pengeluaran.deskripsi,
-                                file: pengeluaran.image || "No File",
-                                oleh: pengeluaran.coa_id,
-                                status: "Pengeluaran",
+                        } else {
+                            response.data.forEach((item) => {
+                                item.penerimaan_kas.forEach((pemasukan) => {
+                                    formattedRows.push({
+                                        id: pemasukan.id,
+                                        name: pemasukan.jenis,
+                                        date: pemasukan.tanggal,
+                                        amount: parseFloat(pemasukan.jumlah),
+                                        tipe: coaMap[pemasukan.coa_id]?.tipe || "N/A",
+                                        description: pemasukan.deskripsi,
+                                        file: pemasukan.image || "No File",
+                                        oleh: coaMap[pemasukan.coa_id]?.nama || "Unknown",
+                                        status: "Pemasukan",
+                                    });
+                                });
+        
+                                item.pengeluaran_kas.forEach((pengeluaran) => {
+                                    formattedRows.push({
+                                        id: pengeluaran.id,
+                                        name: pengeluaran.jenis,
+                                        date: pengeluaran.tanggal,
+                                        amount: -parseFloat(pengeluaran.jumlah),
+                                        tipe: coaMap[pengeluaran.coa_id]?.tipe || "N/A",
+                                        description: pengeluaran.deskripsi,
+                                        file: pengeluaran.image || "No File",
+                                        oleh: coaMap[pengeluaran.coa_id]?.nama || "Unknown",
+                                        status: "Pengeluaran",
+                                    });
+                                });
                             });
-                        });
-                    });
-                }
-
-                setRows(formattedRows);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchCoaData();
-        fetchData();
-    }, []);
+                        }
+        
+                        setRows(formattedRows);
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+        
+                fetchCoaData();
+                fetchData();
+            }, [isRestore]);
 
     const onRestoreToggle = (id: any) => {
         setRestoreItems((prevItems) =>

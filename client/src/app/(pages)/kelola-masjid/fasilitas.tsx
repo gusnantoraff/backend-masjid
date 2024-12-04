@@ -11,7 +11,6 @@ import { Box } from "@mui/material";
 
 const FasilitasMasjid = () => {
     const [fasilitas, setFasilitas] = useState([]);
-    const [newFasilitas, setNewFasilitas] = useState("");
     const [newNamaFasilitas, setNewNamaFasilitas] = useState("");
     const [newDeskripsi, setNewDeskripsi] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,7 +24,6 @@ const FasilitasMasjid = () => {
     const [loading, setLoading] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
-    const [fetchedData, setFetchedData] = useState<any[]>([]);
 
     const fetchUrl = "/fasilitas";
 

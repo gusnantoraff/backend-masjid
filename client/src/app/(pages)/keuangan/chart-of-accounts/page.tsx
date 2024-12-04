@@ -5,324 +5,212 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Search, Plus } from "lucide-react";
 import { AiOutlinePlus } from "react-icons/ai";
 import Button from "@mui/material/Button";
-import fetchWithAuth from "@/utils/fetch";
 import { FaCheck, FaEye, FaTrash } from "react-icons/fa6";
 import { FaEdit, FaTimes } from "react-icons/fa";
 import { IoIosRadioButtonOn } from "react-icons/io";
-
-const API_URL = "http://localhost:8000/api/coa";
-
-// Modal Component
-const Modal = ({ isOpen, onClose, onSubmit, title }) => {
-    const [code, setCode] = useState("");
-    const [name, setName] = useState("");
-    const [type, setType] = useState("");
-    const [formError, setFormError] = useState("");
-
-    const resetForm = () => {
-        setCode("");
-        setName("");
-        setType("");
-        setFormError("");
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!code || !name || !type) {
-            setFormError("All fields are required.");
-            return;
-        }
-
-        const newAccount = {
-            kode_akun: code,
-            nama_akun: name,
-            tipe: type,
-        };
-
-        try {
-            const createdAccount = await fetchWithAuth(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newAccount),
-            });
-            console.log("Account created successfully:", createdAccount);
-            onSubmit();
-            onClose();
-            resetForm();
-        } catch (error) {
-            console.error("Error submitting data:", error);
-            alert("An error occurred during submission.");
-        }
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-                className="fixed inset-0 bg-black opacity-50"
-                onClick={onClose}
-            ></div>
-            <div className="z-10 w-4/5 max-w-md rounded-lg bg-white p-4 shadow-lg">
-                <h2 className="mb-4 text-xl font-bold">{title}</h2>
-                {formError && (
-                    <div className="mb-4 rounded-lg bg-red-100 p-2 text-red-700">
-                        {formError}
-                    </div>
-                )}
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <div>
-                        <label>Kode Akun:</label>
-                        <input
-                            type="text"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            className="h-12 w-full rounded-lg border p-2"
-                            placeholder="Kode Akun"
-                            style={{ textTransform: 'uppercase' }}
-                        />
-                    </div>
-                    <div>
-                        <label>Nama Akun:</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="h-12 w-full rounded-lg border p-2"
-                            placeholder="Nama Akun"
-                            style={{ textTransform: 'uppercase' }}
-                        />
-                    </div>
-                    <div>
-                        <label>Tipe Akun:</label>
-                        <select
-                            value={type}
-                            onChange={(e) => setType(e.target.value)}
-                            className="h-12 w-full rounded-lg border p-2"
-                        >
-                            <option value="">Pilih Tipe Akun</option>
-                            <option value="Infaq">Infaq</option>
-                            <option value="Operasional">Operasional</option>
-                            <option value="Kas">Kas</option>
-                            <option value="Hutang">Hutang</option>
-                        </select>
-                    </div>
-                    <div className="mt-4 flex justify-end gap-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="rounded-lg bg-gray-300 px-4 py-2"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            className="rounded-lg bg-blue-500 px-4 py-2 text-white"
-                        >
-                            Simpan
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-};
-
-const ViewModal = ({ isOpen, onClose, account }) => {
-    const [editMode, setEditMode] = useState(false);
-
-    const handleSave = () => {
-        // Logic untuk menyimpan perubahan
-        console.log("Simpan perubahan!");
-        setEditMode(false); // Keluar dari mode edit
-    };
-
-    if (!isOpen || !account) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-                className="fixed inset-0 bg-black opacity-50"
-                onClick={onClose}
-            ></div>
-            <div className="z-10 w-4/5 max-w-md rounded-lg bg-white p-4 shadow-lg">
-                <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-lg font-bold">Detail Data</h2>
-                    <div className="flex space-x-2">
-                        {editMode ? (
-                            <>
-                                <button
-                                    onClick={handleSave}
-                                    className="text-green-500"
-                                >
-                                    <FaCheck size={20} />
-                                </button>
-                                <button
-                                    onClick={() => setEditMode(false)}
-                                    className="text-gray-500"
-                                >
-                                    <FaTimes size={20} />
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <button
-                                    onClick={() => setEditMode(true)}
-                                    className="flex items-center gap-2 text-yellow-500"
-                                >
-                                    <span>Edit</span>
-                                    <FaEdit size={20} />
-                                </button>
-                                <button
-                                    onClick={onClose}
-                                    className="text-red-500"
-                                >
-                                    <FaTimes size={20} />
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-                <div>
-                    {editMode ? (
-                        <form className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Kode Akun:
-                                </label>
-                                <input
-                                    type="text"
-                                    defaultValue={account.code}
-                                    className="w-full rounded-lg border p-2"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Nama Akun:
-                                </label>
-                                <input
-                                    type="text"
-                                    defaultValue={account.name}
-                                    className="w-full rounded-lg border p-2"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Tipe Akun:
-                                </label>
-                                <select
-                                    defaultValue={account.type}
-                                    className="w-full rounded-lg border p-2"
-                                >
-                                    <option value="Infaq">Infaq</option>
-                                    <option value="Operasional">
-                                        Operasional
-                                    </option>
-                                    <option value="Kas">Kas</option>
-                                    <option value="Hutang">Hutang</option>
-                                </select>
-                            </div>
-                        </form>
-                    ) : (
-                        <div
-                            className="space-y-2"
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "16px",
-                            }}
-                        >
-                            <p>
-                                <strong>Kode Akun:</strong> {account.code}
-                            </p>
-                            <p>
-                                <strong>Nama Akun:</strong> {account.name}
-                            </p>
-                            <p>
-                                <strong>Tipe Akun:</strong> {account.type}
-                            </p>
-                            <p>
-                                <strong>Saldo:</strong>{" "}
-                                {account.balance.toLocaleString("id-ID", {
-                                    style: "currency",
-                                    currency: "IDR",
-                                })}
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
+import axios from "@/utils/axios";
+import { SlActionUndo } from "react-icons/sl";
+import { Checkbox } from "@mui/material";
+import { Box } from "@mui/material";
 
 const ChartOfAccounts = () => {
     const [accounts, setAccounts] = useState([]);
+    const [newNamaAkun, setNewNamaAkun] = useState("");
+    const [newTipeAkun, setNewTipeAkun] = useState("");
+    const [newKodeAkun, setNewKodeAkun] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [isRestore, setIsRestore] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
+    const fetchCOAData = async () => {
+        try {
+            setLoading(true);
+            const url = isRestore ? "/coa/deleted" : "/coa";
+            const response = await axios.get(url);
+            setAccounts(response.data);
+        } catch (error) {
+            console.error("Error fetching data:", error.message);
+            setErrorMessage(
+                error.response?.data?.message ||
+                    "Error fetching data. Please try again.",
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchAccounts = async () => {
-            try {
-                const data = await fetchWithAuth(API_URL);
+        fetchCOAData();
+    }, [isRestore]);
 
-                const formattedAccounts = data.map((account) => ({
-                    code: account.kode_akun,
-                    name: account.nama_akun,
-                    type: account.tipe,
-                    status: account.status || "Aktif",
-                    balance:
-                        (account.penerimaan_kas?.reduce(
-                            (sum, item) => sum + parseFloat(item.jumlah || 0),
-                            0
-                        ) || 0) -
-                        (account.pengeluaran_kas?.reduce(
-                            (sum, item) => sum + parseFloat(item.jumlah || 0),
-                            0
-                        ) || 0),
-                }));
+    const addCOA = async () => {
+        if (!newNamaAkun || !newTipeAkun || !newKodeAkun) {
+            setErrorMessage("Semua field wajib diisi.");
+            setShowAlert(true);
+            return;
+        }
 
-                setAccounts(formattedAccounts);
-            } catch (error) {
-                console.error("Error fetching accounts:", error);
-            }
+        const newCOAData = {
+            coa_id: 1,
+            kode_akun: newKodeAkun,
+            nama_akun: newNamaAkun,
+            tipe: newTipeAkun,
         };
 
-        fetchAccounts();
-    }, []);
+        try {
+            setLoading(true); // Tampilkan indikator loading saat proses
+            const response = await axios.post("/coa", newCOAData);
+            setAccounts((prevAccount) => [
+                ...prevAccount,
+                response.data.coa, // Sesuaikan format dengan respons API
+            ]);
 
-    const handleNewAccountSubmit = () => {
-        // Fetch updated accounts after a successful form submission
-        window.location.reload();
+            setNewNamaAkun("");
+            setNewTipeAkun("");
+            setIsModalOpen(false);
+            setErrorMessage("");
+            setShowAlert(false);
+            setSuccessMessage("Data berhasil ditambahkan.");
+        } catch (error) {
+            console.error("Error adding coa:", error);
+            setErrorMessage(
+                error.response?.data?.message ||
+                    "Terjadi kesalahan saat menambahkan data.",
+            );
+            setShowAlert(true);
+        } finally {
+            setLoading(false); // Matikan indikator loading
+        }
     };
 
-    const handleStatusChange = (accountCode) => {
-        setAccounts((prevAccounts) =>
-            prevAccounts.map((account) =>
-                account.code === accountCode
-                    ? {
-                          ...account,
-                          status: account.status === "Aktif" ? "Tidak Aktif" : "Aktif",
-                      }
-                    : account
-            )
+    const handleDelete = async () => {
+        if (selectedId !== null) {
+            try {
+                await axios.delete(`/coa/${selectedId}`); // API delete
+                setAccounts(accounts.filter((item) => item.id !== selectedId)); // Perbarui tabel
+                setSelectedId(null); // Reset ID setelah dihapus
+                setSuccessMessage("Data berhasil dihapus.");
+            } catch (error) {
+                console.error("Error deleting data:", error);
+                setErrorMessage("Gagal menghapus data. Silakan coba lagi.");
+            }
+        }
+    };
+
+    const handleEditChange = (id, field, value) => {
+        setAccounts((prevAccount) =>
+            prevAccount.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item,
+            ),
         );
     };
-    
-    
 
-    const filteredAccounts = accounts.filter((account) =>
-        account.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
+    const updateCOA = async (id) => {
+        const updatedItem = accounts.find((item) => item.id === id);
+
+        try {
+            const response = await axios.put(`/coa/${id}`, updatedItem);
+
+            // Pastikan update data setelah berhasil merespon API
+            setAccounts((prevAccount) =>
+                prevAccount.map((item) =>
+                    item.id === id
+                        ? { ...item, ...response.data.updatedMubaligh }
+                        : item,
+                ),
+            );
+
+            setIsEditing(null);
+            setSuccessMessage("Data berhasil diperbarui.");
+        } catch (error) {
+            console.error("Error updating data:", error);
+            setErrorMessage("Gagal memperbarui data. Silakan coba lagi.");
+        }
+    };
+
+    const cancelDelete = () => {
+        setIsDeleteModalOpen(false);
+    };
+
+    const closeAlert = () => {
+        setErrorMessage("");
+        setSuccessMessage("");
+    };
+
+    const handleSelect = (id) => {
+        if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter((item) => item !== id));
+        } else {
+            setSelectedIds([...selectedIds, id]);
+        }
+    };
+
+    const handleSelectAll = () => {
+        const allIds = accounts.map((item) => item.id); // Gunakan struktur untuk ID yang tampil di tabel
+        if (selectedIds.length === allIds.length) {
+            setSelectedIds([]); // Kosongkan jika semua sudah dipilih
+        } else {
+            setSelectedIds(allIds); // Pilih semua ID
+        }
+    };
+
+    const handleRestoreSubmit = async () => {
+        if (selectedIds.length === 0) {
+            setErrorMessage("Tidak ada data yang dipilih untuk di-restore.");
+            return;
+        }
+        try {
+            await Promise.all(
+                selectedIds.map((id) =>
+                    axios.patch(`coa/${id}/restore`),
+                ),
+            );
+            setSelectedIds([]);
+            setIsRestore(false);
+            fetchCOAData();
+            setSuccessMessage("Data yang dipilih berhasil dipulihkan.");
+        } catch (error) {
+            setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
+        }
+    };
 
     return (
         <DefaultLayout>
             <h1 className="p-2 text-4xl font-bold text-black">
                 Chart of Accounts
             </h1>
+            {errorMessage && (
+                <div className="mb-4 flex items-center justify-between rounded-lg bg-red-500 p-4 text-white">
+                    {errorMessage}
+                    <button
+                        onClick={closeAlert}
+                        className="text-white hover:text-gray-300"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
+            {successMessage && (
+                <div className="mb-4 flex items-center justify-between rounded-lg bg-green-500 p-4 text-white">
+                    {successMessage}
+                    <button
+                        onClick={closeAlert}
+                        className="text-white hover:text-gray-300"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
             <div className="cols-span-1 mt-2 w-full rounded-xl border border-gray-300 px-2 py-2 shadow-md">
                 <div className="rounded-lg bg-white shadow-1">
                     <div className="border-b border-gray-200 px-4 py-5 sm:px-6">
@@ -343,6 +231,20 @@ const ChartOfAccounts = () => {
                                         }
                                     />
                                 </div>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: "#FFB80D",
+                                        color: "white",
+                                        marginRight: "10px",
+                                    }}
+                                    startIcon={<SlActionUndo />}
+                                    onClick={() => setIsRestore(!isRestore)}
+                                >
+                                    {isRestore
+                                        ? "Cancel Restore"
+                                        : "Restore Data"}
+                                </Button>
                                 <Button
                                     variant="contained"
                                     onClick={() => setIsModalOpen(true)}
@@ -373,121 +275,223 @@ const ChartOfAccounts = () => {
                                             Tipe
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                            Saldo
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                            Keterangan
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                            Aksi
+                                            {isRestore ? (
+                                                <Checkbox
+                                                    checked={
+                                                        selectedIds.length ===
+                                                            accounts.length &&
+                                                        accounts.length > 0
+                                                    }
+                                                    indeterminate={
+                                                        selectedIds.length >
+                                                            0 &&
+                                                        selectedIds.length <
+                                                            accounts.length
+                                                    }
+                                                    onChange={handleSelectAll}
+                                                />
+                                            ) : (
+                                                "Aksi"
+                                            )}
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
-                                    {filteredAccounts.length > 0 ? (
-                                        filteredAccounts.map((account) => (
-                                            <tr
-                                                key={account.code}
-                                                className="hover:bg-gray-50"
-                                            >
-                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm font-medium text-gray-900">
-                                                    {account.code}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
-                                                    {account.name}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
-                                                    {account.type}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
-                                                    {account.balance.toLocaleString(
-                                                        "id-ID",
-                                                        {
-                                                            style: "currency",
-                                                            currency: "IDR",
-                                                        },
-                                                    )}
-                                                </td>
-                                                <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
-                                                    {account.status}
-                                                </td>
-                                                <td className="space-x-2 whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
-                                                    <button
-                                                        onClick={() =>
-                                                            handleStatusChange(
-                                                                account.code,
-                                                                "Aktif",
-                                                            )
-                                                        }
-                                                        className={`text-sm font-medium ${
-                                                            account.status ===
-                                                            "Aktif"
-                                                                ? "text-green-500"
-                                                                : "text-red-500"
-                                                        }`}
-                                                    >
-                                                        {account.status ===
-                                                        "Aktif" ? (
-                                                            <IoIosRadioButtonOn
-                                                                size={20}
-                                                            />
-                                                        ) : (
-                                                            <IoIosRadioButtonOn
-                                                                size={20}
-                                                            />
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedAccount(
-                                                                account,
-                                                            );
-                                                            setIsViewModalOpen(
-                                                                true,
-                                                            );
-                                                        }}
-                                                        className="text-blue-500"
-                                                    >
-                                                        <FaEye size={20} />
-                                                    </button>
-                                                    <button
-                                                        // onClick={{}}
-                                                        className="text-red-500"
-                                                    >
-                                                        <FaTrash size={20} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
+                                    {accounts.map((item) => (
+                                        <tr
+                                            key={item.id}
+                                            className="hover:bg-gray-50"
+                                        >
+                                            <td className="whitespace-nowrap px-6 py-4 text-left text-sm font-medium text-gray-900">
+                                            {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.kode_akun}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "kode_akun",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.kode_akun)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
+                                            {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.nama_akun}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "nama_akun",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.nama_akun)}</td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
+                                            {isEditing === item.id ? (
+                                    <input
+                                        type="text"
+                                        value={item.tipe}
+                                        onChange={(e) =>
+                                            handleEditChange(
+                                                item.id,
+                                                "tipe",
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded border px-2 py-1"
+                                    />
+                                ) : (
+                                    item.tipe)}</td>
+                                            <td className="flex space-x-2 whitespace-nowrap px-6 py-4 text-left text-sm text-gray-500">
+                                                {isRestore ? (
+                                        <Checkbox
+                                            checked={selectedIds.includes(
+                                                item.id,
+                                            )}
+                                            onChange={() =>
+                                                handleSelect(item.id)
+                                            }
+                                        />
                                     ) : (
-                                        <tr>
-                                            <td
-                                                colSpan={4}
-                                                className="py-4 text-center text-sm text-gray-500"
-                                            >
-                                                No accounts available.
+                                        <>
+                                        {isEditing === item.id ? (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                updateCOA(item.id)
+                                            }
+                                            className="text-green-500"
+                                        >
+                                            <FaCheck size={20}/>
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setIsEditing(null);
+                                            }}
+                                            className="text-gray-500"
+                                        >
+                                            <FaTimes size={20}/>
+                                        </button>
+                                    </>
+                                ) : (
+
+                                    <>
+                                                <button
+                                                    className="flex items-center text-yellow-500"
+                                                    onClick={() =>
+                                                        setIsEditing(
+                                                            item.id,
+                                                        )
+                                                    }
+                                                >
+                                                    <FaEdit size={20} />
+                                                </button>
+                                                <button
+                                                    className="flex items-center text-red-500"
+                                                    onClick={() => {
+                                                        setSelectedId(
+                                                            item.id,
+                                                        ); // Pilih ID item
+                                                        setIsDeleteModalOpen(
+                                                            true,
+                                                        );
+                                                    }}
+                                                >
+                                                    <FaTrash size={20} />
+                                                </button>
+                                            </>
+                                        )}
+                                    </>
+                                )}
                                             </td>
                                         </tr>
-                                    )}
+                                    ))}
                                 </tbody>
                             </table>
+                            {isRestore && (
+              <Box sx={{ marginTop: 2, textAlign: "right", padding: "0 10px 10px 0" }}>
+                <Button
+                    variant="contained"
+                    onClick={handleRestoreSubmit}
+                    disabled={selectedIds.length === 0}
+                    sx={{ backgroundColor: "#14B8A6", marginTop: "10px" }}
+                >
+                    Restore Pilihan
+                </Button>
+                </Box>
+            )}
+                            {isDeleteModalOpen && (
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="rounded-lg bg-white p-6">
+                        <h3 className="text-lg font-bold">
+                            Are you sure you want to delete this item?
+                        </h3>
+                        <div className="mt-4">
+                            <button
+                                onClick={handleDelete}
+                                className="mr-2 rounded bg-red-500 px-4 py-2 text-white"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                onClick={cancelDelete}
+                                className="rounded bg-gray-300 px-4 py-2"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+{isModalOpen && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="w-1/3 rounded-lg bg-white p-6 shadow-lg dark:bg-dark-2">
+            <h2 className="mb-4 text-xl font-bold">Tambah Akun</h2>
+            <input
+              type="Number"
+              placeholder="Kode Akun"
+              value={newKodeAkun}
+              onChange={(e) => setNewKodeAkun(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Nama Akun"
+              value={newNamaAkun}
+              onChange={(e) => setNewNamaAkun(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Tipe Akun"
+              value={newTipeAkun}
+              onChange={(e) => setNewTipeAkun(e.target.value)}
+              className="mb-4 w-full rounded-md border p-2"
+              required
+            />
+            <div className="flex justify-end space-x-2">
+              <button onClick={() => setIsModalOpen(false)} className="rounded-lg bg-gray-500 px-4 py-2 text-white">Batal</button>
+              <button
+                onClick={addCOA} className="rounded-lg bg-blue-500 px-4 py-2 text-white">Tambah</button>
+            </div>
+            </div>
+          </div>
+      )}
                         </div>
                     </div>
                 </div>
             </div>
-
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSubmit={handleNewAccountSubmit}
-                title="Tambah Akun Baru"
-            />
-
-            <ViewModal
-                isOpen={isViewModalOpen}
-                onClose={() => setIsViewModalOpen(false)}
-                account={selectedAccount}
-            />
         </DefaultLayout>
     );
 };

@@ -5,6 +5,7 @@ import React from "react";
 import DateFilter from "../arus-kas/DateFilter";
 import StatsArus from "../arus-kas/stats";
 import Jurnal from "../arus-kas/jurnal";
+import TabelKeuangan from "../../tabel/TabelJurnal";
 
 export default function Home() {
     const [filter, setFilter] = React.useState({
@@ -36,12 +37,12 @@ export default function Home() {
                 </div>
                 <StatsArus filter={filter} />
                 <div className="mt-5 flex w-full rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                    <Jurnal
-                       isLaporanPage={true}
-                       isPenerimaanPage={false}
-                       isPengeluaranPage={false}
-                       isArusKasPage={false}
-                    />
+                <TabelKeuangan
+                isArusKasPage={false}
+                isLaporanPage={true}
+                isPenerimaanPage={false}
+                isPengeluaranPage={false}
+                />
                 </div>
             </DefaultLayout>
         </>

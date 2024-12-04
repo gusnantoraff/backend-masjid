@@ -5,6 +5,7 @@ import PengeluaranChart from "../arus-kas/pengeluaranchart";
 import LaporanKeuangan from "../arus-kas/laporan";
 import DateFilter from "../arus-kas/DateFilter";
 import fetchWithAuth from "@/utils/fetch";
+import TabelKeuangan from "../../tabel/TabelJurnal";
 
 const Home = () => {
     const [pengeluaranTotal, setPengeluaranTotal] = useState(0);
@@ -76,12 +77,12 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="mt-4 w-full rounded-xl border border-gray-300 px-2 py-2 shadow-md">
-                    <LaporanKeuangan
-                        isArusKasPage={false}
-                        isLaporanPage={false}
-                        isPenerimaanPage={false}
-                        isPengeluaranPage={true}
-                    />
+                <TabelKeuangan
+                isArusKasPage={false}
+                isLaporanPage={false}
+                isPenerimaanPage={false}
+                isPengeluaranPage={true}
+                />
                 </div>
             </DefaultLayout>
         </>

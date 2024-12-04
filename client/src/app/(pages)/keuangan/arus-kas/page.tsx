@@ -8,7 +8,7 @@ import DateFilter from './DateFilter';
 import StatsArus from './stats';
 import PendapatanChart from './pendapatanchart';
 import PengeluaranChart from './pengeluaranchart';
-import Jurnal from './jurnal';
+import TabelKeuangan from '../../tabel/TabelJurnal';
 
 const ArusKas = () => {
     const [showModalPemasukan, setShowModalPemasukan] = useState(false);
@@ -72,11 +72,11 @@ const ArusKas = () => {
             </div>
 
             <div className="mt-5 flex w-full rounded-xl border border-gray-300 px-4 py-4 shadow-md">
-                <Jurnal
-                    isLaporanPage={false}
-                    isPenerimaanPage={false}
-                    isPengeluaranPage={false}
-                    isArusKasPage={true}
+                <TabelKeuangan
+                isArusKasPage={true}
+                isLaporanPage={false}
+                isPenerimaanPage={false}
+                isPengeluaranPage={false}
                 />
             </div>
 

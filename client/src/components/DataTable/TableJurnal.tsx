@@ -135,7 +135,7 @@ export default function TableContent({
                                 currency: "IDR",
                             })}
                         </TableCell>
-                        <TableCell>Tipe</TableCell>
+                        <TableCell>{coaMap[row.tipe]}</TableCell>
                         <TableCell>{row.description}</TableCell>
                         <TableCell
                             style={{

@@ -21,9 +21,14 @@ import GridOnIcon from "@mui/icons-material/GridOn";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { AiOutlineExport } from "react-icons/ai";
 import { jsPDF } from "jspdf";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from "@mui/material";
 import { FaEye, FaTrash } from "react-icons/fa6";
-import fetchWithAuth from "@/utils/fetch";
+import axios from "@/utils/axios";
 
 export default function AccessibleTable({
     isLaporanPage,
@@ -40,10 +45,20 @@ export default function AccessibleTable({
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [selectedId, setSelectedId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null); // Row for modal
     const [modalOpen, setModalOpen] = useState(false); // Modal state
     const [editMode, setEditMode] = useState(false);
+    const [isRestore, setIsRestore] = useState(false); // Mengelola mode restore
+    const [restoreItems, setRestoreItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+    const COAUrl = "/coa";
+    const ArusKasUrl = "/arus-kas";
 
     const pageTitle = isLaporanPage
         ? "Laporan Keuangan"
@@ -81,59 +96,85 @@ export default function AccessibleTable({
     useEffect(() => {
         const fetchCoaData = async () => {
             try {
-                const result = await fetchWithAuth("http://localhost:8000/api/coa");
+                setLoading(true);
+                const coaurl = isRestore ? `/coa/deleted` : COAUrl;
+                const response = await axios.get(coaurl);
                 const coaMapping = {};
-                result.forEach((coa) => {
-                    coaMapping[coa.id] = coa.nama_akun;
+                response.data.forEach((coa) => {
+                    coaMapping[coa.id] = { nama: coa.nama_akun, tipe: coa.tipe };
                 });
                 setCoaMap(coaMapping);
             } catch (error) {
                 console.error("Error fetching COA data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         const fetchData = async () => {
             try {
-                const result = await fetchWithAuth(
-                    "http://localhost:8000/api/arus-kas",
-                );
+                setLoading(true);
+                const aruskasurl = isRestore ? `/arus-kas/deleted` : ArusKasUrl;
+                const response = await axios.get(aruskasurl);
 
                 const formattedRows = [];
-                result.forEach((item) => {
-                    item.penerimaan_kas.forEach((pemasukan) => {
+                if (isLaporanPage) {
+                    response.data.forEach((item) => {
                         formattedRows.push({
-                            name: pemasukan.jenis,
-                            date: pemasukan.tanggal,
-                            amount: parseFloat(pemasukan.jumlah),
-                            description: pemasukan.deskripsi,
-                            file: pemasukan.image || "No File",
-                            oleh: pemasukan.coa_id,
-                            status: "Pemasukan",
+                            id: item.id,
+                            name: item.jenis,
+                            date: item.tanggal,
+                            amount: parseFloat(item.jumlah),
+                            tipe: coaMap[item.coa_id]?.tipe || "N/A",
+                            description: item.deskripsi,
+                            file: item.image || "No File",
+                            oleh: coaMap[item.coa_id]?.nama || "Unknown",
+                            status: item.status || "N/A",
                         });
                     });
+                } else {
+                    response.data.forEach((item) => {
+                        item.penerimaan_kas.forEach((pemasukan) => {
+                            formattedRows.push({
+                                id: pemasukan.id,
+                                name: pemasukan.jenis,
+                                date: pemasukan.tanggal,
+                                amount: parseFloat(pemasukan.jumlah),
+                                tipe: coaMap[pemasukan.coa_id]?.tipe || "N/A",
+                                description: pemasukan.deskripsi,
+                                file: pemasukan.image || "No File",
+                                oleh: coaMap[pemasukan.coa_id]?.nama || "Unknown",
+                                status: "Pemasukan",
+                            });
+                        });
 
-                    item.pengeluaran_kas.forEach((pengeluaran) => {
-                        formattedRows.push({
-                            name: pengeluaran.jenis,
-                            date: pengeluaran.tanggal,
-                            amount: -parseFloat(pengeluaran.jumlah),
-                            description: pengeluaran.deskripsi,
-                            file: pengeluaran.image || "No File",
-                            oleh: pengeluaran.coa_id,
-                            status: "Pengeluaran",
+                        item.pengeluaran_kas.forEach((pengeluaran) => {
+                            formattedRows.push({
+                                id: pengeluaran.id,
+                                name: pengeluaran.jenis,
+                                date: pengeluaran.tanggal,
+                                amount: -parseFloat(pengeluaran.jumlah),
+                                tipe: coaMap[pengeluaran.coa_id]?.tipe || "N/A",
+                                description: pengeluaran.deskripsi,
+                                file: pengeluaran.image || "No File",
+                                oleh: coaMap[pengeluaran.coa_id]?.nama || "Unknown",
+                                status: "Pengeluaran",
+                            });
                         });
                     });
-                });
+                }
 
                 setRows(formattedRows);
             } catch (error) {
                 console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchCoaData();
         fetchData();
-    }, []);
+    }, [isRestore]);
 
     const mappedRows = rows.map((row) => ({
         ...row,
@@ -257,10 +298,90 @@ export default function AccessibleTable({
         setAnchorEl(null);
     };
 
-    const handleDelete = (index) => {
-        const newRows = [...rows];
-        newRows.splice(index, 1);
-        setRows(newRows);
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+        setIsConfirmModalOpen(true);
+    };
+    
+    const confirmBulkDelete = async () => {
+        try {
+            setLoading(true);
+            const deletePromises = selectedIds.map(item => {
+                const url = item.tipe === "coa" ? `/coa/${item.id}` : `/arus-kas/${item.id}`;
+                return axios.delete(url);
+            });
+    
+            await Promise.all(deletePromises);
+    
+            const deletedCoaIds = selectedIds.filter(item => item.tipe === "coa").map(item => item.id);
+            const deletedArusKasIds = selectedIds.filter(item => item.tipe === "arus-kas").map(item => item.id);
+    
+            if (deletedCoaIds.length > 0) {
+                setCoaMap(prev => {
+                    const updated = { ...prev };
+                    deletedCoaIds.forEach(id => {
+                        delete updated[id];
+                    });
+                    return updated;
+                });
+            }
+    
+            if (deletedArusKasIds.length > 0) {
+                setRows(prevRows => prevRows.filter(row => !deletedArusKasIds.includes(row.id)));
+            }
+    
+            setSelectedIds([]);
+            setSuccessMessage("Data berhasil dihapus.");
+            setIsConfirmModalOpen(false);
+        } catch (error) {
+            console.error("Error deleting data:", error);
+            setErrorMessage("Gagal menghapus data. Silakan coba lagi.");
+            setIsConfirmModalOpen(false);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    const cancelBulkDelete = () => {
+        setIsConfirmModalOpen(false);
+    };
+
+    const handleRowAction = (action, row) => {
+        if (action === "view") {
+            setModalData({ open: true, row });
+        } else if (action === "delete") {
+            const type = row.type; // Pastikan setiap row memiliki properti `type`
+            handleDelete(row.id, type);
+        }
+    };
+
+    const handleDelete = async (id, type) => {
+        if (!id || !type) return;
+
+        const url = type === "coa" ? `/coa/${id}` : `/arus-kas/${id}`;
+
+        try {
+            setLoading(true);
+            await axios.delete(url);
+
+            if (type === "coa") {
+                setCoaMap(prev => {
+                    const updated = { ...prev };
+                    delete updated[id];
+                    return updated;
+                });
+                setRows(prevRows => prevRows.filter(row => row.oleh !== id));
+            } else if (type === "arus-kas") {
+                setRows(prevRows => prevRows.filter(row => row.id !== id));
+            }
+
+            setSuccessMessage("Data berhasil dihapus.");
+        } catch (error) {
+            console.error("Error deleting data:", error);
+            setErrorMessage("Gagal menghapus data. Silakan coba lagi.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDetail = (row) => {
@@ -280,7 +401,6 @@ export default function AccessibleTable({
             <p className="mb-4 mt-2 px-2 text-center text-3xl font-bold text-black">
                 {pageTitle}
             </p>
-
             {/* Filters */}
             <div
                 style={{
@@ -434,7 +554,6 @@ export default function AccessibleTable({
                     </div>
                 </div>
             </div>
-
             {/* Table */}
             <TableContainer component={Paper}>
                 <Table>
@@ -569,23 +688,22 @@ export default function AccessibleTable({
                                 <TableCell className="space-x-2">
                                     <button
                                         onClick={() => handleDetail(row)}
-                        className="text-blue-500"
-                      >
-                        <FaEye size={20}/>
-                      </button>
+                                        className="text-blue-500"
+                                    >
+                                        <FaEye size={20} />
+                                    </button>
                                     <button
-                        onClick={() => handleDelete(index)}
-                        className="text-red-500"
-                      >
-                        <FaTrash size={20}/>
-                      </button>
+                                        onClick={handleBulkDelete}
+                                        className="text-red-500"
+                                    >
+                                        <FaTrash size={20} />
+                                    </button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-
             {/* Pagination */}
             <TablePagination
                 component="div"
@@ -595,216 +713,266 @@ export default function AccessibleTable({
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-
             {/* Modal for Detail */}
             {selectedRow && (
-    <Dialog open={modalOpen} onClose={handleModalClose}>
-        <DialogTitle>Detail Data</DialogTitle>
-        <DialogContent>
-            {editMode ? (
-                // Edit Mode
-                <>
-                    <TextField
-                        label="Jenis"
-                        value={selectedRow.name}
-                        fullWidth
-                        margin="dense"
-                        select
-                        onChange={(e) =>
-                            setSelectedRow((prev) => ({ ...prev, name: e.target.value }))
-                        }
-                    >
-                        <MenuItem value="Jenis A">Jenis A</MenuItem>
-                        <MenuItem value="Jenis B">Jenis B</MenuItem>
-                        <MenuItem value="Jenis C">Jenis C</MenuItem>
-                    </TextField>
-                    <TextField
-                        label="Tanggal"
-                        value={selectedRow.date}
-                        type="date"
-                        fullWidth
-                        margin="dense"
-                        InputLabelProps={{ shrink: true }}
-                        onChange={(e) =>
-                            setSelectedRow((prev) => ({ ...prev, date: e.target.value }))
-                        }
-                    />
-                    <TextField
-                        label="Jumlah"
-                        value={selectedRow.amount}
-                        fullWidth
-                        margin="dense"
-                        onChange={(e) =>
-                            setSelectedRow((prev) => ({
-                                ...prev,
-                                amount: parseFloat(e.target.value),
-                            }))
-                        }
-                    />
-                    <TextField
-                        label="Deskripsi"
-                        value={selectedRow.description}
-                        fullWidth
-                        margin="dense"
-                        onChange={(e) =>
-                            setSelectedRow((prev) => ({
-                                ...prev,
-                                description: e.target.value,
-                            }))
-                        }
-                    />
-                    <TextField
-                        label="File"
-                        value={selectedRow.file}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Oleh"
-                        value={selectedRow.oleh}
-                        fullWidth
-                        margin="dense"
-                        select
-                        onChange={(e) =>
-                            setSelectedRow((prev) => ({ ...prev, oleh: e.target.value }))
-                        }
-                    >
-                        {Object.keys(coaMap).map((key) => (
-                            <MenuItem key={key} value={coaMap[key]}>
-                                {coaMap[key]}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    <TextField
-                        label="Status"
-                        value={selectedRow.status}
-                        fullWidth
-                        margin="dense"
-                        select
-                        onChange={(e) =>
-                            setSelectedRow((prev) => ({
-                                ...prev,
-                                status: e.target.value,
-                            }))
-                        }
-                    >
-                        <MenuItem value="Pemasukan">Pemasukan</MenuItem>
-                        <MenuItem value="Pengeluaran">Pengeluaran</MenuItem>
-                    </TextField>
-                </>
-            ) : (
-                // View Mode
-                <>
-                    <TextField
-                        label="Jenis"
-                        value={selectedRow.name}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Tanggal"
-                        value={selectedRow.date}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Jumlah"
-                        value={selectedRow.amount.toLocaleString("id-ID", {
-                            style: "currency",
-                            currency: "IDR",
-                        })}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Deskripsi"
-                        value={selectedRow.description}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="File"
-                        value={selectedRow.file}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Oleh"
-                        value={selectedRow.oleh}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Status"
-                        value={selectedRow.status}
-                        fullWidth
-                        margin="dense"
-                        InputProps={{ readOnly: true }}
-                    />
-                </>
-            )}
-        </DialogContent>
-        <DialogActions>
-            {editMode ? (
-                <>
-                    <Button
-                        onClick={async () => {
-                            try {
-                                await fetchWithAuth(
-                                    `http://localhost:8000/api/arus-kas/${selectedRow.id}`,
-                                    {
-                                        method: "PUT",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify(selectedRow),
+                <Dialog open={modalOpen} onClose={handleModalClose}>
+                    <DialogTitle>Detail Data</DialogTitle>
+                    <DialogContent>
+                        {editMode ? (
+                            // Edit Mode
+                            <>
+                                <TextField
+                                    label="Jenis"
+                                    value={selectedRow.name}
+                                    fullWidth
+                                    margin="dense"
+                                    select
+                                    onChange={(e) =>
+                                        setSelectedRow((prev) => ({
+                                            ...prev,
+                                            name: e.target.value,
+                                        }))
                                     }
-                                );
-                               
-                                    setRows((prev) =>
-                                        prev.map((row) =>
-                                            row.id === selectedRow.id ? selectedRow : row
-                                        )
-                                    );
-                                    setEditMode(false);
-                                    setModalOpen(false);
-                            } catch (error) {
-                                console.error("Error updating data:", error);
-                            }
-                        }}
-                        variant="contained"
-                        color="primary"
-                    >
-                        Simpan
-                    </Button>
-                    <Button
-                        onClick={() => setEditMode(false)}
-                        variant="outlined"
-                        color="secondary"
-                    >
-                        Batal
-                    </Button>
-                </>
-            ) : (
-                <Button
-                    onClick={() => setEditMode(true)}
-                    variant="contained"
-                    color="primary"
-                >
-                    Edit
-                </Button>
+                                >
+                                    <MenuItem value="Jenis A">Jenis A</MenuItem>
+                                    <MenuItem value="Jenis B">Jenis B</MenuItem>
+                                    <MenuItem value="Jenis C">Jenis C</MenuItem>
+                                </TextField>
+                                <TextField
+                                    label="Tanggal"
+                                    value={selectedRow.date}
+                                    type="date"
+                                    fullWidth
+                                    margin="dense"
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={(e) =>
+                                        setSelectedRow((prev) => ({
+                                            ...prev,
+                                            date: e.target.value,
+                                        }))
+                                    }
+                                />
+                                <TextField
+                                    label="Jumlah"
+                                    value={selectedRow.amount}
+                                    fullWidth
+                                    margin="dense"
+                                    onChange={(e) =>
+                                        setSelectedRow((prev) => ({
+                                            ...prev,
+                                            amount: parseFloat(e.target.value),
+                                        }))
+                                    }
+                                />
+                                <TextField
+                                    label="Deskripsi"
+                                    value={selectedRow.description}
+                                    fullWidth
+                                    margin="dense"
+                                    onChange={(e) =>
+                                        setSelectedRow((prev) => ({
+                                            ...prev,
+                                            description: e.target.value,
+                                        }))
+                                    }
+                                />
+                                <TextField
+                                    label="File"
+                                    value={selectedRow.file}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="Oleh"
+                                    value={selectedRow.oleh}
+                                    fullWidth
+                                    margin="dense"
+                                    select
+                                    onChange={(e) =>
+                                        setSelectedRow((prev) => ({
+                                            ...prev,
+                                            oleh: e.target.value,
+                                        }))
+                                    }
+                                >
+                                    {Object.keys(coaMap).map((key) => (
+                                        <MenuItem key={key} value={coaMap[key]}>
+                                            {coaMap[key]}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                                <TextField
+                                    label="Status"
+                                    value={selectedRow.status}
+                                    fullWidth
+                                    margin="dense"
+                                    select
+                                    onChange={(e) =>
+                                        setSelectedRow((prev) => ({
+                                            ...prev,
+                                            status: e.target.value,
+                                        }))
+                                    }
+                                >
+                                    <MenuItem value="Pemasukan">
+                                        Pemasukan
+                                    </MenuItem>
+                                    <MenuItem value="Pengeluaran">
+                                        Pengeluaran
+                                    </MenuItem>
+                                </TextField>
+                            </>
+                        ) : (
+                            // View Mode
+                            <>
+                                <TextField
+                                    label="Jenis"
+                                    value={selectedRow.name}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="Tanggal"
+                                    value={selectedRow.date}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="Jumlah"
+                                    value={selectedRow.amount.toLocaleString(
+                                        "id-ID",
+                                        {
+                                            style: "currency",
+                                            currency: "IDR",
+                                        },
+                                    )}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="Deskripsi"
+                                    value={selectedRow.description}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="File"
+                                    value={selectedRow.file}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="Oleh"
+                                    value={selectedRow.oleh}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                                <TextField
+                                    label="Status"
+                                    value={selectedRow.status}
+                                    fullWidth
+                                    margin="dense"
+                                    InputProps={{ readOnly: true }}
+                                />
+                            </>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        {editMode ? (
+                            <>
+                                <Button
+                                    onClick={async () => {
+                                        try {
+                                            await fetchWithAuth(
+                                                `http://localhost:8000/api/arus-kas/${selectedRow.id}`,
+                                                {
+                                                    method: "PUT",
+                                                    headers: {
+                                                        "Content-Type":
+                                                            "application/json",
+                                                    },
+                                                    body: JSON.stringify(
+                                                        selectedRow,
+                                                    ),
+                                                },
+                                            );
+
+                                            setRows((prev) =>
+                                                prev.map((row) =>
+                                                    row.id === selectedRow.id
+                                                        ? selectedRow
+                                                        : row,
+                                                ),
+                                            );
+                                            setEditMode(false);
+                                            setModalOpen(false);
+                                        } catch (error) {
+                                            console.error(
+                                                "Error updating data:",
+                                                error,
+                                            );
+                                        }
+                                    }}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Simpan
+                                </Button>
+                                <Button
+                                    onClick={() => setEditMode(false)}
+                                    variant="outlined"
+                                    color="secondary"
+                                >
+                                    Batal
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                onClick={() => setEditMode(true)}
+                                variant="contained"
+                                color="primary"
+                            >
+                                Edit
+                            </Button>
+                        )}
+                        <Button onClick={handleModalClose} color="secondary">
+                            Tutup
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             )}
-            <Button onClick={handleModalClose} color="secondary">
-                Tutup
-            </Button>
-        </DialogActions>
-    </Dialog>
-)};
+
+{isConfirmModalOpen && (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-1000">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Konfirmasi Penghapusan</h2>
+            <p>Apakah Anda yakin ingin menghapus {selectedItems.length} item yang dipilih?</p>
+            <div className="mt-4 flex justify-end gap-2">
+                <button
+                    onClick={cancelBulkDelete}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+                >
+                    Batal
+                </button>
+                <button
+                    onClick={confirmBulkDelete}
+                    className="px-4 py-2 bg-red-500 text-white rounded"
+                >
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
+            ;
         </div>
     );
 }
