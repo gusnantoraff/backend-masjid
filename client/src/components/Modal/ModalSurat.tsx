@@ -9,9 +9,10 @@ interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  onSuccess: (message: string) => void;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit, onSuccess }) => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,7 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
   const initialFormData = {
     judul_surat: "",
     isi_surat: "",
+    tanggal: "",
     stempel: null as File | null,
     tanda_tangan: null as File | null,
   };
@@ -48,13 +50,16 @@ const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose, onSubmit }) => {
     e.preventDefault();
     const data = new FormData();
 
+    const message = "Surat berhasil ditambahkan";
+    onSuccess(message);
+
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
       now.getDate()
     ).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
     data.append("judul_surat", formData.judul_surat);
-    data.append("tanggal_publikasi", formattedDate);
+    data.append("tanggal", formattedDate);
     data.append("isi_surat", content);
 
     if (formData.stempel) {

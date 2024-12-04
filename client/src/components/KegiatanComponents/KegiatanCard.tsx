@@ -27,7 +27,7 @@ const KegiatanCard: React.FC<KegiatanCardProps> = ({ nama_kegiatan, tanggal, lok
     normal: { 
       cardWidth: '565px', 
       cardHeight: '200px', 
-      imgWidth: 275, 
+      imgWidth: 230, 
       imgHeight: 175, 
       fontSize: '16px', 
       buttonSize: '14px', 
