@@ -12,6 +12,7 @@ class CreateTemplateSuratTable extends Migration
             $table->id();
             $table->string('judul_surat');
             $table->text('isi_surat');
+            $table->date('tanggal');
             $table->text('tanda_tangan')->nullable();
             $table->text('stempel')->nullable();
             $table->timestamps();
