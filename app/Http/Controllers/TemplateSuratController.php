@@ -19,6 +19,12 @@ class TemplateSuratController extends Controller
         return response()->json($templateSurat);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = TemplateSurat::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created template_surat in storage.
      *

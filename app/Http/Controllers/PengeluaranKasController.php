@@ -20,6 +20,12 @@ class PengeluaranKasController extends Controller
         return response()->json($pengeluaranKas);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = PengeluaranKas::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created pengeluaran_kas in storage.
      */

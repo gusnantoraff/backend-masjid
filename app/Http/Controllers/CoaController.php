@@ -41,6 +41,12 @@ class CoaController extends Controller
     
         return response()->json($coa);
     }
+
+    public function getDeleted()
+    {
+        $deletedData = Coa::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
     
 
     /**

@@ -19,6 +19,12 @@ class InfoMasjidController extends Controller
         return response()->json($infoMasjid);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = InfoMasjid::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created info_masjid in storage.
      *

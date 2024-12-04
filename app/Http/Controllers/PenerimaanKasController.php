@@ -20,6 +20,12 @@ class PenerimaanKasController extends Controller
         return response()->json($penerimaanKas);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = PenerimaanKas::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created penerimaan_kas in storage.
      */

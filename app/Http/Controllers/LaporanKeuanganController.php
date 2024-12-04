@@ -20,6 +20,12 @@ class LaporanKeuanganController extends Controller
         return response()->json($laporanKeuangan);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = LaporanKeuangan::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created laporan_keuangan in storage.
      *

@@ -33,6 +33,12 @@ class ArusKasController extends Controller
         return response()->json($arusKas);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = ArusKas::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created arus_kas in storage.
      */

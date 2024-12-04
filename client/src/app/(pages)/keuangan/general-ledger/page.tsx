@@ -158,6 +158,7 @@ const GeneralLedger = () => {
                 setSelectedDate("");
                 setIsModalOpen(false);
                 setIsSubmitted(true);
+                fetchData();
             }
         } catch (error) {
             console.error("Error adding General Ledger:", error);

@@ -37,6 +37,12 @@ class KegiatanController extends Controller
         return response()->json($kegiatan);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = Kegiatan::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created kegiatan in storage along with an associated image.
      *

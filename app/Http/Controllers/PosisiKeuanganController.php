@@ -19,6 +19,12 @@ class PosisiKeuanganController extends Controller
         return response()->json($posisiKeuangan);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = PosisiKeuangan::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created posisi_keuangan in storage.
      *

@@ -19,6 +19,12 @@ class PesanWebsiteController extends Controller
         return response()->json($pesanWebsite);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = PesanWebsite::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created pesan_website in storage.
      *

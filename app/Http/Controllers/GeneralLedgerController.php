@@ -20,6 +20,12 @@ class GeneralLedgerController extends Controller
         return response()->json($generalLedger);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = GeneralLedger::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created general ledger entry in storage.
      */

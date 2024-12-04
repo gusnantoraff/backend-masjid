@@ -28,6 +28,12 @@ class ImagesController extends Controller
         return response()->json($images);
     }
 
+    public function getDeleted()
+    {
+        $deletedData = Images::onlyTrashed()->get();
+        return response()->json($deletedData);
+    }
+
     /**
      * Store a newly created image in storage for a specific model.
      */

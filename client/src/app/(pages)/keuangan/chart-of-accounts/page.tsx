@@ -275,14 +275,14 @@ const ChartOfAccounts = () => {
                     type: account.tipe,
                     status: account.status || "Aktif",
                     balance:
-                        account.penerimaan_kas.reduce(
-                            (sum, item) => sum + parseFloat(item.jumlah),
-                            0,
-                        ) -
-                        account.pengeluaran_kas.reduce(
-                            (sum, item) => sum + parseFloat(item.jumlah),
-                            0,
-                        ),
+                        (account.penerimaan_kas?.reduce(
+                            (sum, item) => sum + parseFloat(item.jumlah || 0),
+                            0
+                        ) || 0) -
+                        (account.pengeluaran_kas?.reduce(
+                            (sum, item) => sum + parseFloat(item.jumlah || 0),
+                            0
+                        ) || 0),
                 }));
 
                 setAccounts(formattedAccounts);
