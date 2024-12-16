@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import DataTable from '@/components/DataTable/TabelSurat';
-import { Button, Box, Paper, InputBase, Typography,IconButton, CircularProgress } from '@mui/material';
-import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
+import { Button, Box, Paper, InputBase, Typography, IconButton, CircularProgress } from '@mui/material';
+import { AiOutlinePlus } from 'react-icons/ai';
 import ModalForm from '@/components/Modal/ModalSurat';
+import SuratTemplateForm from '@/components/TemplateSurat';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SlActionUndo } from "react-icons/sl";
@@ -29,6 +30,7 @@ interface Column {
 
 export default function Surat() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState<Surat[]>([]);
@@ -45,11 +47,18 @@ export default function Surat() {
     setIsModalOpen(false);
   };
 
+  const openTemplateModal = () => {
+    setIsTemplateModalOpen(true);
+  };
+
+  const closeTemplateModal = () => {
+    setIsTemplateModalOpen(false);
+  };
+
   const handleSubmit = () => {
     fetchData();
     closeModal();
   };
-
 
   const fetchData = async () => {
     setLoading(true);
@@ -78,10 +87,8 @@ export default function Surat() {
       );
     }
   
-    console.log(filtered); 
     setFilteredData(filtered);
   }, [searchTerm, suratData]);
-  
 
   const reloadData = () => {
     const url = isRestore ? '/template-surat/deleted' : '/template-surat';
@@ -158,10 +165,18 @@ export default function Surat() {
             <Button
               variant="contained"
               sx={{ backgroundColor: '#14B8A6', color: 'white', marginRight: '10px' }}
-              startIcon={<AiOutlinePlus />}
+             
               onClick={openModal}
             >
               Tambah Surat
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: '#1E40AF', color: 'white'}}
+              startIcon={<AiOutlinePlus />}
+              onClick={openTemplateModal}
+            >
+              Tambah Surat by Template
             </Button>
           </Box>
         </Box>
@@ -197,8 +212,13 @@ export default function Surat() {
               onChange={handleSearchChange}
             />
           </Paper>
-          </Box>
+        </Box>
 
+        <SuratTemplateForm
+          isOpen={isTemplateModalOpen}
+          onClose={closeTemplateModal}
+          onSubmit={handleSubmit}
+        />
 
         {loading ? (
           <CircularProgress sx={{ display: 'block', margin: 'auto' }} />
@@ -219,6 +239,7 @@ export default function Surat() {
           onSuccess={(message: string) => toast.success(message)}
           onSubmit={handleSubmit} 
         />
+
         <ToastContainer position="bottom-right" autoClose={1000} hideProgressBar={false} />
         <AlertConfirm open={showConfirm} onClose={() => setShowConfirm(false)} onConfirm={handleRestore} message="Apakah Anda Yakin Ingin Restore Data?" />
       </div>

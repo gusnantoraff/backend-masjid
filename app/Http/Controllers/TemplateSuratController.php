@@ -19,7 +19,12 @@ class TemplateSuratController extends Controller
         return response()->json($templateSurat);
     }
 
-    public function getDeleted()
+    /**
+     * Display a listing of the soft-deleted template_surat.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDeleted(): JsonResponse
     {
         $deletedData = TemplateSurat::onlyTrashed()->get();
         return response()->json($deletedData);
@@ -34,9 +39,15 @@ class TemplateSuratController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'judul_surat' => 'required|string|max:255',
+            'judul_surat' => 'nullable|string|max:255',
             'isi_surat' => 'required|string',
-            'tanda_tangan' => 'nullable|string',
+            'tanggal' => 'required|date',
+            'nomor' => 'nullable|string|max:255',
+            'hal' => 'nullable|string|max:255',
+            'lampiran' => 'nullable|string|max:255',
+            'penerima' => 'nullable|string|max:255',
+            'lokasi' => 'nullable|string|max:255',
+            'nama_ttd' => 'nullable|string',
             'stempel' => 'nullable|string',
         ]);
 
@@ -78,9 +89,15 @@ class TemplateSuratController extends Controller
         }
 
         $validatedData = $request->validate([
-            'judul_surat' => 'sometimes|string|max:255',
+            'judul_surat' => 'nullable|string|max:255',
             'isi_surat' => 'sometimes|string',
-            'tanda_tangan' => 'nullable|string',
+            'tanggal' => 'sometimes|date',
+            'nomor' => 'nullable|string|max:255',
+            'hal' => 'nullable|string|max:255',
+            'lampiran' => 'nullable|string|max:255',
+            'penerima' => 'nullable|string|max:255',
+            'lokasi' => 'nullable|string|max:255',
+            'nama_ttd' => 'nullable|string',
             'stempel' => 'nullable|string',
         ]);
 
@@ -108,7 +125,13 @@ class TemplateSuratController extends Controller
         return response()->json(['message' => 'Template Surat deleted successfully']);
     }
 
-    public function restore($ids): JsonResponse
+    /**
+     * Restore the soft-deleted template_surat.
+     *
+     * @param string $ids
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function restore(string $ids): JsonResponse
     {
         $idsArray = explode(',', $ids);
 

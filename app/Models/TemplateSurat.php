@@ -15,7 +15,13 @@ class TemplateSurat extends Model
     protected $fillable = [
         'judul_surat',
         'isi_surat',
-        'tanda_tangan',
+        'tanggal',
+        'nomor',
+        'hal',
+        'lampiran',
+        'penerima',
+        'lokasi',
+        'nama_ttd',
         'stempel',
         'deleted_status'
     ];
