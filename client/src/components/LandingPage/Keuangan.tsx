@@ -70,29 +70,31 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
     setSelectedReport(null);
   };
 
-  const formatDate = (date: string, period: PeriodType) => {
-    const d = new Date(date);
+    const formatDate = (date: string, period: PeriodType) => {
+      const d = new Date(date);
 
-    if (period === 'harian') {
-      const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-      return `Laporan ${d.toLocaleDateString('id-ID', options)}`;
-    }
+      if (period === 'harian') {
+        const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        return `Laporan ${d.toLocaleDateString('id-ID', options)}`;
+      }
 
-    if (period === 'mingguan') {
-      return `${date}`;
-    }
+      if (period === 'mingguan') {
+        const now = new Date();
+        const monthName = now.toLocaleString('id-ID', { month: 'long' });
+        return `${date} Bulan ${monthName}`;
+      }
 
-    if (period === 'bulanan') {
-      const monthName = d.toLocaleString('id-ID', { month: 'long' });
-      return `Laporan Bulan ${monthName} ${d.getFullYear()}`;
-    }
+      if (period === 'bulanan') {
+        const monthName = d.toLocaleString('id-ID', { month: 'long' });
+        return `Laporan Bulan ${monthName} ${d.getFullYear()}`;
+      }
 
-    if (period === 'tahunan') {
-      return `Laporan Tahun ${d.getFullYear()}`;
-    }
+      if (period === 'tahunan') {
+        return `Laporan Tahun ${d.getFullYear()}`;
+      }
 
-    return date;
-  };
+      return date;
+    };
 
   return (
     <section id={id} className="mb-10 font-poppins" data-aos="fade-right" data-aos-delay="200">
