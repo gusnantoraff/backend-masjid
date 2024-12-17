@@ -58,7 +58,7 @@ const TabelKeuangan = () => {
                 setLoading(true);
                 const coaurl = COAUrl;
                 const response = await axios.get(coaurl);
-    
+
                 const coaMapping = {};
                 response.data.forEach((coa) => {
                     coaMapping[coa.id] = {
@@ -66,7 +66,7 @@ const TabelKeuangan = () => {
                         tipe: coa.tipe,
                     };
                 });
-    
+
                 setCoaMap(coaMapping); // This sets the COA map
             } catch (error) {
                 console.error("Error fetching COA data:", error);
@@ -74,14 +74,14 @@ const TabelKeuangan = () => {
                 setLoading(false);
             }
         };
-    
+
         const fetchPenerimaanKas = async (coaMapping) => {
             try {
                 const url = isRestore
                     ? `/penerimaan-kas/deleted`
                     : `/penerimaan-kas`;
                 const response = await axios.get(url);
-    
+
                 return response.data.map((pemasukan) => ({
                     id: pemasukan.id,
                     name: pemasukan.jenis,
@@ -98,14 +98,14 @@ const TabelKeuangan = () => {
                 return [];
             }
         };
-    
+
         const fetchPengeluaranKas = async (coaMapping) => {
             try {
                 const url = isRestore
                     ? `/pengeluaran-kas/deleted`
                     : `/pengeluaran-kas`;
                 const response = await axios.get(url);
-    
+
                 return response.data.map((pengeluaran) => ({
                     id: pengeluaran.id,
                     name: pengeluaran.jenis,
@@ -114,7 +114,8 @@ const TabelKeuangan = () => {
                     tipe: coaMapping[pengeluaran.coa_id]?.tipe || "N/A",
                     description: pengeluaran.deskripsi,
                     file: pengeluaran.image || "No File",
-                    oleh: coaMapping[pengeluaran.coa_id]?.nama_akun || "Unknown",
+                    oleh:
+                        coaMapping[pengeluaran.coa_id]?.nama_akun || "Unknown",
                     status: "Pengeluaran",
                 }));
             } catch (error) {
@@ -122,7 +123,7 @@ const TabelKeuangan = () => {
                 return [];
             }
         };
-    
+
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -130,38 +131,42 @@ const TabelKeuangan = () => {
                 console.log("Fetching COA data...");
                 await fetchCoaData();
                 console.log("COA data fetched.");
-        
+
                 console.log("Fetching Penerimaan Kas data...");
                 const penerimaanKas = await fetchPenerimaanKas(coaMap);
                 console.log("Penerimaan Kas data fetched:", penerimaanKas);
-        
+
                 console.log("Fetching Pengeluaran Kas data...");
                 const pengeluaranKas = await fetchPengeluaranKas(coaMap);
                 console.log("Pengeluaran Kas data fetched:", pengeluaranKas);
 
                 const combinedData = [...penerimaanKas, ...pengeluaranKas];
                 console.log("Combined Data (Before Filtering):", combinedData);
-        
+
                 combinedData.forEach((item, index) => {
                     if (item.deleted_status === undefined) {
-                        console.error(`Error: 'deleted_status' is missing in item at index ${index}`, item);
+                        console.error(
+                            `Error: 'deleted_status' is missing in item at index ${index}`,
+                            item,
+                        );
                     }
                 });
-        
+
                 // Filter data based on restore mode
-                const filteredData = [...penerimaanKas, ...pengeluaranKas].filter(
-                    (item) => (isRestore ? item.deleted_status === 1 : true)
+                const filteredData = [
+                    ...penerimaanKas,
+                    ...pengeluaranKas,
+                ].filter((item) =>
+                    isRestore ? item.deleted_status === 1 : true,
                 );
-                
-        
+
                 console.log("Filtered Data (After Filtering):", filteredData);
-        
+
                 // Set filtered rows to the state
                 if (filteredData.length === 0) {
                     console.warn("No data matched the filter condition.");
                 }
-                setRows(filteredData); 
-        
+                setRows(filteredData);
             } catch (error) {
                 console.error("Error fetching data:", error.message);
                 console.error("Stack trace:", error.stack);
@@ -169,18 +174,15 @@ const TabelKeuangan = () => {
                 setLoading(false);
             }
         };
-        
+
         fetchData(); // Call the function to fetch the data
-         // Call the function to fetch the data
-        
-    
+        // Call the function to fetch the data
     }, [isRestore]); // Only depend on isRestore, no longer on coaMap
-    
+
     const displayedRows = useMemo(() => {
         // Ensure the data for the current page is correctly sliced.
         return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     }, [rows, page, rowsPerPage]);
-    
 
     const handleSelect = (id, status) => {
         setSelectedIds((prevSelectedIds) => {
@@ -306,7 +308,6 @@ const TabelKeuangan = () => {
             setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
         }
     };
-
 
     return (
         <>

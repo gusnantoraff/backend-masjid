@@ -9,6 +9,7 @@ import InfoMasjid from '@/components/LandingPage/InfoMasjid';
 import Galeri from '@/components/LandingPage/Galeri';
 import NewsSection from '@/components/LandingPage/Berita';
 import Footer from '@/components/LandingPage/Footer';
+import JamDigital from '@/components/LandingPage/JamDigital';
 
 
 const Home = () => {
@@ -30,30 +31,58 @@ const Home = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Mencegah scroll horizontal
+    document.body.style.overflowX = "hidden";
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      // Mengembalikan pengaturan scroll saat komponen unmount
+      document.body.style.overflowX = "";
+      document.body.style.margin = "";
+      document.body.style.padding = "";
+    };
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar className={`fixed top-0 left-0 w-full z-50 h-[78px] ${navbarBg ? "bg-white" : "bg-white"}`} />
-      <Banner id="home"  />
-      <main className="flex-grow pt-16">
+    <div
+    className="flex flex-col min-h-screen"
+    style={{
+      maxWidth: "100vw",  // Membatasi lebar elemen root ke lebar layar
+      overflowX: "hidden",  // Mencegah scroll horizontal
+    }}
+  >
+      {/* Jam Digital */}
+      <JamDigital />
 
-        <div className="container mx-auto px-40 pb-10">
+      {/* Navbar */}
+      <Navbar className="fixed top-0 left-0 w-full z-50 h-[78px] bg-white" />
+
+      {/* Banner */}
+      <Banner id="home" />
+
+      <main className="flex-grow pt-16">
+        {/* Info Masjid and Keuangan Section */}
+        <div className="container mx-auto px-4 md:px-10 lg:px-20 pb-10">
           <InfoMasjid id="infoMasjid" />
           <Keuangan id="keuangan" />
         </div>
 
-        <div className="w-full px-0">
+        {/* Kegiatan Terdekat Section */}
+        <div className="w-full px-4 md:px-10 lg:px-20">
           <KegiatanTerdekat id="kegiatan" />
         </div>
 
-        <div className="container mx-auto px-40">
+        {/* News and Galeri Section */}
+        <div className="container mx-auto px-4 md:px-10 lg:px-20">
           <NewsSection id="berita" />
           <Galeri id="galeri" />
         </div>
-
       </main>
+
+      {/* Footer */}
       <Footer id="footer" />
     </div>
   );

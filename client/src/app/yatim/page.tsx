@@ -1,0 +1,132 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import Navbar from "@/components/LandingPage/Navbar";
+import Footer from "@/components/LandingPage/Footer";
+import axios from "@/utils/axios";
+
+interface RekeningBank {
+    id: number;
+    nama_bank: string;
+    nomor_rekening: string;
+    atas_nama: string;
+}
+
+const Profil = () => {
+    const [navbarBg, setNavbarBg] = useState(false);
+    const [rekeningData, setRekeningData] = useState<RekeningBank | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // State untuk mengontrol modal
+
+    useEffect(() => {
+        // Contoh mendapatkan data rekening dari API
+        axios.get("/rekening-bank/1") // Ganti dengan URL yang sesuai
+            .then((response) => {
+                setRekeningData(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching rekening data", error);
+            });
+
+        const handleScroll = () => {
+            if (window.scrollY > 50) {
+                setNavbarBg(true);
+            } else {
+                setNavbarBg(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    // Fungsi untuk membuka dan menutup modal
+    const toggleModal = () => {
+        console.log("Toggling modal, current state:", isModalOpen); // Debugging log
+        setIsModalOpen(!isModalOpen);
+    };
+
+    return (
+        <div className="flex min-h-screen flex-col">
+            <Navbar
+                className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
+            />
+            <section
+                className="mt-10 flex flex-col items-center bg-white px-4 py-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
+                data-aos="fade-down"
+                data-aos-delay="200"
+            >
+                {/* Header */}
+                <h2 className="flex items-center gap-3 text-center text-3xl font-bold text-ijo sm:text-4xl lg:text-5xl">
+                    Yatim & Dhuafa
+                </h2>
+                <hr className="mx-auto my-4 w-2/3 rounded-lg border-2 border-ijo sm:my-6 sm:w-1/2 lg:w-[30%]" />
+
+                <button
+                        onClick={toggleModal}
+                        className="py-4 block w-full rounded-lg bg-ijo px-4 py-2 text-center text-white hover:bg-green-light-7 lg:w-auto"
+                    >
+                        Donasi
+                    </button>
+
+                {/* Struktur Organisasi */}
+                <div className="mt-8 flex w-full flex-col items-center justify-center rounded-lg bg-teal-50 p-6 text-gray-700 shadow-md sm:p-8">
+                    <h3 className="mb-4 text-center text-xl font-semibold text-teal-700 sm:text-2xl">
+                        Tentang Yatim & Dhuafa
+                    </h3>
+                    <h3 className="mb-4 text-center font-medium text-teal-700 sm:text-sm">
+                        عَنْ سَهْلٍ بْنِ سَعْدٍ قَالَ : قَالَ رَسُولُ اللَّهِ
+                        صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ : ” أَنَا وَكَافِلُ
+                        الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا ، وَأَشَارَ
+                        بِالسَّبَّابَةِ وَالْوُسْطَى وَفَرَّجَ بَيْنَهُمَا
+                        شَيْئًا 
+                        <br/>Dari Sahl bin Sa’ad r.a berkata: “Rasulullah SAW
+                        bersabda: “Saya dan orang yang memelihara anak yatim itu
+                        dalam surga seperti ini.” Beliau mengisyaratkan dengan
+                        jari telunjuk dan jari tengahnya serta merenggangkan
+                        keduanya.”
+                    </h3>
+                    <img
+                        src={"/images/yatim3.jpg"}
+                        alt="Description of Image"
+                        className="w-1/2"
+                    />
+                </div>
+
+                {/* Modal untuk Rekening Bank */}
+                {isModalOpen && rekeningData && (
+                    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+                        <div className="bg-white rounded-lg shadow-lg w-1/2 p-8">
+                            <h3 className="mb-4 text-center text-xl font-semibold text-teal-700 sm:text-2xl">
+                                Informasi Rekening Bank
+                            </h3>
+                            <div className="space-y-4 w-full">
+                                <div className="flex justify-between">
+                                    <span className="font-semibold text-teal-700">Nama Bank:</span>
+                                    <span className="text-gray-700">{rekeningData.nama_bank}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-semibold text-teal-700">Nomor Rekening:</span>
+                                    <span className="text-gray-700">{rekeningData.nomor_rekening}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-semibold text-teal-700">Atas Nama:</span>
+                                    <span className="text-gray-700">{rekeningData.atas_nama}</span>
+                                </div>
+                            </div>
+                            <div className="mt-6 flex justify-center">
+                                <button
+                                    onClick={toggleModal}
+                                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300"
+                                >
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </section>
+            <Footer id="footer" />
+        </div>
+    );
+};
+
+export default Profil;
