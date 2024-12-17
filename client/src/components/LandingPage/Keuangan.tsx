@@ -130,7 +130,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
       <h2 className="text-4xl text-gray-700 mb-6 font-poppins text-center font-semibold">Laporan Keuangan</h2>
       <hr className="my-1 mb-6 border-ijo w-[20%] mx-auto border-2 rounded-lg" />
       <h3 className="px-5 text-lg text-gray-700 mb-10 font-poppins text-center font-light">
-        Laporan keuangan Masjid Tercode yang mencakup berbagai periode, mulai dari harian, mingguan, bulanan, hingga tahunan.
+        Laporan keuangan mencakup berbagai periode, mulai dari harian, mingguan, bulanan, hingga tahunan.
         Laporan ini mencakup pendapatan, pengeluaran, serta saldo akhir untuk memastikan transparansi dan akuntabilitas keuangan.
       </h3>
       
