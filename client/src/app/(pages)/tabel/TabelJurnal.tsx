@@ -19,6 +19,9 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
+import DetailModal from "./DetailJurnal";
+import DetailJurnal from "@/components/DetailModal/DetailJurnal";
+import Modal from "./DetailJurnal";
 
 const TabelKeuangan = ({
     isLaporanPage,
@@ -39,7 +42,7 @@ const TabelKeuangan = ({
     const [modalOpen, setModalOpen] = useState(false); // Modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null); // Menyimpan item yang dipilih untuk detail
+    const [selectedItem, setSelectedItem] = useState([]); // Menyimpan item yang dipilih untuk detail
 
     const [isEditing, setIsEditing] = useState(false); // Untuk mengontrol mode edit
     const [editedItem, setEditedItem] = useState(null); // Menyimpan item yang sedang diedit
@@ -87,23 +90,6 @@ const TabelKeuangan = ({
         { value: "11", label: "November" },
         { value: "12", label: "Desember" },
     ];
-    // const [coaOptions, setCoaOptions] = useState([]);
-    // useEffect(() => {
-    //     const fetchCoaOptionData = async () => {
-    //         try {
-    //             const response = await axios.get("/coa");
-    //             setCoaOptions(response.data);
-    //             const map = response.data.reduce((acc, item) => {
-    //                 acc[item.id] = item.nama_akun;
-    //                 return acc;
-    //             }, {});
-    //             setCoaMap(map);
-    //         } catch (error) {
-    //             console.error("Error fetching COA data:", error);
-    //         }
-    //     };
-    //     fetchCoaOptionData();
-    // }, []);
 
     useEffect(() => {
         const fetchCoaData = async () => {
@@ -221,7 +207,6 @@ const TabelKeuangan = ({
         fetchKasData(); // Trigger data fetch after COA is ready
     }, [coaMap, isRestore]);
 
-
     const [filteredRows, setFilteredRows] = useState([]); // State untuk menyimpan data yang sudah difilter
     const [startDate, setStartDate] = useState(null); // Tanggal mulai
     const [endDate, setEndDate] = useState(null); // Tanggal selesai
@@ -268,65 +253,75 @@ const TabelKeuangan = ({
         }
     }, [rows, startDate, endDate, statusFilter, monthFilter]); // Trigger efek ketika rows atau filter berubah
 
-    const handleEdit = (item) => {
-        setIsDetailModalOpen(true);
-        setSelectedItem(null);
-        setIsEditing(true);  // Aktifkan mode edit
+    const handleEdit = () => {
+        setIsEditing(true); // Mengaktifkan mode edit
+        setIsDetailModalOpen(true); // Membuka modal
     };
 
     const handleShowDetail = (item) => {
+        setIsEditing(false);
         setSelectedItem(item); // Menyimpan item yang dipilih
         setIsDetailModalOpen(true); // Membuka modal
     };
 
     const handleSaveChanges = async () => {
+        // Pastikan semua field terisi sebelum melanjutkan
+        if (
+            !selectedItem.name ||
+            !selectedItem.date ||
+            selectedItem.amount == null
+        ) {
+            console.error("Semua field wajib diisi.");
+            alert("Semua field wajib diisi.");
+            return;
+        }
+
         try {
-            // Set loading to true while saving data
             setLoading(true);
-    
-            // Determine the URL based on the item type (Pemasukan or Pengeluaran)
-            const url = selectedItem.status === "Pemasukan"
-                ? "/penerimaan-kas/"
-                : "/pengeluaran-kas/";
-    
-            // Prepare the data to be saved
-            const dataToSave = {
-                ...editedItem,
-                amount: editedItem.amount.toString(), // Ensure it's a string if needed
-                tanggal: editedItem.date, // Make sure this is in the correct format
-                coa_id: editedItem.tipe, // Assuming this is the correct reference for COA
+
+            // Tentukan endpoint berdasarkan nilai `amount`
+            const isPengeluaran = selectedItem.amount < 0; // Jika < 0 berarti pengeluaran
+            const endpoint = isPengeluaran
+                ? `/pengeluaran-kas/${selectedItem.id}`
+                : `/penerimaan-kas/${selectedItem.id}`;
+            console.log(selectedItem);
+            // Pastikan `amount` selalu positif sebelum dikirim
+            const payload = {
+                ...selectedItem,
+                jumlah: Math.abs(selectedItem.amount), // Konversi ke positif
+                jenis: selectedItem.name,
+                tanggal: selectedItem.date,
             };
-    
-            // Make the API call to save the changes
-            const response = await axios.put(`${url}/${selectedItem.id}`, dataToSave);
-    
-            // Check the response for success
+            console.log("Payload yang dikirim:", payload);
+
+            // Kirim data ke server dengan menggunakan axios
+            const response = await axios.put(endpoint, payload);
+
+            console.log(response);
+
             if (response.status === 200) {
-                // Update the rows to reflect the changes
-                const updatedItem = response.data;
-    
-                // Update the selected item in state
+                // Perbarui state rows setelah data berhasil disimpan
                 setRows((prevRows) =>
                     prevRows.map((row) =>
-                        row.id === selectedItem.id ? updatedItem : row
-                    )
+                        row.id === selectedItem.id
+                            ? { ...row, ...payload }
+                            : row,
+                    ),
                 );
-    
-                // Close the modal and reset editing state
-                setIsDetailModalOpen(false);
-                setIsEditing(false);
-                setSelectedItem(updatedItem);
+
+                alert("Perubahan berhasil disimpan!");
+                setIsDetailModalOpen(false); // Tutup modal
             } else {
-                console.error("Failed to save changes:", response);
+                alert("Gagal menyimpan perubahan, coba lagi.");
             }
         } catch (error) {
             console.error("Error saving changes:", error);
+            alert("Gagal menyimpan perubahan. Periksa koneksi atau coba lagi.");
         } finally {
             setLoading(false);
         }
     };
-    
-    
+
     const displayedRows = useMemo(() => {
         const filteredRows = filterData(
             rows,
@@ -432,27 +427,6 @@ const TabelKeuangan = ({
         setAnchorEl(null);
     };
 
-    const handleSelect = (id, status) => {
-        setSelectedIds((prevSelectedIds) => {
-            // Tentukan daftar ID berdasarkan status (Pemasukan atau Pengeluaran)
-            const currentSelectedIds = prevSelectedIds[status] || [];
-
-            if (currentSelectedIds.includes(id)) {
-                // Jika ID sudah ada di selectedIds, maka hilangkan
-                return {
-                    ...prevSelectedIds,
-                    [status]: currentSelectedIds.filter((item) => item !== id),
-                };
-            } else {
-                // Jika ID belum ada, tambahkan
-                return {
-                    ...prevSelectedIds,
-                    [status]: [...currentSelectedIds, id],
-                };
-            }
-        });
-    };
-
     const handleSelectId = (id, status) => {
         setSelectedIds((prevSelectedIds) => {
             const currentSelectedIds = prevSelectedIds[status] || [];
@@ -556,7 +530,6 @@ const TabelKeuangan = ({
             setErrorMessage("Gagal memulihkan data. Silakan coba lagi.");
         }
     };
-    
 
     return (
         <>
@@ -907,19 +880,15 @@ const TabelKeuangan = ({
                                 </td>
                                 <td className="border-b px-4 py-2 dark:border-gray-dark">
                                     {item.description}{" "}
-                                    {/* Displaying the "tipe" field */}
                                 </td>
                                 <td className="border-b px-4 py-2 dark:border-gray-dark">
                                     {item.tipe}{" "}
-                                    {/* Displaying the "tipe" field */}
                                 </td>
                                 <td className="border-b px-4 py-2 dark:border-gray-dark">
                                     {item.file}{" "}
-                                    {/* Displaying the "file" field */}
                                 </td>
                                 <td className="border-b px-4 py-2 dark:border-gray-dark">
                                     {item.oleh}{" "}
-                                    {/* Displaying the "oleh" field */}
                                 </td>
                                 <td className="border-b px-4 py-2 dark:border-gray-dark">
                                     {item.amount < 0 ? (
@@ -975,10 +944,10 @@ const TabelKeuangan = ({
                                                     className="flex items-center text-blue-500"
                                                     onClick={() => {
                                                         handleShowDetail(item); // Memilih ID saat ikon mata diklik
-                                                        setSelectedId(item.id); // Menyimpan ID untuk detail // Pilih ID item
-                                                        setIsDetailModalOpen(
-                                                            true,
-                                                        );
+                                                        // setSelectedId(item.id); // Menyimpan ID untuk detail // Pilih ID item
+                                                        // setIsDetailModalOpen(
+                                                        //     true,
+                                                        // );
                                                     }}
                                                 >
                                                     <FaEye size={20} />
@@ -1048,6 +1017,16 @@ const TabelKeuangan = ({
                 </div>
             </div>
 
+            <Modal
+                isOpen={isDetailModalOpen}
+                onClose={() => setIsDetailModalOpen(false)}
+                item={selectedItem}
+                isEditing={isEditing}
+                onEdit={handleEdit}
+                onChange={setSelectedItem}
+                onSave={handleSaveChanges}
+            />
+
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50">
                     <div className="rounded-lg bg-white p-6">
@@ -1068,278 +1047,6 @@ const TabelKeuangan = ({
                                 No
                             </button>
                         </div>
-                    </div>
-                </div>
-            )}
-
-            {isDetailModalOpen && selectedItem && (
-                <div className="fixed inset-0 z-50 z-[1000] flex items-center justify-center bg-gray-500 bg-opacity-50">
-                    <div className="w-2/3 rounded-lg bg-white p-6 shadow-lg">
-                        <div className="mb-4 flex justify-between text-xl font-semibold">
-                            {isEditing ? "Edit" : "Detail"} Data
-                            <div className="flex space-x-2">
-                                {isEditing ? (
-                                    <>
-                                        <button
-                                            onClick={handleSaveChanges}
-                                            className="text-green-500"
-                                        >
-                                            <FaCheck size={20} />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setIsDetailModalOpen(false);
-                                                setIsEditing(false);
-                                            }}
-                                            className="text-gray-500"
-                                        >
-                                            <FaTimes size={20} />
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={() =>
-                                                handleEdit(selectedItem)
-                                            }
-                                            className="flex items-center gap-2 text-yellow-500"
-                                        >
-                                            <span>Edit</span>
-                                            <FaEdit size={20} />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setIsDetailModalOpen(false);
-                                                setIsEditing(false);
-                                            }}
-                                            className="text-red-500"
-                                        >
-                                            <FaTimes size={20} />
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Formulir untuk Edit */}
-                        {isEditing ? (
-                            <div className="grid grid-cols-2 gap-6">
-                                {" "}
-                                {/* Membuat 2 kolom dengan gap */}
-                                <div className="mb-2">
-                                    <label className="mb-2 block">Jenis</label>
-                                    <select
-                                        className="w-full border p-2"
-                                        value={editedItem.name}
-                                        onChange={(e) =>
-                                            setEditedItem({
-                                                ...editedItem,
-                                                name: e.target.value,
-                                            })
-                                        }
-                                    >
-                                        {/* Dropdown Options */}
-                                        {selectedItem.status === "Pemasukan" ? (
-                                            <>
-                                                <option value="Donasi Tunai">
-                                                    Donasi Tunai
-                                                </option>
-                                                <option value="Donasi Uang Digital">
-                                                    Donasi Uang Digital
-                                                </option>
-                                                <option value="Donasi Berbasis Program">
-                                                    Donasi Berbasis Program
-                                                </option>
-                                                <option value="Donasi Khusus">
-                                                    Donasi Khusus
-                                                </option>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <option value="Pengeluaran Operasional">
-                                                    Pengeluaran Operasional
-                                                </option>
-                                                <option value="Pengeluaran Kegiatan Keagamaan">
-                                                    Pengeluaran Kegiatan
-                                                    Keagamaan
-                                                </option>
-                                                <option value="Pengeluaran Sosial">
-                                                    Pengeluaran Sosial
-                                                </option>
-                                                <option value="Pengeluaran Pembangunan dan Renovasi">
-                                                    Pengeluaran Pembangunan dan
-                                                    Renovasi
-                                                </option>
-                                                <option value="Pengeluaran Dakwah dan Penyebaran">
-                                                    Pengeluaran Dakwah dan
-                                                    Penyebaran
-                                                </option>
-                                                <option value="Pengeluaran Musiman">
-                                                    Pengeluaran Musiman
-                                                </option>
-                                                <option value="Pengeluaran Administrasi">
-                                                    Pengeluaran Administrasi
-                                                </option>
-                                            </>
-                                        )}
-                                    </select>
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">
-                                        Tanggal
-                                    </label>
-                                    <input
-                                        type="date"
-                                        className="w-full border p-2"
-                                        value={
-                                            new Date(editedItem.date)
-                                                .toISOString()
-                                                .split("T")[0]
-                                        } // Mengonversi tanggal ke format input
-                                        onChange={(e) =>
-                                            setEditedItem({
-                                                ...editedItem,
-                                                date: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">Jumlah</label>
-                                    <input
-                                        type="number"
-                                        className="w-full border p-2"
-                                        value={editedItem.amount}
-                                        onChange={(e) =>
-                                            setEditedItem({
-                                                ...editedItem,
-                                                amount: parseFloat(
-                                                    e.target.value,
-                                                ),
-                                            })
-                                        }
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">Tipe</label>
-                                    <select
-                                        className="w-full border p-2"
-                                        value={editedItem.tipe}
-                                        onChange={(e) => {
-                                            const selectedTipe = e.target.value;
-                                            setEditedItem({
-                                                ...editedItem,
-                                                tipe: selectedTipe,
-                                                oleh:
-                                                    coaMap[selectedTipe] ||
-                                                    "Unknown",
-                                            });
-                                        }}
-                                    >
-                                        <option value="">Pilih Tipe</option>
-                                        {coaOptions.map((coa) => (
-                                            <option key={coa.id} value={coa.id}>
-                                                {coa.tipe}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">
-                                        Deskripsi
-                                    </label>
-                                    <textarea
-                                        className="w-full border p-2"
-                                        value={editedItem.description || ""}
-                                        onChange={(e) =>
-                                            setEditedItem({
-                                                ...editedItem,
-                                                description: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">File</label>
-                                    <input
-                                        type="text"
-                                        className="w-full border p-2"
-                                        value={editedItem.file}
-                                        onChange={(e) =>
-                                            setEditedItem({
-                                                ...editedItem,
-                                                file: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">Oleh</label>
-                                    <input
-                                        type="text"
-                                        className="w-full border p-2"
-                                        value={editedItem.oleh || "Unknown"}
-                                        disabled
-                                    />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="mb-2 block">Status</label>
-                                    <select
-                                        type="text"
-                                        className="w-full border p-2"
-                                        value={editedItem.status}
-                                        onChange={(e) =>
-                                            setEditedItem({
-                                                ...editedItem,
-                                                status: e.target.value,
-                                            })
-                                        }
-                                    >
-                                        <option value="Pemasukan">
-                                            Pemasukan
-                                        </option>
-                                        <option value="Pengeluaran">
-                                            Pengeluaran
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        ) : (
-                            // Detail View
-                            <div>
-                                <div className="mb-4">
-                                    <strong>Nama: </strong> {selectedItem.name}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>Tanggal: </strong>{" "}
-                                    {new Date(
-                                        selectedItem.date,
-                                    ).toLocaleDateString()}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>Jumlah: </strong>{" "}
-                                    {selectedItem.amount.toFixed(2)}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>Tipe: </strong> {selectedItem.tipe}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>Deskripsi: </strong>{" "}
-                                    {selectedItem.description ||
-                                        "No description available"}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>File: </strong> {selectedItem.file}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>Oleh: </strong> {selectedItem.oleh}
-                                </div>
-                                <div className="mb-4">
-                                    <strong>Status: </strong>{" "}
-                                    {selectedItem.status}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             )}
