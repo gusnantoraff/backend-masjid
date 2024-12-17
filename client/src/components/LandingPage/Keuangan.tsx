@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from '@/utils/axios';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface KeuanganProps {
   id?: string;
@@ -22,6 +27,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('harian'); // Default to 'harian'
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -70,31 +76,54 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
     setSelectedReport(null);
   };
 
-    const formatDate = (date: string, period: PeriodType) => {
-      const d = new Date(date);
+  const formatDate = (date: string, period: PeriodType) => {
+    const d = new Date(date);
 
-      if (period === 'harian') {
-        const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-        return `Laporan ${d.toLocaleDateString('id-ID', options)}`;
-      }
+    if (period === 'harian') {
+      const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      return `Laporan ${d.toLocaleDateString('id-ID', options)}`;
+    }
 
-      if (period === 'mingguan') {
-        const now = new Date();
-        const monthName = now.toLocaleString('id-ID', { month: 'long' });
-        return `${date} Bulan ${monthName}`;
-      }
+    if (period === 'mingguan') {
+      const now = new Date();
+      const monthName = now.toLocaleString('id-ID', { month: 'long' });
+      return `${date} Bulan ${monthName}`;
+    }
 
-      if (period === 'bulanan') {
-        const monthName = d.toLocaleString('id-ID', { month: 'long' });
-        return `Laporan Bulan ${monthName} ${d.getFullYear()}`;
-      }
+    if (period === 'bulanan') {
+      const monthName = d.toLocaleString('id-ID', { month: 'long' });
+      return `Laporan Bulan ${monthName} ${d.getFullYear()}`;
+    }
 
-      if (period === 'tahunan') {
-        return `Laporan Tahun ${d.getFullYear()}`;
-      }
+    if (period === 'tahunan') {
+      return `Laporan Tahun ${d.getFullYear()}`;
+    }
 
-      return date;
+    return date;
+  };
+
+  // Chart Data Preparation
+  const prepareChartData = () => {
+    const labels = Object.keys(reports[selectedPeriod]);
+    const pemasukanData = labels.map((key) => reports[selectedPeriod][key].total_pemasukan);
+    const pengeluaranData = labels.map((key) => reports[selectedPeriod][key].total_pengeluaran);
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Pemasukan',
+          data: pemasukanData,
+          backgroundColor: 'rgba(34, 197, 94, 0.5)', // green
+        },
+        {
+          label: 'Pengeluaran',
+          data: pengeluaranData,
+          backgroundColor: 'rgba(244, 63, 94, 0.5)', // red
+        },
+      ],
     };
+  };
 
   return (
     <section id={id} className="mb-10 font-poppins" data-aos="fade-right" data-aos-delay="200">
@@ -104,31 +133,51 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
         Laporan keuangan Masjid Tercode yang mencakup berbagai periode, mulai dari harian, mingguan, bulanan, hingga tahunan.
         Laporan ini mencakup pendapatan, pengeluaran, serta saldo akhir untuk memastikan transparansi dan akuntabilitas keuangan.
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Periode Reports */}
+      
+      {/* Period Selector (Dropdown or Buttons) */}
+      <div className="flex justify-center mb-6">
         {(['harian', 'mingguan', 'bulanan', 'tahunan'] as PeriodType[]).map((period) => (
-          <div key={period} className="bg-white shadow-md p-4 rounded-lg">
-            <h3 className="text-xl font-semibold text-gray-700 capitalize">
-              Laporan {period === 'harian' ? 'Harian' : period === 'mingguan' ? 'Mingguan' : period === 'bulanan' ? 'Bulanan' : 'Tahunan'}
-            </h3>
-            <ul className="mt-4">
-              {Object.keys(reports[period]).length > 0 ? (
-                Object.keys(reports[period]).map((key, index) => (
-                  <li key={index} className="flex flex-col text-gray-700 mb-2 font-semibold">
-                    <button
-                      onClick={() => handleReportClick(period, key)}
-                      className="text-oren text-sm text-left w-full hover:underline hover:text-orange-300"
-                    >
-                      {formatDate(key, period)}
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500 text-sm text-oren font-semibold">Tidak ada laporan untuk periode ini.</li>
-              )}
-            </ul>
-          </div>
+          <button
+            key={period}
+            onClick={() => setSelectedPeriod(period)}
+            className={`px-4 py-2 mx-2 border rounded ${selectedPeriod === period ? 'bg-ijo text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            {period.charAt(0).toUpperCase() + period.slice(1)}
+          </button>
         ))}
+      </div>
+
+      {/* Render Chart */}
+      <div className="my-8">
+        <h3 className="text-xl font-semibold text-gray-700 text-center mb-4">{`Chart Laporan ${selectedPeriod}`}</h3>
+        <div className="bg-white shadow-md p-4 rounded-lg">
+          <Bar data={prepareChartData()} options={{ responsive: true }} />
+        </div>
+      </div>
+
+      {/* Periode Reports */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {Object.keys(reports[selectedPeriod]).length > 0 ? (
+          Object.keys(reports[selectedPeriod]).map((key, index) => (
+            <div key={index} className="bg-white shadow-md p-4 rounded-lg">
+              <h3 className="text-xl font-semibold text-gray-700 capitalize">{formatDate(key, selectedPeriod)}</h3>
+              <ul className="mt-4">
+                <li className="text-gray-700 mb-2 font-semibold">
+                  <button
+                    onClick={() => handleReportClick(selectedPeriod, key)}
+                    className="text-oren text-sm text-left w-full hover:underline hover:text-orange-300"
+                  >
+                    Lihat Detail
+                  </button>
+                </li>
+              </ul>
+            </div>
+          ))
+        ) : (
+          <div className="bg-white shadow-md p-4 rounded-lg">
+            <h3 className="text-xl font-semibold text-gray-700">Tidak ada laporan untuk periode ini.</h3>
+          </div>
+        )}
       </div>
 
       {/* Modal or Detailed Report View */}

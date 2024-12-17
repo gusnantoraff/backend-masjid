@@ -64,7 +64,7 @@ const Profil = () => {
                         onClick={toggleModal}
                         className="py-4 block w-full rounded-lg bg-ijo px-4 py-2 text-center text-white hover:bg-green-light-7 lg:w-auto"
                     >
-                        Donasi
+                        Informasi Rekening Donasi
                     </button>
 
                 {/* Struktur Organisasi */}
