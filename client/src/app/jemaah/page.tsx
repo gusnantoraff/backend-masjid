@@ -8,101 +8,135 @@ interface Jamaah {
     id: number; // bigint(20) UNSIGNED
     gender: "pria" | "wanita"; // enum('pria', 'wanita') NOT NULL
     keterangan: "aktif" | "pindah" | "wafat"; // enum('aktif', 'pindah', 'wafat') NOT NULL DEFAULT 'aktif'
-  }
+}
+
+interface InfoMasjid {
+    id: number; // bigint(20) UNSIGNED
+    nama_masjid: string; // varchar(255) NOT NULL
+}
 
 const Profil = () => {
     const [navbarBg, setNavbarBg] = useState(false);
+    const [infoMasjid, setInfoMasjid] = useState<InfoMasjid | null>(null);
     const [countMuslimAktif, setMuslimAktif] = useState(0);
     const [countMuslimahAktif, setMuslimahAktif] = useState(0);
 
     useEffect(() => {
-        const fetchJamaah = async () => {
-          try {
-            // Fetch data jamaah dari endpoint
-            const response = await axios.get("/jamaah");
-    
-            // Pastikan data berupa array dan hitung jumlah pria dan wanita aktif
-            const data = response.data;
-            if (Array.isArray(data)) {
-              const priaAktif = data.filter(
-                (jamaah) => jamaah.gender === "pria" && jamaah.keterangan === "aktif"
-              ).length;
-              const wanitaAktif = data.filter(
-                (jamaah) =>
-                  jamaah.gender === "wanita" && jamaah.keterangan === "aktif"
-              ).length;
-    
-              setMuslimAktif(priaAktif);
-              setMuslimahAktif(wanitaAktif);
-            } else {
-              console.error("Invalid data format. Expected an array.");
+        const fetchMasjidData = async () => {
+            try {
+                const response = await axios.get("/info-masjid");
+                setInfoMasjid(response.data[0]);
+            } catch (error) {
+                console.error("Error fetching masjid data:", error);
             }
-          } catch (error) {
-            console.error("Error fetching jamaah data:", error);
-          }
         };
-    
+
+        const fetchJamaah = async () => {
+            try {
+                // Fetch data jamaah dari endpoint
+                const response = await axios.get("/jamaah");
+
+                // Pastikan data berupa array dan hitung jumlah pria dan wanita aktif
+                const data = response.data;
+                if (Array.isArray(data)) {
+                    const priaAktif = data.filter(
+                        (jamaah) =>
+                            jamaah.gender === "pria" &&
+                            jamaah.keterangan === "aktif",
+                    ).length;
+                    const wanitaAktif = data.filter(
+                        (jamaah) =>
+                            jamaah.gender === "wanita" &&
+                            jamaah.keterangan === "aktif",
+                    ).length;
+
+                    setMuslimAktif(priaAktif);
+                    setMuslimahAktif(wanitaAktif);
+                } else {
+                    console.error("Invalid data format. Expected an array.");
+                }
+            } catch (error) {
+                console.error("Error fetching jamaah data:", error);
+            }
+        };
+
         fetchJamaah();
-      }, []);
+        fetchMasjidData();
+    }, []);
 
     return (
         <div className="flex min-h-screen flex-col">
             <Navbar
                 className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
             />
+
+            {/* HEADER */}
+            <div
+                style={{
+                    backgroundImage: "url(/images/jemaah-bg.jpeg)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center center",
+                }}
+                className="mt-25 flex h-[250px] w-full items-center justify-center"
+            >
+                <h2 className="flex items-center gap-3 text-center font-poppins text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+                    Jamaah {infoMasjid?.nama_masjid}
+                </h2>
+            </div>
+
             <section
-                className="mt-10 flex flex-col items-center bg-white px-4 py-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
+                className="flex flex-col items-center bg-white px-4 pb-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
                 data-aos="fade-down"
                 data-aos-delay="200"
             >
-                <h2 className="flex items-center gap-3 text-center text-center font-poppins text-3xl font-bold text-ijo sm:text-4xl lg:text-5xl">
-                    Jamaah
-                </h2>
-                <hr className="mx-auto my-4 w-2/3 rounded-lg border-2 border-ijo sm:my-6 sm:w-1/2 lg:w-[30%]" />
+                <h3 className="mb-4 text-center text-xl font-semibold text-blue-800 sm:text-2xl">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit consequatur quam esse enim delectus, tempore at soluta ipsam assumenda tempora nesciunt mollitia eaque facilis voluptatum recusandae officia magnam repellendus voluptate.
+                </h3>
 
-                <div className="flex span-2 gap-4">
-                <div className="mt-8 flex items-center justify-center sm:mt-10">
-                    <div className="relative w-full max-w-xs min-w-[150px] overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
-                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
-                        <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
-                        <div className="mb-4">
-                            <img
-                                src="/images/muslim.png"
-                                style={{ width: "64px", height: "64px" }}
-                                className="mx-auto animate-bounce text-4xl text-white sm:text-5xl"
-                            />
+                <div className="span-2 flex gap-6" style={{gap:"6rem"}}>
+                    <div className="mt-8 flex items-center justify-center sm:mt-10">
+                        <div className="relative w-full min-w-[150px] max-w-xs overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
+                            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
+                            <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
+                            <div className="mb-4">
+                                <img
+                                    src="/images/muslim.png"
+                                    style={{ width: "64px", height: "64px" }}
+                                    className="mx-auto text-4xl text-white sm:text-5xl"
+                                />
+                            </div>
+                            <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
+                                Akhi
+                            </h3>
+                            <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+                                {countMuslimAktif}
+                            </p>
+                            <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
                         </div>
-                        <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
-                            Akhi
-                        </h3>
-                        <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                            {countMuslimAktif}
-                        </p>
-                        <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
                     </div>
-                </div>
-                <div className="mt-8 flex items-center justify-center sm:mt-10">
-                    <div className="relative w-full max-w-xs min-w-[150px] overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
-                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
-                        <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
-                        <div className="mb-4">
-                            <img
-                                src="/images/muslimah.png"
-                                style={{ width: "64px", height: "64px" }}
-                                className="mx-auto animate-bounce text-4xl text-white sm:text-5xl"
-                            />
+                    <div className="mt-8 flex items-center justify-center sm:mt-10">
+                        <div className="relative w-full min-w-[150px] max-w-xs overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
+                            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
+                            <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
+                            <div className="mb-4">
+                                <img
+                                    src="/images/muslimah.png"
+                                    style={{ width: "64px", height: "64px" }}
+                                    className="mx-auto text-4xl text-white sm:text-5xl"
+                                />
+                            </div>
+                            <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
+                                Ukhti
+                            </h3>
+                            <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+                                {countMuslimahAktif}
+                            </p>
+                            <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
                         </div>
-                        <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
-                            Ukhti
-                        </h3>
-                        <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                            {countMuslimahAktif}
-                        </p>
-                        <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
                     </div>
-                </div>
                 </div>
             </section>
+
             <Footer id="footer" />
         </div>
     );

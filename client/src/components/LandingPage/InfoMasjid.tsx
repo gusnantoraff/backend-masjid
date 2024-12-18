@@ -44,7 +44,7 @@ const InfoMasjid: React.FC<InfoMasjidProps> = ({ id }) => {
   return (
     <section
       id={id}
-      className="py-35 mt-10 sm:mt-20 md:mt-15 px-4 sm:px-6 md:px-12 lg:px-20 xl:px-28 flex flex-col items-center bg-white font-poppins"
+      className="mt-30 sm:mt-20 md:mt-[7rem] px-4 sm:px-6 md:px-12 lg:px-20 xl:px-28 flex flex-col items-center bg-white font-poppins"
       data-aos="fade-down"
       data-aos-delay="200"
     >

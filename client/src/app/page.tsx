@@ -10,6 +10,7 @@ import Galeri from '@/components/LandingPage/Galeri';
 import NewsSection from '@/components/LandingPage/Berita';
 import Footer from '@/components/LandingPage/Footer';
 import JamDigital from '@/components/LandingPage/JamDigital';
+import BackToTopButton from '@/components/LandingPage/ButtonKeAtas';
 
 
 const Home = () => {
@@ -56,6 +57,8 @@ const Home = () => {
   >
       {/* Jam Digital */}
       <JamDigital />
+
+      <BackToTopButton/>
 
       {/* Navbar */}
       <Navbar className="fixed top-0 left-0 w-full z-50 h-[78px] bg-white" />

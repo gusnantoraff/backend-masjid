@@ -50,21 +50,29 @@ const Profil: React.FC<InfoMasjidProps> = ({ id }) => {
             <Navbar
                 className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
             />
+            {/* Header */}
+            <div
+                style={{
+                    backgroundImage: "url(/images/jemaah-bg.jpeg)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center center",
+                }}
+                className="mt-25 flex h-[250px] w-full items-center justify-center"
+            >
+                <h2 className="flex items-center gap-3 text-center font-poppins text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+                Profil {nama_masjid}
+                </h2>
+            </div>
+
             <section
                 id={id}
-                className="mt-10 flex flex-col items-center bg-white px-4 py-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
+                className="mt-10 flex flex-col items-center bg-white py-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
                 data-aos="fade-down"
                 data-aos-delay="200"
             >
-                {/* Header */}
-                <h2 className="flex items-center gap-3 text-center text-3xl font-bold text-ijo sm:text-4xl lg:text-5xl">
-                    Profil {nama_masjid}
-                </h2>
-                <hr className="mx-auto my-4 w-2/3 rounded-lg border-2 border-ijo sm:my-6 sm:w-1/2 lg:w-[30%]" />
-
                 {/* Deskripsi */}
-                <div className="mt-8 w-full rounded-lg bg-teal-50 p-6 text-gray-700 shadow-md sm:p-8">
-                    <h3 className="mb-4 text-center text-xl font-semibold text-teal-700 sm:text-2xl">
+                <div className="mt-8 w-full rounded-lg bg-amber-300 p-6 text-blue-800 shadow-md sm:p-8">
+                    <h3 className="mb-4 text-center text-xl font-semibold text-blue-800 sm:text-2xl">
                         {nama_masjid}
                     </h3>
                     <p className="text-md text-justify leading-relaxed sm:text-base">
@@ -73,8 +81,8 @@ const Profil: React.FC<InfoMasjidProps> = ({ id }) => {
                 </div>
 
                 {/* Struktur Organisasi */}
-                <div className="mt-8 flex w-full flex-col items-center justify-center rounded-lg bg-teal-50 p-6 text-gray-700 shadow-md sm:p-8">
-                    <h3 className="mb-4 text-center text-xl font-semibold text-teal-700 sm:text-2xl">
+                <div className="mt-8 flex w-full flex-col items-center justify-center rounded-lg bg-amber-300 p-6 text-gray-700 shadow-md sm:p-8">
+                    <h3 className="mb-4 text-center text-xl font-semibold text-blue-800 sm:text-2xl">
                         Struktur {nama_masjid}
                     </h3>
                     <img
