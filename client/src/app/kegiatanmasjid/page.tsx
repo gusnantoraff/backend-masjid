@@ -2,43 +2,203 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/LandingPage/Navbar";
 import Footer from "@/components/LandingPage/Footer";
-import Kegiatan from "@/components/LandingPage/Kegiatan";
+import axios from "@/utils/axios";
+import { BiCalendar, BiMap } from "react-icons/bi";
+import { FaArrowRight } from "react-icons/fa6";
+import Image from "next/image";
+import Link from "next/link";
 
-const Profil = () => {
+interface Image {
+    id: number;
+    keterangan: string;
+    kategori: string;
+    image: string;
+}
+
+interface Kegiatan {
+    id: number;
+    nama_kegiatan: string;
+    tanggal: string;
+    lokasi: string;
+    images: Image[];
+}
+
+interface KegiatanTerdekatProps {
+    id?: string;
+}
+
+const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
+    const [kegiatan, setKegiatan] = useState<Kegiatan[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const [navbarBg, setNavbarBg] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => {
-            const infoMasjidSection = document.getElementById("infoMasjid");
-            if (infoMasjidSection) {
-                const sectionTop = infoMasjidSection.offsetTop;
-                const scrollTop = window.scrollY;
+        const fetchKegiatan = async () => {
+            try {
+                const response = await axios.get("/kegiatan");
+                const kegiatanData: Kegiatan[] = response.data;
 
-                if (scrollTop >= sectionTop - 50) {
-                    setNavbarBg(true);
-                } else {
-                    setNavbarBg(false);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const sevenDaysAhead = new Date(today);
+                sevenDaysAhead.setDate(today.getDate() + 7);
+
+                const filteredKegiatan = kegiatanData.filter((item) => {
+                    const eventDate = new Date(item.tanggal);
+                    eventDate.setHours(0, 0, 0, 0);
+                    return eventDate >= today && eventDate <= sevenDaysAhead;
+                });
+
+                const sortedKegiatan = filteredKegiatan.sort((a, b) => {
+                    const dateA = new Date(a.tanggal);
+                    const dateB = new Date(b.tanggal);
+                    return dateA.getTime() - dateB.getTime();
+                });
+
+                const activitiesToDisplay = sortedKegiatan.slice(0, 3);
+
+                while (activitiesToDisplay.length < 3) {
+                    activitiesToDisplay.push({
+                        id: -1,
+                        nama_kegiatan: "Tidak ada kegiatan terdekat",
+                        tanggal: "",
+                        lokasi: "",
+                        images: [],
+                    });
                 }
+
+                setKegiatan(activitiesToDisplay);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching kegiatan:", error);
+                setLoading(false);
             }
         };
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        fetchKegiatan();
     }, []);
+
+    console.log("data", kegiatan);
+
+    console.log("data", kegiatan);
+
+    const formatDate = (dateString: string) => {
+        const options: Intl.DateTimeFormatOptions = {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        };
+        const date = new Date(dateString);
+        const wibDate = new Date(date.getTime());
+
+        return (
+            new Intl.DateTimeFormat("id-ID", options).format(wibDate) + " WIB"
+        );
+    };
 
     return (
         <div className="flex min-h-screen flex-col">
             <Navbar
                 className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
             />
-            <main>
-                <div className="container mx-auto pb-20 mt-30">
-                    <Kegiatan />
+            <div
+                style={{
+                    backgroundImage: "url(/images/yatim-bg.jpeg)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center center",
+                }}
+                className="mt-25 flex h-[250px] w-full items-center justify-center"
+            >
+                <h2 className="flex items-center gap-3 text-center font-poppins text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+                    Kegiatan
+                </h2>
+                
+            </div>
+
+            <section
+    className="flex flex-col items-center bg-white px-4 pb-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
+    data-aos="fade-down"
+    data-aos-delay="200"
+  >
+    <div
+      className="grid grid-cols-1 gap-6 px-20 sm:grid-cols-2 lg:grid-cols-3"
+      data-aos="zoom-in"
+      data-aos-delay="200"
+    >
+      {kegiatan.map((item) => (
+        <div
+          key={item.id}
+          className="group w-full flex-shrink-0 transform overflow-hidden rounded-lg bg-white shadow-lg transition-transform hover:scale-105 hover:shadow-2xl"
+        >
+          <div className="relative mb-4 h-64 w-full">
+            <Image
+              src={
+                item.id === -1
+                  ? "/images/placeholder.png"
+                  : item.images && item.images.length > 0
+                  ? `http://localhost:8000/storage/${item.images[0].image}`
+                  : "/images/placeholder.png"
+              }
+              alt={
+                item.nama_kegiatan || "Tidak ada kegiatan terdekat"
+              }
+              layout="fill"
+              style={{ objectFit: "cover" }}
+              className="rounded-t-lg"
+            />
+          </div>
+          <div className="px-6 pb-3">
+            <h3 className="mb-2 text-xl font-semibold text-gray-700">
+              {item.id === -1
+                ? "Tidak ada kegiatan terdekat"
+                : item.nama_kegiatan}
+            </h3>
+            {item.id !== -1 && (
+              <>
+                <div className="mb-2 flex items-center text-gray-700">
+                  <BiCalendar
+                    size={20}
+                    style={{
+                      marginRight: "5px",
+                      color: "#14B8A6",
+                    }}
+                  />
+                  {formatDate(item.tanggal)}
                 </div>
-            </main>
+                <div className="mb-4 flex items-center text-gray-700">
+                  <BiMap
+                    size={20}
+                    style={{
+                      marginRight: "5px",
+                      color: "#F97F30",
+                    }}
+                  />
+                  {item.lokasi}
+                </div>
+              </>
+            )}
+          </div>
+          {item.id !== -1 && (
+            <div className="absolute bottom-8 right-6 flex h-10 w-15 cursor-pointer items-center justify-center rounded-lg bg-[rgba(20,184,166,0.3)] transition-all duration-300 group-hover:bg-ijo">
+              <Link
+                href="/detail"
+                className="transform group-hover:scale-125"
+              >
+                <FaArrowRight size={24} className="text-white" />
+              </Link>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
             <Footer id="footer" />
         </div>
     );
 };
 
-export default Profil;
+export default KegiatanTerdekat;

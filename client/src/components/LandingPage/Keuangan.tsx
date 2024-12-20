@@ -272,7 +272,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
             </div>
 
             {/* Periode Reports */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {Object.keys(reports[selectedPeriod]).length > 0 ? (
                     Object.keys(reports[selectedPeriod]).map((key, index) => (
                         <div
@@ -306,10 +306,10 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
                         </h3>
                     </div>
                 )}
-            </div>
+            </div> */}
 
             {/* Modal or Detailed Report View */}
-            {selectedReport && (
+            {/* {selectedReport && (
                 <div className="fixed inset-0 z-10 flex items-center justify-center bg-white bg-opacity-30">
                     <div className="relative w-1/3 rounded-lg bg-white p-6 font-light shadow-lg">
                         <h4 className="mb-4 text-xl font-semibold text-gray-700">
@@ -340,7 +340,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
                         </button>
                     </div>
                 </div>
-            )}
+            )} */}
         </section>
     );
 };

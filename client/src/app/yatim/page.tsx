@@ -145,6 +145,10 @@ const Profil = () => {
                         </div>
                     </div>
                 )}
+
+                <button className="mt-4 block w-full rounded-lg bg-ijo px-4 py-2 py-4 text-center text-white hover:bg-green-light-7 lg:w-auto">
+                    Download Data Anak
+                </button>
             </section>
             <Footer />
         </div>
