@@ -16,7 +16,7 @@ const InformasiMasjid = () => {
           <StrukturOrganisasiMasjid/>
           <FasilitasMasjid/>
           <RekeningMasjid/>
-          <KeuanganMasjid/>
+          {/* <KeuanganMasjid/> */}
           <MubalighMasjid/>  
         </div>
         </div>

@@ -2,7 +2,6 @@
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import React, { useState, useEffect } from "react";
 import PendapatanChart from "../arus-kas/pendapatanchart";
-import LaporanKeuangan from "../arus-kas/laporan";
 import DateFilter from "../arus-kas/DateFilter";
 import fetchWithAuth from "@/utils/fetch";
 import TabelKeuangan from "../../tabel/TabelJurnal";
@@ -17,6 +16,17 @@ const Home = () => {
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
     };
+
+    // const PendapatanChart = ({ filter }) => {
+    //     try {
+    //         // Logika komponen
+    //         return <div>Chart Content Here</div>;
+    //     } catch (error) {
+    //         console.error("Error rendering PendapatanChart:", error);
+    //         return <div className="text-red-500">Failed to load chart.</div>;
+    //     }
+    // };
+    
 
     // Format numbers to Indonesian Rupiah format
     const formatRupiah = (number) =>

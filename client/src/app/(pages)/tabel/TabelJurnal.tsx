@@ -9,7 +9,8 @@ import { Checkbox } from "@mui/material";
 import { Box } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { jsPDF } from "jspdf";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Menu from "@mui/material/Menu";
 import MenuItemMUI from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -19,8 +20,6 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
-import DetailModal from "./DetailJurnal";
-import DetailJurnal from "@/components/DetailModal/DetailJurnal";
 import Modal from "./DetailJurnal";
 
 const TabelKeuangan = ({
@@ -43,7 +42,6 @@ const TabelKeuangan = ({
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState([]); // Menyimpan item yang dipilih untuk detail
-
     const [isEditing, setIsEditing] = useState(false); // Untuk mengontrol mode edit
     const [editedItem, setEditedItem] = useState(null); // Menyimpan item yang sedang diedit
     const [isRestore, setIsRestore] = useState(false); // Mengelola mode restore
@@ -52,9 +50,6 @@ const TabelKeuangan = ({
     const [page, setPage] = useState(0);
     const rowsPerPage = 10;
     const [anchorEl, setAnchorEl] = useState(null);
-    // const [endDate, setEndDate] = useState(null); // Tanggal selesai
-    // const [statusFilter, setStatusFilter] = useState(""); // Status (Pemasukan/Pengeluaran)
-    // const [monthFilter, setMonthFilter] = useState(null); // Bulan
 
     const COAUrl = "/coa";
 
@@ -233,7 +228,7 @@ const TabelKeuangan = ({
 
             // Filter berdasarkan bulan (jika bulan diatur)
             const isMonthMatch =
-                !monthFilter || itemDate.getMonth() + 1 === monthFilter;
+                !monthFilter || itemDate.getMonth() + 1 === parseInt(monthFilter);
 
             return isDateInRange && isStatusMatch && isMonthMatch;
         });
@@ -359,7 +354,10 @@ const TabelKeuangan = ({
                                 [
                                     row.name,
                                     row.date,
-                                    row.amount,
+                                    row.amount.toLocaleString("id-ID", {
+                                        style: "currency",
+                                        currency: "IDR",
+                                    }),
                                     row.description,
                                     row.file,
                                     row.oleh,
@@ -656,7 +654,7 @@ const TabelKeuangan = ({
                                         select
                                         label="Pilih Bulan"
                                         size="small"
-                                        value={selectedMonth}
+                                        value={monthFilter}
                                         onChange={(e) =>
                                             setMonthFilter(e.target.value)
                                         }
@@ -944,10 +942,7 @@ const TabelKeuangan = ({
                                                     className="flex items-center text-blue-500"
                                                     onClick={() => {
                                                         handleShowDetail(item); // Memilih ID saat ikon mata diklik
-                                                        // setSelectedId(item.id); // Menyimpan ID untuk detail // Pilih ID item
-                                                        // setIsDetailModalOpen(
-                                                        //     true,
-                                                        // );
+                
                                                     }}
                                                 >
                                                     <FaEye size={20} />
