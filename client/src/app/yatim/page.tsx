@@ -20,7 +20,7 @@ const Profil = () => {
     useEffect(() => {
         // Contoh mendapatkan data rekening dari API
         axios
-            .get("/rekening-bank/1") // Ganti dengan URL yang sesuai
+            .get("/public/rekening-bank/1") // Ganti dengan URL yang sesuai
             .then((response) => {
                 setRekeningData(response.data);
             })

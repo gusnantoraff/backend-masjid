@@ -24,7 +24,7 @@ const Profil = () => {
     useEffect(() => {
         const fetchMasjidData = async () => {
             try {
-                const response = await axios.get("/info-masjid");
+                const response = await axios.get("/public/info-masjid");
                 setInfoMasjid(response.data[0]);
             } catch (error) {
                 console.error("Error fetching masjid data:", error);
@@ -34,7 +34,7 @@ const Profil = () => {
         const fetchJamaah = async () => {
             try {
                 // Fetch data jamaah dari endpoint
-                const response = await axios.get("/jamaah");
+                const response = await axios.get("/public/jamaah");
 
                 // Pastikan data berupa array dan hitung jumlah pria dan wanita aktif
                 const data = response.data;

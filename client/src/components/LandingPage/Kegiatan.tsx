@@ -31,7 +31,7 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
   useEffect(() => {
     const fetchKegiatan = async () => {
       try {
-        const response = await axios.get('/kegiatan');
+        const response = await axios.get('/public/kegiatan');
         const kegiatanData: Kegiatan[] = response.data;
 
         const today = new Date();

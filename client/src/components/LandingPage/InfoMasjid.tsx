@@ -25,7 +25,7 @@ const InfoMasjid: React.FC<InfoMasjidProps> = ({ id }) => {
   useEffect(() => {
     const fetchMasjidData = async () => {
       try {
-        const response = await axios.get('/info-masjid');
+        const response = await axios.get('/public/info-masjid');
         setInfoMasjid(response.data[0]);
       } catch (error) {
         console.error("Error fetching masjid data:", error);

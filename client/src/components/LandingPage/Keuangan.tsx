@@ -58,7 +58,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
 
     useEffect(() => {
         axios
-            .get("/rekening-bank/1")
+            .get("/public/rekening-bank/1")
             .then((response) => setRekeningData(response.data))
             .catch((error) =>
                 console.error("Error fetching rekening data", error),
@@ -85,7 +85,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
 
                 for (let period of periods) {
                     const response = await axios.get(
-                        "/laporan-keuangan2/periode",
+                        "/public/laporan-keuangan2/periode",
                         {
                             params: { periode: period },
                         },

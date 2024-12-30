@@ -28,7 +28,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ id }) => {
     useEffect(() => {
         const fetchBerita = async () => {
             try {
-                const response = await axios.get("/berita");
+                const response = await axios.get("/public/berita");
                 setBerita(response.data);
                 setLoading(false);
             } catch (error) {

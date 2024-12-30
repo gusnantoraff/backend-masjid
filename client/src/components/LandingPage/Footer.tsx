@@ -37,7 +37,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
     useEffect(() => {
         // Mendapatkan data masjid dari API
         axios
-            .get("/info-masjid/1")
+            .get("/public/info-masjid/1")
             .then((response) => {
                 setInfoMasjid(response.data);
             })

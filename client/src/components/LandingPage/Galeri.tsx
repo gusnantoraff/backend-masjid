@@ -38,7 +38,7 @@ const Galeri: React.FC<GaleriProps> = ({ id }) => {
   };
 
   useEffect(() => {
-    fetchWithAuth('http://localhost:8000/api/images?kategori=galeri')
+    fetchWithAuth('http://localhost:8000/api/public/images?kategori=galeri')
       .then(data => setImages(data))
       .catch(error => console.error('Error fetching images:', error));
   }, []);

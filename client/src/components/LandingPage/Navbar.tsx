@@ -91,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
                         Keuangan
                     </Link>
                     <Link
-                        href="/kegiatanmasjid"
+                        href="/agenda"
                         className="block px-4 py-2 text-gray-700 hover:text-gray-500"
                     >
                         Kegiatan
@@ -112,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ className = "" }) => {
                                 }}
                             >
                                 <Link
-                                    href="/beritamasjid"
+                                    href="/news"
                                     className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-300"
                                 >
                                     Berita

@@ -23,6 +23,26 @@ $resources = [
     'yatim-dhuafa' => \App\Http\Controllers\YatimDhuafaController::class,
 ];
 
+$resources2 = [
+    'berita' => \App\Http\Controllers\BeritaController::class,
+    'coa' => \App\Http\Controllers\CoaController::class,
+    'fasilitas' => \App\Http\Controllers\FasilitasController::class,
+    'general-ledger' => \App\Http\Controllers\GeneralLedgerController::class,
+    'images' => \App\Http\Controllers\ImagesController::class,
+    'info-masjid' => \App\Http\Controllers\InfoMasjidController::class,
+    'jamaah' => \App\Http\Controllers\JamaahController::class,
+    'kegiatan' => \App\Http\Controllers\KegiatanController::class,
+    'laporan-keuangan' => \App\Http\Controllers\LaporanKeuanganController::class,
+    'mubaligh' => \App\Http\Controllers\MubalighController::class,
+    'arus-kas' => \App\Http\Controllers\ArusKasController::class,
+    'penerimaan-kas' => \App\Http\Controllers\PenerimaanKasController::class,
+    'pengeluaran-kas' => \App\Http\Controllers\PengeluaranKasController::class,
+    'rekening-bank' => \App\Http\Controllers\RekeningBankController::class,
+    'posisi-keuangan' => \App\Http\Controllers\PosisiKeuanganController::class,
+    'struktur-organisasi' => \App\Http\Controllers\StrukturOrganisasiController::class,
+    'yatim-dhuafa' => \App\Http\Controllers\YatimDhuafaController::class,
+];
+
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\BeritaController;
@@ -36,7 +56,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('encrypt', [EncryptionController::class, 'encryptLink']);
 Route::post('decrypt', [EncryptionController::class, 'decryptLink']);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware('auth:sanctum')->post('/change-password', [ChangePasswordController::class, 'store']);
 
@@ -47,7 +67,7 @@ Route::middleware('auth:sanctum')->group(function () use ($resources) {
     foreach ($resources as $route => $controller) {
         Route::apiResource($route, $controller)->except(['show']);
         Route::get("$route/{id}", [$controller, 'show'])->where('id', '[0-9]+')->name("$route.show");
-        
+
         Route::patch("$route/{ids}/restore", [$controller, 'restore'])->name("$route.restore");
         Route::get("$route/deleted", [$controller, 'getDeleted'])->name("$route.deleted");
     }
@@ -58,6 +78,16 @@ Route::middleware('auth:sanctum')->group(function () use ($resources) {
     Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
     Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
 });
+
+Route::group(['prefix' => 'public'], function () use ($resources2) {
+    foreach ($resources2 as $route => $controller) {
+        Route::get("$route", [$controller, 'index'])->name("public.$route.index");
+        Route::get("$route/{id}", [$controller, 'show'])->where('id', '[0-9]+')->name("public.$route.show");
+    }
+
+    Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode'])->name('public.laporan-keuangan2.periode');
+});
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/check-verified', function () {
     return response()->json(['message' => 'Access granted to verified users.']);
