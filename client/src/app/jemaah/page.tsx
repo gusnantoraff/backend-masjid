@@ -90,8 +90,7 @@ const Profil = () => {
     data-aos-delay="200"
   >
     <h3 className="mb-4 mt-4 text-center text-xl font-semibold text-blue-800 sm:text-2xl">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit consequatur quam esse enim delectus, tempore at soluta ipsam assumenda tempora nesciunt mollitia eaque facilis voluptatum recusandae officia magnam repellendus voluptate.
-    </h3>
+    Jamaah Masjid menyediakan informasi lengkap tentang jamaah, mempermudah pengelolaan data, dan mendukung komunikasi serta kegiatan masjid secara efektif.    </h3>
 
     {/* Flexbox Container with Responsiveness */}
     <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 justify-center items-center sm:justify-between">

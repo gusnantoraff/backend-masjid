@@ -153,13 +153,6 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
               </>
             )}
           </div>
-          {item.id !== -1 && (
-            <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 w-12 sm:w-15 h-8 sm:h-10 rounded-lg bg-[rgba(20,184,166,0.3)] group-hover:bg-teal-500 flex justify-center items-center transition-all duration-300 cursor-pointer">
-              <Link href="/detail" className="transform group-hover:scale-125">
-                <FaArrowRight size={20} className="text-white" />
-              </Link>
-            </div>
-          )}
         </div>
       ))}
     </div>
