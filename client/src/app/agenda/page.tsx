@@ -107,7 +107,7 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
       />
       <div
         style={{
-          backgroundImage: "url(/images/yatim-bg.jpeg)",
+          backgroundImage: "url(/images/jemaah-bg.jpeg)",
           backgroundSize: "cover",
           backgroundPosition: "center center",
         }}
