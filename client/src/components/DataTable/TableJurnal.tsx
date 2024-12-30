@@ -6,7 +6,6 @@ import TableHead from "@mui/material/TableHead";
 import { FaEye, FaTrash } from "react-icons/fa6";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { FaEdit } from "react-icons/fa";
 import { Checkbox } from "@mui/material";
 
 type TableContentProps = {

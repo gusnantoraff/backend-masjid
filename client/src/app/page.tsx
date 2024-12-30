@@ -68,9 +68,9 @@ const Home = () => {
 
       <main className="flex-grow pt-16">
         {/* Info Masjid and Keuangan Section */}
-        <div className="container mx-auto px-4 md:px-10 lg:px-20 pb-10">
+        <div className="container mx-auto px-4 md:px-10 lg:px-20 pb-10 mt-30">
           <InfoMasjid id="infoMasjid" />
-          <Keuangan id="keuangan" />
+          <Keuangan id="keuangan"/>
         </div>
 
         {/* Kegiatan Terdekat Section */}

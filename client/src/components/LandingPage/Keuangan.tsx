@@ -186,44 +186,44 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
             data-aos="fade-right"
             data-aos-delay="200"
         >
-            <div className="mb-[3rem] flex items-center justify-center py-4">
-                <div className="w-1/2 rounded-lg bg-white p-8 shadow-lg">
-                    <h3 className="mb-4 text-center text-xl font-semibold text-teal-700 sm:text-2xl">
+            <div className="mb-[3rem] flex items-center justify-center px-4 py-4 sm:px-6 md:px-8">
+                <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg sm:p-8">
+                    <h3 className="mb-6 text-center text-lg font-semibold text-teal-700 sm:text-xl md:text-2xl">
                         Informasi Rekening Bank
                     </h3>
                     <div className="w-full space-y-4">
-                        <div className="grid grid-cols-3 items-center gap-x-4">
+                        <div className="grid grid-cols-3 items-center gap-x-4 gap-y-2 sm:grid-cols-3">
                             <span className="font-semibold text-teal-700">
                                 Nama Bank
                             </span>
-                            <span className="text-center font-semibold text-teal-700">
+                            <span className="text-center font-semibold text-teal-700 sm:col-span-1">
                                 :
                             </span>
-                            <span className="text-gray-700">
+                            <span className="text-gray-700 sm:col-span-1">
                                 {rekeningData?.nama_bank ||
                                     "Data tidak tersedia"}
                             </span>
                         </div>
-                        <div className="grid grid-cols-3 items-center gap-x-4">
+                        <div className="grid grid-cols-3 items-center gap-x-4 gap-y-2 sm:grid-cols-3">
                             <span className="font-semibold text-teal-700">
                                 Nomor Rekening
                             </span>
-                            <span className="text-center font-semibold text-teal-700">
+                            <span className="text-center font-semibold text-teal-700 sm:col-span-1">
                                 :
                             </span>
-                            <span className="text-gray-700">
+                            <span className="text-gray-700 sm:col-span-1">
                                 {rekeningData?.nomor_rekening ||
                                     "Data tidak tersedia"}
                             </span>
                         </div>
-                        <div className="grid grid-cols-3 items-center gap-x-4">
+                        <div className="grid grid-cols-3 items-center gap-x-4 gap-y-2 sm:grid-cols-3">
                             <span className="font-semibold text-teal-700">
                                 Atas Nama
                             </span>
-                            <span className="text-center font-semibold text-teal-700">
+                            <span className="text-center font-semibold text-teal-700 sm:col-span-1">
                                 :
                             </span>
-                            <span className="text-gray-700">
+                            <span className="text-gray-700 sm:col-span-1">
                                 {rekeningData?.atas_nama ||
                                     "Data tidak tersedia"}
                             </span>
@@ -244,14 +244,18 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
             </h3>
 
             {/* Period Selector (Dropdown or Buttons) */}
-            <div className="mb-6 flex justify-center">
+            <div className="mb-6 flex flex-wrap justify-center gap-2 sm:gap-4">
                 {(
                     ["harian", "mingguan", "bulanan", "tahunan"] as PeriodType[]
                 ).map((period) => (
                     <button
                         key={period}
                         onClick={() => setSelectedPeriod(period)}
-                        className={`mx-2 rounded border px-4 py-2 ${selectedPeriod === period ? "bg-ijo text-white" : "bg-gray-200 text-gray-700"}`}
+                        className={`rounded border px-4 py-2 text-sm sm:text-base ${
+                            selectedPeriod === period
+                                ? "bg-ijo text-white"
+                                : "bg-gray-200 text-gray-700"
+                        }`}
                     >
                         {period.charAt(0).toUpperCase() + period.slice(1)}
                     </button>
@@ -259,88 +263,24 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
             </div>
 
             {/* Render Chart */}
-            <div className="flex flex-col items-center justify-center pb-6">
-                <h3 className="mb-4 text-center text-xl font-semibold text-gray-700">
+            <div className="flex flex-col items-center justify-center px-4 pb-6">
+                <h3 className="mb-4 text-center text-lg font-semibold text-gray-700 sm:text-xl">
                     {`Chart Laporan ${selectedPeriod}`}
                 </h3>
-                <div className="flex w-3/4 items-center justify-center rounded-lg bg-white p-4 shadow-md">
-                    <Bar
-                        data={prepareChartData()}
-                        options={{ responsive: true }}
-                    />
+                <div className="flex w-full items-center justify-center rounded-lg bg-white p-4 shadow-md sm:w-3/4">
+                    <div className="w-full" style={{ height: "300px" }}>
+                        {" "}
+                        {/* Tinggi grafik responsif */}
+                        <Bar
+                            data={prepareChartData()}
+                            options={{
+                                responsive: true,
+                                maintainAspectRatio: false, // Proporsional untuk layar kecil
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
-
-            {/* Periode Reports */}
-            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {Object.keys(reports[selectedPeriod]).length > 0 ? (
-                    Object.keys(reports[selectedPeriod]).map((key, index) => (
-                        <div
-                            key={index}
-                            className="rounded-lg bg-white p-4 shadow-md"
-                        >
-                            <h3 className="text-xl font-semibold capitalize text-gray-700">
-                                {formatDate(key, selectedPeriod)}
-                            </h3>
-                            <ul className="mt-4">
-                                <li className="mb-2 font-semibold text-gray-700">
-                                    <button
-                                        onClick={() =>
-                                            handleReportClick(
-                                                selectedPeriod,
-                                                key,
-                                            )
-                                        }
-                                        className="w-full text-left text-sm text-oren hover:text-orange-300 hover:underline"
-                                    >
-                                        Lihat Detail
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    ))
-                ) : (
-                    <div className="rounded-lg bg-white p-4 shadow-md">
-                        <h3 className="text-xl font-semibold text-gray-700">
-                            Tidak ada laporan untuk periode ini.
-                        </h3>
-                    </div>
-                )}
-            </div> */}
-
-            {/* Modal or Detailed Report View */}
-            {/* {selectedReport && (
-                <div className="fixed inset-0 z-10 flex items-center justify-center bg-white bg-opacity-30">
-                    <div className="relative w-1/3 rounded-lg bg-white p-6 font-light shadow-lg">
-                        <h4 className="mb-4 text-xl font-semibold text-gray-700">
-                            Detail Laporan
-                        </h4>
-                        <p className="mb-2">
-                            <strong>Pemasukan:</strong>{" "}
-                            {formatCurrency(selectedReport.total_pemasukan)}
-                        </p>
-                        <p className="mb-2">
-                            <strong>Pengeluaran:</strong>{" "}
-                            {formatCurrency(selectedReport.total_pengeluaran)}
-                        </p>
-                        <p className="mb-2">
-                            <strong>Saldo Akhir:</strong>{" "}
-                            {formatCurrency(
-                                calculateBalance(
-                                    selectedReport.total_pemasukan,
-                                    selectedReport.total_pengeluaran,
-                                ),
-                            )}
-                        </p>
-                        <button
-                            onClick={handleCloseModal}
-                            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-ijo px-4 py-2 text-2xl text-white"
-                        >
-                            &times;
-                        </button>
-                    </div>
-                </div>
-            )} */}
         </section>
     );
 };

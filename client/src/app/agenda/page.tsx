@@ -101,103 +101,99 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
     };
 
     return (
-        <div className="flex min-h-screen flex-col">
-            <Navbar
-                className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
-            />
-            <div
-                style={{
-                    backgroundImage: "url(/images/yatim-bg.jpeg)",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center center",
-                }}
-                className="mt-25 flex h-[250px] w-full items-center justify-center"
-            >
-                <h2 className="flex items-center gap-3 text-center font-poppins text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-                    Kegiatan
-                </h2>
-                
-            </div>
-
-            <section
-    className="flex flex-col items-center bg-white px-4 pb-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
-    data-aos="fade-down"
-    data-aos-delay="200"
-  >
-    <div
-      className="grid grid-cols-1 gap-6 px-20 sm:grid-cols-2 lg:grid-cols-3"
-      data-aos="zoom-in"
-      data-aos-delay="200"
-    >
-      {kegiatan.map((item) => (
+      <div className="flex min-h-screen flex-col">
+      <Navbar
+        className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
+      />
+      <div
+        style={{
+          backgroundImage: "url(/images/yatim-bg.jpeg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+        }}
+        className="mt-20 sm:mt-25 flex h-[200px] sm:h-[250px] w-full items-center justify-center"
+      >
+        <h2 className="flex items-center gap-3 text-center font-poppins text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+          Kegiatan
+        </h2>
+      </div>
+    
+      <section
+        className="flex flex-col items-center bg-white px-4 sm:px-6 md:px-12 lg:px-20 xl:px-28 pb-10 font-poppins sm:mt-20 md:mt-15"
+        data-aos="fade-down"
+        data-aos-delay="200"
+      >
         <div
-          key={item.id}
-          className="group w-full flex-shrink-0 transform overflow-hidden rounded-lg bg-white shadow-lg transition-transform hover:scale-105 hover:shadow-2xl"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-8 md:px-12 lg:px-20"
+          data-aos="zoom-in"
+          data-aos-delay="200"
         >
-          <div className="relative mb-4 h-64 w-full">
-            <Image
-              src={
-                item.id === -1
-                  ? "/images/placeholder.png"
-                  : item.images && item.images.length > 0
-                  ? `http://localhost:8000/storage/${item.images[0].image}`
-                  : "/images/placeholder.png"
-              }
-              alt={
-                item.nama_kegiatan || "Tidak ada kegiatan terdekat"
-              }
-              layout="fill"
-              style={{ objectFit: "cover" }}
-              className="rounded-t-lg"
-            />
-          </div>
-          <div className="px-6 pb-3">
-            <h3 className="mb-2 text-xl font-semibold text-gray-700">
-              {item.id === -1
-                ? "Tidak ada kegiatan terdekat"
-                : item.nama_kegiatan}
-            </h3>
-            {item.id !== -1 && (
-              <>
-                <div className="mb-2 flex items-center text-gray-700">
-                  <BiCalendar
-                    size={20}
-                    style={{
-                      marginRight: "5px",
-                      color: "#14B8A6",
-                    }}
-                  />
-                  {formatDate(item.tanggal)}
+          {kegiatan.map((item) => (
+            <div
+              key={item.id}
+              className="group w-full flex-shrink-0 transform overflow-hidden rounded-lg bg-white shadow-lg transition-transform hover:scale-105 hover:shadow-2xl"
+            >
+              <div className="relative mb-4 h-48 sm:h-56 md:h-64 lg:h-72 w-full">
+                <Image
+                  src={
+                    item.id === -1
+                      ? "/images/placeholder.png"
+                      : item.images && item.images.length > 0
+                      ? `http://localhost:8000/storage/${item.images[0].image}`
+                      : "/images/placeholder.png"
+                  }
+                  alt={item.nama_kegiatan || "Tidak ada kegiatan terdekat"}
+                  layout="fill"
+                  style={{ objectFit: "cover" }}
+                  className="rounded-t-lg"
+                />
+              </div>
+              <div className="px-6 pb-3">
+                <h3 className="mb-2 text-xl sm:text-2xl font-semibold text-gray-700">
+                  {item.id === -1 ? "Tidak ada kegiatan terdekat" : item.nama_kegiatan}
+                </h3>
+                {item.id !== -1 && (
+                  <>
+                    <div className="mb-2 flex items-center text-gray-700">
+                      <BiCalendar
+                        size={20}
+                        style={{
+                          marginRight: "5px",
+                          color: "#14B8A6",
+                        }}
+                      />
+                      {formatDate(item.tanggal)}
+                    </div>
+                    <div className="mb-4 flex items-center text-gray-700">
+                      <BiMap
+                        size={20}
+                        style={{
+                          marginRight: "5px",
+                          color: "#F97F30",
+                        }}
+                      />
+                      {item.lokasi}
+                    </div>
+                  </>
+                )}
+              </div>
+              {item.id !== -1 && (
+                <div className="absolute bottom-8 right-6 flex h-10 w-15 cursor-pointer items-center justify-center rounded-lg bg-[rgba(20,184,166,0.3)] transition-all duration-300 group-hover:bg-ijo">
+                  <Link
+                    href="/detail"
+                    className="transform group-hover:scale-125"
+                  >
+                    <FaArrowRight size={24} className="text-white" />
+                  </Link>
                 </div>
-                <div className="mb-4 flex items-center text-gray-700">
-                  <BiMap
-                    size={20}
-                    style={{
-                      marginRight: "5px",
-                      color: "#F97F30",
-                    }}
-                  />
-                  {item.lokasi}
-                </div>
-              </>
-            )}
-          </div>
-          {item.id !== -1 && (
-            <div className="absolute bottom-8 right-6 flex h-10 w-15 cursor-pointer items-center justify-center rounded-lg bg-[rgba(20,184,166,0.3)] transition-all duration-300 group-hover:bg-ijo">
-              <Link
-                href="/detail"
-                className="transform group-hover:scale-125"
-              >
-                <FaArrowRight size={24} className="text-white" />
-              </Link>
+              )}
             </div>
-          )}
+          ))}
         </div>
-      ))}
+      </section>
+      <Footer id="footer" />
     </div>
-  </section>
-            <Footer id="footer" />
-        </div>
+    
     );
 };
 

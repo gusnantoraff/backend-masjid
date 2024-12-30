@@ -66,79 +66,84 @@ const Profil = () => {
 
     return (
         <div className="flex min-h-screen flex-col">
-            <Navbar
-                className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
+  <Navbar
+    className={`fixed left-0 top-0 z-50 h-[78px] w-full ${navbarBg ? "bg-white" : "bg-white"}`}
+  />
+
+  {/* HEADER */}
+  <div
+    style={{
+      backgroundImage: "url(/images/jemaah-bg.jpeg)",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+    className="mt-20 sm:mt-25 flex h-[200px] sm:h-[250px] w-full items-center justify-center"
+  >
+    <h2 className="flex items-center gap-3 text-center font-poppins text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+      Jamaah {infoMasjid?.nama_masjid}
+    </h2>
+  </div>
+
+  <section
+    className="flex flex-col items-center bg-white px-4 sm:px-6 md:px-12 lg:px-20 xl:px-28 pb-10 font-poppins sm:mt-20 md:mt-15"
+    data-aos="fade-down"
+    data-aos-delay="200"
+  >
+    <h3 className="mb-4 mt-4 text-center text-xl font-semibold text-blue-800 sm:text-2xl">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit consequatur quam esse enim delectus, tempore at soluta ipsam assumenda tempora nesciunt mollitia eaque facilis voluptatum recusandae officia magnam repellendus voluptate.
+    </h3>
+
+    {/* Flexbox Container with Responsiveness */}
+    <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 justify-center items-center sm:justify-between">
+      {/* Card 1 */}
+      <div className="mt-8 flex items-center justify-center sm:mt-10">
+        <div className="relative w-full min-w-[150px] max-w-xs overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
+          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
+          <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
+          <div className="mb-4">
+            <img
+              src="/images/muslim.png"
+              style={{ width: "64px", height: "64px" }}
+              className="mx-auto text-4xl text-white sm:text-5xl"
             />
-
-            {/* HEADER */}
-            <div
-                style={{
-                    backgroundImage: "url(/images/jemaah-bg.jpeg)",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center center",
-                }}
-                className="mt-25 flex h-[250px] w-full items-center justify-center"
-            >
-                <h2 className="flex items-center gap-3 text-center font-poppins text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-                    Jamaah {infoMasjid?.nama_masjid}
-                </h2>
-            </div>
-
-            <section
-                className="flex flex-col items-center bg-white px-4 pb-10 font-poppins sm:mt-20 sm:px-6 md:mt-15 md:px-12 lg:px-20 xl:px-28"
-                data-aos="fade-down"
-                data-aos-delay="200"
-            >
-                <h3 className="mb-4 text-center text-xl font-semibold text-blue-800 sm:text-2xl">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit consequatur quam esse enim delectus, tempore at soluta ipsam assumenda tempora nesciunt mollitia eaque facilis voluptatum recusandae officia magnam repellendus voluptate.
-                </h3>
-
-                <div className="span-2 flex gap-6" style={{gap:"6rem"}}>
-                    <div className="mt-8 flex items-center justify-center sm:mt-10">
-                        <div className="relative w-full min-w-[150px] max-w-xs overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
-                            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
-                            <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
-                            <div className="mb-4">
-                                <img
-                                    src="/images/muslim.png"
-                                    style={{ width: "64px", height: "64px" }}
-                                    className="mx-auto text-4xl text-white sm:text-5xl"
-                                />
-                            </div>
-                            <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
-                                Akhi
-                            </h3>
-                            <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                                {countMuslimAktif}
-                            </p>
-                            <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
-                        </div>
-                    </div>
-                    <div className="mt-8 flex items-center justify-center sm:mt-10">
-                        <div className="relative w-full min-w-[150px] max-w-xs overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
-                            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
-                            <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
-                            <div className="mb-4">
-                                <img
-                                    src="/images/muslimah.png"
-                                    style={{ width: "64px", height: "64px" }}
-                                    className="mx-auto text-4xl text-white sm:text-5xl"
-                                />
-                            </div>
-                            <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
-                                Ukhti
-                            </h3>
-                            <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                                {countMuslimahAktif}
-                            </p>
-                            <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <Footer id="footer" />
+          </div>
+          <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
+            Akhi
+          </h3>
+          <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+            {countMuslimAktif}
+          </p>
+          <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
         </div>
+      </div>
+
+      {/* Card 2 */}
+      <div className="mt-8 flex items-center justify-center sm:mt-10">
+        <div className="relative w-full min-w-[150px] max-w-xs overflow-hidden rounded-lg bg-gradient-to-br from-teal-500 to-ijo p-6 text-center shadow-md sm:max-w-sm sm:p-8">
+          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-300 opacity-20"></div>
+          <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-green-300 opacity-20"></div>
+          <div className="mb-4">
+            <img
+              src="/images/muslimah.png"
+              style={{ width: "64px", height: "64px" }}
+              className="mx-auto text-4xl text-white sm:text-5xl"
+            />
+          </div>
+          <h3 className="text-lg font-bold tracking-wide text-white sm:text-2xl">
+            Ukhti
+          </h3>
+          <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+            {countMuslimahAktif}
+          </p>
+          <div className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-green-300 to-teal-500"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer id="footer" />
+</div>
+
     );
 };
 

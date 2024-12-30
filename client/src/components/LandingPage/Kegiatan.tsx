@@ -97,58 +97,74 @@ const KegiatanTerdekat: React.FC<KegiatanTerdekatProps> = ({ id }) => {
 
   return (
     <section
-      id={id}
-      className="py-20 pb-25 lg:px-20 bg-cover bg-center font-poppins font-semibold"
-      style={{
-        backgroundImage: "url('/images/BG.png')",
-        marginBottom: "40px"
-      }}
-    >      <h2 className="text-4xl text-gray-700 mb-6 text-center text-white" data-aos="fade-down" data-aos-delay="200">Kegiatan Terdekat</h2>
-      <hr className="my-1 mb-15 border-white w-[17%] mx-auto border-2 rounded-lg"/>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-20" data-aos="zoom-in" data-aos-delay="200">
-        {kegiatan.map((item) => (
-          <div key={item.id} className="group bg-white shadow-lg rounded-lg transition-transform transform hover:scale-105 hover:shadow-2xl relative overflow-hidden flex-shrink-0 w-full">
-            <div className="relative w-full h-64 mb-4">
-              <Image
-                src={
-                  item.id === -1
-                    ? '/images/placeholder.png'
-                    : item.images && item.images.length > 0
-                      ? `http://localhost:8000/storage/${item.images[0].image}`
-                      : '/images/placeholder.png'
-                }
-                alt={item.nama_kegiatan || "Tidak ada kegiatan terdekat"}
-                layout="fill"
-                style={{ objectFit: "cover" }}
-                className="rounded-t-lg"
-              />
-            </div>
-            <div className="px-6 pb-3">
-              <h3 className="text-xl text-gray-700 font-semibold mb-2">
-                {item.id === -1 ? "Tidak ada kegiatan terdekat" : item.nama_kegiatan}
-              </h3>
-              {item.id !== -1 && (
-                <>
-                  <div className="flex items-center text-gray-700 mb-2">
-                    <BiCalendar size={20} style={{ marginRight: '5px', color: '#14B8A6' }} /> {formatDate(item.tanggal)}
-                  </div>
-                  <div className="flex items-center text-gray-700 mb-4">
-                    <BiMap size={20} style={{ marginRight: '5px', color: '#F97F30' }} /> {item.lokasi}
-                  </div>
-                </>
-              )}
-            </div>
+    id={id}
+    className="py-20 lg:py-24 bg-cover bg-center font-poppins font-semibold"
+    style={{
+      backgroundImage: "url('/images/BG.png')",
+      marginBottom: "40px",
+    }}
+  >
+    <h2
+      className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 mb-6 text-center text-white"
+      data-aos="fade-down"
+      data-aos-delay="200"
+    >
+      Kegiatan Terdekat
+    </h2>
+    <hr className="my-1 mb-8 border-white w-1/3 sm:w-[17%] mx-auto border-2 rounded-lg" />
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-10 lg:px-20"
+      data-aos="zoom-in"
+      data-aos-delay="200"
+    >
+      {kegiatan.map((item) => (
+        <div
+          key={item.id}
+          className="group bg-white shadow-lg rounded-lg transition-transform transform hover:scale-105 hover:shadow-2xl relative overflow-hidden flex-shrink-0 w-full"
+        >
+          <div className="relative w-full h-48 sm:h-56 lg:h-64 mb-4">
+            <Image
+              src={
+                item.id === -1
+                  ? "/images/placeholder.png"
+                  : item.images && item.images.length > 0
+                  ? `http://localhost:8000/storage/${item.images[0].image}`
+                  : "/images/placeholder.png"
+              }
+              alt={item.nama_kegiatan || "Tidak ada kegiatan terdekat"}
+              layout="fill"
+              style={{ objectFit: "cover" }}
+              className="rounded-t-lg"
+            />
+          </div>
+          <div className="px-4 sm:px-6 pb-3">
+            <h3 className="text-lg sm:text-xl text-gray-700 font-semibold mb-2">
+              {item.id === -1 ? "Tidak ada kegiatan terdekat" : item.nama_kegiatan}
+            </h3>
             {item.id !== -1 && (
-              <div className="absolute bottom-8 right-6 w-15 h-10 rounded-lg bg-[rgba(20,184,166,0.3)] group-hover:bg-ijo flex justify-center items-center transition-all duration-300 cursor-pointer">
-                <Link href="/detail" className="transform group-hover:scale-125">
-                  <FaArrowRight size={24} className="text-white" />
-                </Link>
-              </div>
+              <>
+                <div className="flex items-center text-sm sm:text-base text-gray-700 mb-2">
+                  <BiCalendar size={18} className="mr-2 text-teal-500" />{" "}
+                  {formatDate(item.tanggal)}
+                </div>
+                <div className="flex items-center text-sm sm:text-base text-gray-700 mb-4">
+                  <BiMap size={18} className="mr-2 text-orange-500" /> {item.lokasi}
+                </div>
+              </>
             )}
           </div>
-        ))}
-      </div>
-    </section>
+          {item.id !== -1 && (
+            <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 w-12 sm:w-15 h-8 sm:h-10 rounded-lg bg-[rgba(20,184,166,0.3)] group-hover:bg-teal-500 flex justify-center items-center transition-all duration-300 cursor-pointer">
+              <Link href="/detail" className="transform group-hover:scale-125">
+                <FaArrowRight size={20} className="text-white" />
+              </Link>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+  
   );
 };
 

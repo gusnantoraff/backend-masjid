@@ -89,91 +89,55 @@ const JadwalSholat = () => {
 
   return (
     <div
-      className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1100px] mx-auto"
-      style={{
-        backgroundImage: "url('/images/BG.png')",
-        backgroundSize: "cover",
-      }}
-    >
-      <div className="mt-6 text-white font-semibold font-poppins">
-        <p className="text-lg sm:text-xl md:text-2xl">
-          Jadwal shalat berikutnya <strong className="text-xl sm:text-2xl">{nextPrayer}</strong>
-        </p>
-        <p className="text-lg sm:text-xl md:text-2xl">
-          Akan dimulai dalam <strong className="text-xl sm:text-2xl">{timeLeft}</strong> lagi
-        </p>
-      </div>
-      <hr className="my-6 border-white w-[88%] mx-auto" />
-  
-      {isLoading ? (
-        <p className="text-center text-white font-semibold text-lg sm:text-xl md:text-2xl font-poppins">Loading...</p>
-      ) : (
-        jadwal && (
-          <>
-            {/* Tabel untuk layar besar */}
-            <div className="hidden md:block w-full mb-6">
-              <table className="table-auto w-full text-center text-white font-semibold font-poppins">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2">Subuh</th>
-                    <th className="px-4 py-2">Dzuhur</th>
-                    <th className="px-4 py-2">Ashar</th>
-                    <th className="px-4 py-2">Maghrib</th>
-                    <th className="px-4 py-2">Isya</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="font-light font-poppins">
-                    <td className="px-4 py-2">{jadwal.subuh} WIB</td>
-                    <td className="px-4 py-2">{jadwal.dzuhur} WIB</td>
-                    <td className="px-4 py-2">{jadwal.ashar} WIB</td>
-                    <td className="px-4 py-2">{jadwal.maghrib} WIB</td>
-                    <td className="px-4 py-2">{jadwal.isya} WIB</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-  
-            {/* Tabel untuk layar kecil (md dan sm) */}
-            <div className="block md:hidden w-full mb-6">
-              {/* Tabel 1: Shalat Pagi */}
-              <table className="table-auto w-full text-center text-white font-semibold font-poppins mb-4">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2">Subuh</th>
-                    <th className="px-4 py-2">Dzuhur</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="font-light font-poppins">
-                    <td className="px-4 py-2">{jadwal.subuh} <br/> WIB</td>
-                    <td className="px-4 py-2">{jadwal.dzuhur} <br/> WIB</td>
-                  </tr>
-                </tbody>
-              </table>
-  
-              {/* Tabel 2: Shalat Sore */}
-              <table className="table-auto w-full text-center text-white font-semibold font-poppins">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2">Ashar</th>
-                    <th className="px-4 py-2">Maghrib</th>
-                    <th className="px-4 py-2">Isya</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="font-light font-poppins">
-                    <td className="px-4 py-2">{jadwal.ashar} <br/> WIB</td>
-                    <td className="px-4 py-2">{jadwal.maghrib} <br/> WIB</td>
-                    <td className="px-4 py-2">{jadwal.isya} <br/> WIB</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </>
-        )
-      )}
-    </div>
+  className="bg-white shadow-md rounded-lg p-6 w-full max-w-[1100px] mx-auto sm:mt-4 sm:mb-6"
+  style={{
+    backgroundImage: "url('/images/BG.png')",
+    backgroundSize: "cover",
+  }}
+>
+  <div className="mt-6 text-white font-semibold font-poppins">
+    <p className="text-lg sm:text-xl md:text-2xl">
+      Jadwal shalat berikutnya <strong className="text-xl sm:text-2xl">{nextPrayer}</strong>
+    </p>
+    <p className="text-lg sm:text-xl md:text-2xl">
+      Akan dimulai dalam <strong className="text-xl sm:text-2xl">{timeLeft}</strong> lagi
+    </p>
+  </div>
+  <hr className="my-6 border-white w-[88%] mx-auto" />
+
+  {isLoading ? (
+    <p className="text-center text-white font-semibold text-lg sm:text-xl md:text-2xl font-poppins">Loading...</p>
+  ) : (
+    jadwal && (
+      <>
+        {/* Jadwal dalam satu baris */}
+        <div className="w-full flex flex-wrap justify-center gap-4 text-white font-semibold font-poppins text-sm sm:text-base md:text-lg lg:text-xl">
+          <div className="flex flex-col items-center">
+            <p className="mb-2">Subuh</p>
+            <p className="font-light">{jadwal.subuh} WIB</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="mb-2">Dzuhur</p>
+            <p  className="font-light">{jadwal.dzuhur} WIB</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="mb-2">Ashar</p>
+            <p  className="font-light">{jadwal.ashar} WIB</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="mb-2">Maghrib</p>
+            <p  className="font-light">{jadwal.maghrib} WIB</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="mb-2">Isya</p>
+            <p  className="font-light">{jadwal.isya} WIB</p>
+          </div>
+        </div>
+      </>
+    )
+  )}
+</div>
+
   );
 };
 

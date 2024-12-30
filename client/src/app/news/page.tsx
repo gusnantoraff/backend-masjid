@@ -90,90 +90,70 @@ const NewsSection: React.FC<NewsSectionProps> = ({ id }) => {
                 data-aos="fade-down"
                 data-aos-delay="200"
             >
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-                {/* Main featured news */}
-                <div
-                    className="col-span-2 h-full overflow-hidden rounded-lg bg-white shadow-md hover:cursor-pointer lg:col-span-2"
-                    data-aos="fade-right"
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 px-4 sm:px-6 md:px-8">
+                  {/* Main featured news */}
+                  <div 
+                    className="col-span-1 lg:col-span-2 bg-white shadow-md rounded-lg overflow-hidden hover:cursor-pointer h-full" 
+                    data-aos="fade-right" 
                     data-aos-delay="200"
-                >
-                    <div className="group relative h-full w-full overflow-hidden">
-                        <Image
-                            src={
-                                berita[0]?.foto
-                                    ? `http://localhost:8000/storage/${berita[0].foto}`
-                                    : "/images/600x400.png"
-                            }
-                            alt={berita[0]?.judul || "Main News Placeholder"}
-                            layout="fill"
-                            objectFit="cover"
-                            className="h-full w-full transform object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black via-black/40 to-transparent p-6">
-                            <h3 className="mb-2 font-poppins text-2xl font-semibold text-white">
-                                {berita[0]?.judul || "Tidak ada berita terbaru"}
-                            </h3>
-                            <p className="flex items-center font-poppins text-xs text-white">
-                                <FaRegCalendarAlt className="mr-2 h-4 w-4 text-white" />
-                                {berita[0]?.tanggal_publikasi
-                                    ? formatDate(berita[0].tanggal_publikasi)
-                                    : "Tidak Tersedia"}
-                            </p>
-                        </div>
+                  >
+                    <div className="relative w-full h-64 lg:h-full overflow-hidden group">
+                      <Image
+                        src={berita[0]?.foto ? `http://localhost:8000/storage/${berita[0].foto}` : '/images/600x400.png'}
+                        alt={berita[0]?.judul || 'Main News Placeholder'}
+                        layout="fill"
+                        objectFit="cover"
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300 ease-in-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-6 flex flex-col justify-end">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 font-poppins">
+                          {berita[0]?.judul || 'Tidak ada berita terbaru'}
+                        </h3>
+                        <p className="text-white text-xs font-poppins flex items-center">
+                          <FaRegCalendarAlt className="h-4 w-4 mr-2 text-white" />
+                          {berita[0]?.tanggal_publikasi ? formatDate(berita[0].tanggal_publikasi) : 'Tidak Tersedia'}
+                        </p>
+                      </div>
                     </div>
-                </div>
-
-                {/* List of smaller news items */}
-                <div className="col-span-2 grid grid-cols-1 gap-4 lg:col-span-2 lg:grid-cols-1">
+                  </div>
+                
+                  {/* List of smaller news items */}
+                  <div className="col-span-1 lg:col-span-2 grid grid-cols-1 gap-4">
                     {Array.from({ length: 4 }).map((_, index) => {
-                        const item = berita[index + 1] || {
-                            foto: null,
-                            judul: "",
-                            tanggal_publikasi: "",
-                        };
-
-                        return (
-                            <div
-                                key={index}
-                                className="flex h-full transform flex-col rounded-lg bg-white p-0 shadow-md transition-all duration-300 ease-in-out hover:scale-105 lg:flex-row"
-                                data-aos="fade-left"
-                                data-aos-delay="200"
-                            >
-                                <div className="relative h-full w-full flex-shrink-0 overflow-hidden lg:w-60">
-                                    <Image
-                                        src={
-                                            item.foto
-                                                ? `http://localhost:8000/storage/${item.foto}`
-                                                : "/images/250x160.png"
-                                        }
-                                        alt={item.judul || "Placeholder"}
-                                        layout="fill"
-                                        objectFit="cover"
-                                        className="h-full w-full rounded-l-lg object-cover"
-                                    />
-                                </div>
-                                <div className="flex w-full flex-col justify-between p-4">
-                                    <h3 className="font-poppins text-lg font-semibold text-gray-700">
-                                        {truncateText(
-                                            item.judul ||
-                                                "Tidak ada berita terbaru",
-                                            30,
-                                        )}
-                                    </h3>
-                                    <p className="mb-2 flex items-center py-0 font-poppins text-xs font-light text-gray-700">
-                                        <FaRegCalendarAlt className="mr-2 h-4 w-4 text-oren" />
-                                        {item.tanggal_publikasi
-                                            ? formatDate(item.tanggal_publikasi)
-                                            : "Tidak Tersedia"}
-                                    </p>
-                                    <button className="mt-4 font-poppins text-xs text-ijo hover:underline">
-                                        Baca Selengkapnya
-                                    </button>
-                                </div>
-                            </div>
-                        );
+                      const item = berita[index + 1] || { foto: null, judul: '', tanggal_publikasi: '' };
+                
+                      return (
+                        <div 
+                          key={index} 
+                          className="flex flex-col lg:flex-row bg-white shadow-md rounded-lg overflow-hidden hover:scale-105 transform transition-all duration-300 ease-in-out" 
+                          data-aos="fade-left" 
+                          data-aos-delay="200"
+                        >
+                          <div className="flex-shrink-0 w-full h-40 lg:w-60 relative overflow-hidden">
+                            <Image
+                              src={item.foto ? `http://localhost:8000/storage/${item.foto}` : '/images/250x160.png'}
+                              alt={item.judul || 'Placeholder'}
+                              layout="fill"
+                              objectFit="cover"
+                              className="w-full h-full object-cover rounded-l-lg"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-between w-full p-4">
+                            <h3 className="text-sm sm:text-lg text-gray-700 font-semibold font-poppins">
+                              {truncateText(item.judul || 'Tidak ada berita terbaru', 30)}
+                            </h3>
+                            <p className="text-gray-700 text-xs font-poppins flex items-center py-1 font-light">
+                              <FaRegCalendarAlt className="h-4 w-4 mr-2 text-oren" />
+                              {item.tanggal_publikasi ? formatDate(item.tanggal_publikasi) : 'Tidak Tersedia'}
+                            </p>
+                            <button className="mt-4 text-ijo text-xs sm:text-sm font-poppins hover:underline">
+                              Baca Selengkapnya
+                            </button>
+                          </div>
+                        </div>
+                      );
                     })}
-                </div>
+                  </div>
                 </div>
             </section>
             <Footer id="footer" />

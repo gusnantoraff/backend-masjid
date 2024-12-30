@@ -260,7 +260,7 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
                     </div>
                 </div>
 
-                <div className="mb-6 flex justify-center">
+                <div className="mb-6 flex flex-wrap justify-center gap-2 sm:gap-4">
                     {(
                         [
                             "harian",
@@ -272,7 +272,11 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
                         <button
                             key={period}
                             onClick={() => setSelectedPeriod(period)}
-                            className={`mx-2 rounded border px-4 py-2 ${selectedPeriod === period ? "bg-ijo text-white" : "bg-gray-200 text-gray-700"}`}
+                            className={`rounded border px-4 py-2 text-sm sm:text-base ${
+                                selectedPeriod === period
+                                    ? "bg-ijo text-white"
+                                    : "bg-gray-200 text-gray-700"
+                            }`}
                         >
                             {period.charAt(0).toUpperCase() + period.slice(1)}
                         </button>
@@ -280,92 +284,26 @@ const Keuangan: React.FC<KeuanganProps> = ({ id }) => {
                 </div>
 
                 {/* Render Chart */}
-                <div className="flex w-3/4 flex-col items-center justify-center pb-6">
-                    <h3 className="mb-4 text-center text-xl font-semibold text-gray-700">
-                        {`Chart Laporan ${selectedPeriod}`}
-                    </h3>
-                    <div className="flex w-full items-center justify-center rounded-lg bg-white p-4 shadow-md">
-                        <Bar
-                            data={prepareChartData()}
-                            options={{ responsive: true }}
-                        />
-                    </div>
-                </div>
+                <div className="flex flex-col items-center justify-center px-0 pb-6 w-3/4">
+  <h3 className="mb-4 text-center text-lg font-semibold text-gray-700 sm:text-xl md:text-2xl">
+    {`Chart Laporan ${selectedPeriod}`}
+  </h3>
 
-                {/* Periode Reports */}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {Object.keys(reports[selectedPeriod]).length > 0 ? (
-                        Object.keys(reports[selectedPeriod]).map(
-                            (key, index) => (
-                                <div
-                                    key={index}
-                                    className="rounded-lg bg-white p-4 shadow-md"
-                                >
-                                    <h3 className="text-xl font-semibold capitalize text-gray-700">
-                                        {formatDate(key, selectedPeriod)}
-                                    </h3>
-                                    <ul className="mt-4">
-                                        <li className="mb-2 font-semibold text-gray-700">
-                                            <button
-                                                onClick={() =>
-                                                    handleReportClick(
-                                                        selectedPeriod,
-                                                        key,
-                                                    )
-                                                }
-                                                className="w-full text-left text-sm text-oren hover:text-orange-300 hover:underline"
-                                            >
-                                                Lihat Detail
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            ),
-                        )
-                    ) : (
-                        <div className="rounded-lg bg-white p-4 shadow-md">
-                            <h3 className="text-xl font-semibold text-gray-700">
-                                Tidak ada laporan untuk periode ini.
-                            </h3>
-                        </div>
-                    )}
-                </div>
+  <div className="flex w-full items-center justify-center rounded-lg bg-white p-4 shadow-md">
+    <div className="w-full" style={{ height: "300px" }}>
+      {/* Tinggi grafik responsif, lebar mengikuti lebar section */}
+      <Bar
+        data={prepareChartData()}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false, // Proporsional untuk layar kecil
+        }}
+      />
+    </div>
+  </div>
+</div>
 
-                {/* Modal or Detailed Report View */}
-                {selectedReport && (
-                    <div className="fixed inset-0 z-10 flex items-center justify-center bg-white bg-opacity-30">
-                        <div className="relative w-1/3 rounded-lg bg-white p-6 font-light shadow-lg">
-                            <h4 className="mb-4 text-xl font-semibold text-gray-700">
-                                Detail Laporan
-                            </h4>
-                            <p className="mb-2">
-                                <strong>Pemasukan:</strong>{" "}
-                                {formatCurrency(selectedReport.total_pemasukan)}
-                            </p>
-                            <p className="mb-2">
-                                <strong>Pengeluaran:</strong>{" "}
-                                {formatCurrency(
-                                    selectedReport.total_pengeluaran,
-                                )}
-                            </p>
-                            <p className="mb-2">
-                                <strong>Saldo Akhir:</strong>{" "}
-                                {formatCurrency(
-                                    calculateBalance(
-                                        selectedReport.total_pemasukan,
-                                        selectedReport.total_pengeluaran,
-                                    ),
-                                )}
-                            </p>
-                            <button
-                                onClick={handleCloseModal}
-                                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-ijo px-4 py-2 text-2xl text-white"
-                            >
-                                &times;
-                            </button>
-                        </div>
-                    </div>
-                )}
+
             </section>
             <Footer id="footer" />
         </div>
