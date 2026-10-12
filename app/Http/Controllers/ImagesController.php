@@ -66,28 +66,50 @@ class ImagesController extends Controller
     /**
      * Handle image upload specifically for 'galeri' category.
      */
-    public function storeForGaleri(Request $request): JsonResponse
-    {
-        $validatedData = $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'keterangan' => 'required|string',
-            'kategori' => 'required|string|in:galeri',
-        ]);
+   public function storeForGaleri(Request $request): JsonResponse
+{
+    $validatedData = $request->validate([
+        'image' => [
+            'required',
+            'image',
+            'mimes:jpeg,jpg,png',
+            'max:8192',
+        ],
+        'keterangan' => ['required', 'string', 'max:255'],
+        'kategori' => ['required', 'string', 'in:galeri'],
+    ]);
 
-        $file = $request->file('image');
-        $filePath = $file->store('images', 'public');
+    $file = $request->file('image');
 
+    $filePath = $file->store('images', 'public');
+
+    if (!$filePath) {
+        return response()->json([
+            'message' => 'Gagal menyimpan file gambar.',
+        ], 500);
+    }
+
+    try {
         $image = Images::create([
             'image' => $filePath,
             'keterangan' => $validatedData['keterangan'],
             'kategori' => $validatedData['kategori'],
         ]);
+    } catch (\Throwable $e) {
+        Storage::disk('public')->delete($filePath);
 
-        return response()->json(['message' => 'Image Galeri uploaded successfully', 'image' => $image], 201);
+        report($e);
+
+        return response()->json([
+            'message' => 'Gagal menyimpan data galeri ke database.',
+        ], 500);
     }
-    /**
-     * Display the specified image.
-     */
+
+    return response()->json([
+        'message' => 'Gambar galeri berhasil diunggah.',
+        'image' => $image,
+    ], 201);
+}
     public function show(int $id): JsonResponse
     {
         $image = Images::with('imageable')->find($id);

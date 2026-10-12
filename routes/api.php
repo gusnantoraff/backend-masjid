@@ -74,7 +74,6 @@ Route::middleware('auth:sanctum')->group(function () use ($resources) {
 
     Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode']);
     Route::post('/users/{id}/avatar', [UserController::class, 'storeAvatar']);
-    Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
     Route::post('/kegiatan/{id}/upload-foto', [KegiatanController::class, 'uploadPhoto']);
     Route::post('/berita/{id}/upload-foto', [BeritaController::class, 'updateFoto']);
 });
@@ -86,6 +85,7 @@ Route::group(['prefix' => 'public'], function () use ($resources2) {
     }
 
     Route::get('laporan-keuangan2/periode', [LaporanKeuanganController::class, 'getPeriode'])->name('public.laporan-keuangan2.periode');
+    Route::post('/images/galeri', [ImagesController::class, 'storeForGaleri']);
 });
 
 
